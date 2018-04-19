@@ -22,6 +22,10 @@ class Player():
         self.state = PlayerState.checkpseudo
         self.client.sendMessage("Indiquez votre pseudonyme:")
 
+    def send(self, text):
+        # shortcut to send messages
+        self.client.sendMessage(text)
+
     def setkey(self):
         self.key = "player:" + str(self.id)
 
