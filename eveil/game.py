@@ -1,7 +1,6 @@
 import queue
 from time import sleep
 
-from .state import ClientState
 from .data import Data
 from .player import Player
 from .parser import Parser
@@ -29,11 +28,10 @@ class Game():
             self.clients.append(client)
             player = Player(self, client)
             client.setPlayer(player)
-            client.setState(ClientState.player)
         elif kind == "disconnect" and client in self.clients:
             self.clients.remove(client)
         else:
-            self.parser.parse(client, message)
+            self.parser.parse(client.player, message)
         self.queue.task_done()
     
     def handleMessage(self, client, message):

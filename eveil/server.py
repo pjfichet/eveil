@@ -19,14 +19,6 @@ class Server(WebSocket):
     def setPlayer(self, player):
         self.player = player
 
-    def setState(self, state):
-        # Do not use self.state since it would conflict
-        # with the class WebSocket.
-        self.status = state
-
-    def getState(self):
-        return self.status
-
 
 class ThreadServer(threading.Thread):
 

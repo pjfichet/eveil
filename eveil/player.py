@@ -2,10 +2,10 @@
 
 from datetime import datetime
 
-from .state import ClientState, PlayerState
-
 class Player():
-    players = []
+    # Initialize an enumeration of states
+    CHECKPSEUDO, CREATEPWD, CHECKPWD1, CHECKPWD2, \
+        CHECKPWD3, CONFIRMPWD, EMAIL, LOGGED = range(8)
 
     def __init__(self, game, client):
         self.client = client
@@ -19,8 +19,8 @@ class Player():
         self.login = None
         self.logout = None
         self.characters = []
-        self.state = PlayerState.checkpseudo
-        self.client.sendMessage("Indiquez votre pseudonyme:")
+        self.state = self.CHECKPSEUDO
+        self.send("Indiquez votre pseudonyme:")
 
     def send(self, text):
         # shortcut to send messages
@@ -63,76 +63,71 @@ class Player():
     def checkpseudo(self, text):
         self.pseudo = text
         if self.get():
-            self.client.sendMessage("Indiquez votre mot de passe:")
-            self.state = PlayerState.checkpwd1
+            self.send("Indiquez votre mot de passe:")
+            self.state = self.CHECKPWD1
         else:
-            self.client.sendMessage("Création d'un compte sous le pseudonyme «{}».".format(self.pseudo))
-            self.client.sendMessage("Choisissez un mot de passe:")
-            self.state = PlayerState.createpwd
+            self.send("Création d'un compte sous le pseudonyme «{}».".format(self.pseudo))
+            self.send("Choisissez un mot de passe:")
+            self.state = self.CREATEPWD
 
     def checkpwd(self, data):
         if self.passwd == data:
             if self.characters:
-                self.client.sendMessage("Choisissez votre personnage, ou créez-en un nouveau.")
-                self.client.sendMessage("Personnages existants: {}.".format(self.characters))
+                self.send("Choisissez votre personnage, ou créez-en un nouveau.")
+                self.send("Personnages existants: {}.".format(self.characters))
             else:
-                self.client.sendMessage("Choisissez le nom de votre personnage:")
+                self.send("Choisissez le nom de votre personnage:")
             self.login = datetime.now()
-            self.state = PlayerState.logged
-            self.client.setState(ClientState.chargen)
+            self.state = self.LOGGED
         else:
-            if self.state == PlayerState.checkpwd3:
-                self.client.sendMessage("Mot de passe erronné.")
+            if self.state == self.CHECKPWD3:
+                self.send("Mot de passe erronné.")
                 # todo: kick
             else:
-                self.client.sendMessage("Mot de passe erronné. Veuillez ré-essayer:")
-                if self.state == PlayerState.checkpwd2:
-                    self.state = PlayerState.checkpwd3
+                self.send("Mot de passe erronné. Veuillez ré-essayer:")
+                if self.state == self.CHECKPWD2:
+                    self.state = self.CHECKPWD3
                 else:
-                    self.state = PlayerState.checkpwd2
+                    self.state = self.CHECKPWD2
 
     def createpwd(self, data):
         self.passwd = data
-        self.client.sendMessage("Confirmez votre mot de passe:")
-        self.state = PlayerState.confirmpwd
+        self.send("Confirmez votre mot de passe:")
+        self.state = self.CONFIRMPWD
 
     def confirmpwd(self, data):
         if self.passwd == data:
-            self.client.sendMessage("Veuillez indiquer une adresse mail \
+            self.send("Veuillez indiquer une adresse mail \
 (les adresses mail ne sont utilisées qu'à votre demande, \
 pour vous communiquer un nouveau mot de passe).")
-            self.state = PlayerState.email
+            self.state = self.EMAIL
         else:
-            self.client.sendMessage("La confirmation ne correspond pas au mot de passe. Recommencez s'il vous plaît.")
-            self.client.sendMessage("Choisissez un mot de passe:")
+            self.send("La confirmation ne correspond pas au mot de passe. Recommencez s'il vous plaît.")
+            self.send("Choisissez un mot de passe:")
             self.passwd = None
-            self.state = PlayerState.createpwd
+            self.state = self.CREATEPWD
 
     def getemail(self, data):
         self.email = data
         self.new()
-        self.client.sendMessage("Bravo, votre compte est bien enregistré!")
-        self.client.sendMessage("Choisissez le nom de votre personnage:")
-        self.state = PlayerState.logged
-        self.client.setState(ClientState.chargen)
+        self.send("Bravo, votre compte est bien enregistré!")
+        self.send("Choisissez le nom de votre personnage:")
+        self.state = self.LOGGED
 
     def parse(self, text):
-        if self.state == PlayerState.checkpseudo:
+        if self.state == self.CHECKPSEUDO:
             self.checkpseudo(text)
-        elif self.state == PlayerState.createpwd:
+        elif self.state == self.CREATEPWD:
             self.createpwd(text)
-        elif self.state == PlayerState.checkpwd1 \
-            or self.state == PlayerState.checkpwd2 \
-            or self.state == PlayerState.checkpwd3:
+        elif self.state == self.CHECKPWD1 \
+            or self.state == self.CHECKPWD2 \
+            or self.state == self.CHECKPWD3:
             self.checkpwd(text)
-        elif self.state == PlayerState.confirmpwd:
+        elif self.state == self.CONFIRMPWD:
             self.confirmpwd(text)
-        elif self.state == PlayerState.email:
+        elif self.state == self.EMAIL:
             self.getemail(text)
-        elif self.state == PlayerState.logged:
+        elif self.state == self.LOGGED:
             # should not arrive here
             pass
-
-
-
 
