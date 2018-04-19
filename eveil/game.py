@@ -26,7 +26,7 @@ class Game():
             self.shutdown()
         elif kind == "connect" and client not in self.clients:
             self.clients.append(client)
-            player = Player(self, client)
+            player = Player(self.db, client)
             client.setPlayer(player)
         elif kind == "disconnect" and client in self.clients:
             self.clients.remove(client)

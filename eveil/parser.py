@@ -5,7 +5,8 @@ class Parser():
         pass
 
     def parse(self, player, message):
+        # Player logging
         if player.state != player.LOGGED:
             player.parse(message)
-        else:
-            pass
+            return
+        # Character generation commands

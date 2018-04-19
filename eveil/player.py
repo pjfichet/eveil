@@ -1,15 +1,21 @@
 #! python
 
 from datetime import datetime
+from .character import Character
 
 class Player():
+    """ Represent the player. Some information about him is
+    recorded in the database, as well as a list of its characters.
+    A login, he must provide those informations, and choose
+    a character to play."""
+
     # Initialize an enumeration of states
     CHECKPSEUDO, CREATEPWD, CHECKPWD1, CHECKPWD2, \
-        CHECKPWD3, CONFIRMPWD, EMAIL, LOGGED = range(8)
+        CHECKPWD3, CONFIRMPWD, EMAIL, CHARACTER, LOGGED = range(9)
 
-    def __init__(self, game, client):
+    def __init__(self, db, client):
         self.client = client
-        self.db = game.db
+        self.db = db
         self.id = None
         self.key = None
         self.pseudo = None
@@ -72,17 +78,17 @@ class Player():
 
     def checkpwd(self, data):
         if self.passwd == data:
-            if self.characters:
-                self.send("Choisissez votre personnage, ou créez-en un nouveau.")
-                self.send("Personnages existants: {}.".format(self.characters))
-            else:
-                self.send("Choisissez le nom de votre personnage:")
             self.login = datetime.now()
-            self.state = self.LOGGED
+            self.state = self.CHARACTER
+            if self.characters:
+                self.send("Choisissez votre personnage, ou creez-en un nouveau en appuyant sur «Entrée».")
+                self.send("Personnages: {}.".format(self.player.characters))
+            else:
+                self.send("Bienvenue {}. Appuyez sur «Entrée» pour créer un personnage.".format(self.pseudo))
         else:
             if self.state == self.CHECKPWD3:
                 self.send("Mot de passe erronné.")
-                # todo: kick
+                self.client.close()
             else:
                 self.send("Mot de passe erronné. Veuillez ré-essayer:")
                 if self.state == self.CHECKPWD2:
@@ -111,8 +117,13 @@ pour vous communiquer un nouveau mot de passe).")
         self.email = data
         self.new()
         self.send("Bravo, votre compte est bien enregistré!")
-        self.send("Choisissez le nom de votre personnage:")
+        self.send("Appuyez sur «Entrée» pour créer un personnage.")
+        self.state = self.CHARACTER
+
+    def setcharacter(self, text):
+        self.character = Character(self.db, self)
         self.state = self.LOGGED
+        self.character.checkname(text)
 
     def parse(self, text):
         if self.state == self.CHECKPSEUDO:
@@ -127,6 +138,8 @@ pour vous communiquer un nouveau mot de passe).")
             self.confirmpwd(text)
         elif self.state == self.EMAIL:
             self.getemail(text)
+        elif self.state == self.CHARACTER:
+            self.setcharacter(text)
         elif self.state == self.LOGGED:
             # should not arrive here
             pass

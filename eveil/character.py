@@ -1,9 +1,9 @@
 
-class character():
+class Character():
 
-    def __init__(self, game, player):
-        self.game = game
-        self.client = client
+    def __init__(self, db, player):
+        self.db = db
+        self.player = player
         self.id = None
         self.key = None
         self.name = None
@@ -13,10 +13,6 @@ class character():
         self.longdesc = None
         self.shortdesc = None
         self.stats = []
-        self.state = CharacterState.checkname
-        self.player.send("Choisissez votre personnage, ou creez-en un nouveau.")
-        self.player.send("Personnages: {}.".format(self.player.characters))
-
 
     def setkey(self):
         self.key = "character:" + str(self.id)
@@ -33,8 +29,6 @@ class character():
             self.longdesc = data["longdesc"]
             self.shortdesc = data["shortdesc"]
             self.stats = data["stats"]
-            # should I put this in the db?
-            self.state = data["state"]
             return True
         else:
             return  False
@@ -44,7 +38,7 @@ class character():
         self.db.put(self.key, {"name": self.name, "lastname": self.lastname,
             "gender": self.gender, "room": self.room, 
             "longdesc": self.longdesc, "shortdesc": self.shortdesc,
-            "stats": self.stats, "state" = self.state })
+            "stats": self.stats, "state": self.state })
 
     def new(self):
         self.id = self.db.new("character")
@@ -54,9 +48,15 @@ class character():
         self.put()
 
     def checkname(self, text):
-        self.name = text
-        if not self.get():
-            self.player.send("Creating {}.".format(self.name))
-            self.new()
+        if self.player.characters:
+            if text in self.player.characters:
+                self.name = text
+                self.get()
+        self.entergame()
+
+    def entergame(self):
+        #todo: enter the game
+        pass
+
 
 

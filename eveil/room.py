@@ -4,6 +4,7 @@ class Room():
     def __init__(game):
         self.game = game
         self.id = None
+        self.area = None
         self.shortdesc = None
         self.longdesc = None
         self.exits = []
@@ -17,4 +18,5 @@ class Room():
                     character.client.sendMessage(exit)
 
     def addexit(self):
+        pass
 
