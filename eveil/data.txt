@@ -1,0 +1,4 @@
+
+player			maxid
+player:id		{pseudo, passwd, email, creation, login, logout, [characters]}
+player:pseudo	id

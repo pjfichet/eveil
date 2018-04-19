@@ -1,0 +1,9 @@
+# Threading in python
+https://stackoverflow.com/questions/13481276/threading-in-python-using-queue
+
+# threading the simple web socket server
+https://stackoverflow.com/questions/38302613/run-websocket-server-in-thread
+https://github.com/dpallot/simple-websocket-server
+
+# Threading a database access
+http://code.activestate.com/recipes/526618/
