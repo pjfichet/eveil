@@ -9,14 +9,34 @@
 <body>
 	<header>
 		<h1>Éveil</h1>
+		<p class="subtitle">Jeu de rôle / Improvisation littéraire</p>
 		<nav></nav>
 	</header>
 	<section>
+		<form id="login">
+			<label for='pseudo'>Pseudonyme</label>
+			<input type="text" name="pseudo"/>
+			<label for='passwd'>Mot de passe</label>
+			<input type="password" name="passwd"/>
+			<input type="button" value="Créer un compte" onClick="changeForm();"/>
+			<input type="button" value="Jouer" onClick="login();"/>
+		</form>
+		<form id="create">
+			<label for='pseudo'>Pseudonyme</label>
+			<input type="text" name="pseudo"/>
+			<label for='passwd'>Mot de passe</label>
+			<input type="password" name="passwd"/>
+			<label for='confirm'>Confirmation du m.d.p.</label>
+			<input type="password" name="confirm"/>
+			<label for='email'>Adresse électronique</label>
+			<input type="text" name="email"/>
+			<input type="button" value="J'ai déjà un compte" onClick="changeForm();"/>
+			<input type="button" value="Jouer" onClick="create();"/>
+		</form>
 		<div id="output"></div>
 		<div id="input">
 			<textarea id="inputText"></textarea>
 			<input type="button" id="sendButton" value="Envoyer" onClick="sendText();"/>
-			<input type="button" id="connectButton" value="Commencer" onClick="doConnect();"/>
 		</div>
 	</section>
 </body>

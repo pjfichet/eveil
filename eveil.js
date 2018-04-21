@@ -1,7 +1,14 @@
+var pseudo;
+var passwd1;
+var passwd2;
+var email;
+var type;
+
 function doInit()
 {
-	document.getElementById("sendButton").style.display = 'none';
-	document.getElementById("inputText").style.display = 'none';
+	document.getElementById("input").style.display = 'none';
+	document.getElementById("output").style.display = 'none';
+	document.getElementById("create").style.display = 'none';
 	document.getElementById("input").onkeypress = function(ev) {
 		if (ev.keyCode == 13 || ev.which == 13) {
 			document.getElementById("sendButton").click();
@@ -20,16 +27,19 @@ function doConnect()
 
 function onOpen(evt)
 {
-	document.getElementById("sendButton").style.display = 'inline-block';
-	document.getElementById("inputText").style.display = 'inline-block';
-	document.getElementById("connectButton").style.display = 'none';
+	document.getElementById("input").style.display = 'block';
+	document.getElementById("output").style.display = 'block';
+	document.getElementById("login").style.display = 'none';
+	document.getElementById("create").style.display = 'none';
+	doSend(type, pseudo, passwd1, passwd2, email);
 }
 
 function onClose(evt)
 {
-	document.getElementById("sendButton").style.display = 'none';
-	document.getElementById("inputText").style.display = 'none';
-	document.getElementById("connectButton").style.display = 'inline-block';
+	document.getElementById("input").style.display = 'none';
+	document.getElementById("output").style.display = 'none';
+	document.getElementById("create").style.display = 'none';
+	document.getElementById("login").style.display = 'block';
 }
 
 function onMessage(evt)
@@ -49,6 +59,19 @@ function doSend(message)
 	ws.send(message);
 }
 
+function findPos(obj)
+{
+	// Finds y value of given object
+    var curtop = 0;
+    if (obj.offsetParent) {
+        do {
+            curtop += obj.offsetTop;
+        } while (obj = obj.offsetParent);
+    return [curtop];
+    }
+}
+
+
 function writeToScreen(message)
 {
 	var output = document.getElementById('output'),
@@ -62,16 +85,41 @@ function sendText() {
 	doSend( document.getElementById('inputText').value );
 }
 
-//Finds y value of given object
-function findPos(obj) {
-    var curtop = 0;
-    if (obj.offsetParent) {
-        do {
-            curtop += obj.offsetTop;
-        } while (obj = obj.offsetParent);
-    return [curtop];
-    }
+function login() {
+	var form = document.getElementById('login');
+	type = 'login';
+	pseudo = form.getElementById('pseudo').value;
+	passwd1 = form.getElementById('passwd').value;
+	doConnect();
 }
+
+function create() {
+	var form = document.getElementById('create');
+	type = 'create';
+	pseudo = form.getElementById('pseudo').value;
+	passwd1 = form.getElementById('passwd').value;
+	passwd2 = form.getElementById('confirm').value;
+	email = form.getElementById('email').value;
+	doConnect();
+}
+
+function changeForm() {
+	var login = document.getElementById('login');
+	var create = document.getElementById('create');
+	if (document.getElementById("create").style.display == 'none')
+	{
+		create.pseudo.value = login.pseudo.value;
+		create.passwd.value = login.passwd.value;
+		document.getElementById("create").style.display = 'block';
+		document.getElementById("login").style.display = 'none';
+	} else {
+		login.pseudo.value = create.pseudo.value;
+		login.passwd.value = create.passwd.value;
+		document.getElementById("create").style.display = 'none';
+		document.getElementById("login").style.display = "block";
+	}
+}
+
 
 window.addEventListener("load", doInit, false);
 
