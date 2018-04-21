@@ -25,11 +25,13 @@ textarea, input, form {
 	line-height: inherit;
 	vertical-align: baseline;
 	color: inherit;
+	box-sizing: border-box;
 }
 
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
 	display: block;
+	box-sizing: border-box;
 }
 /**********************************************************
 * GRID
@@ -51,7 +53,9 @@ section {
 	max-width: 90%;
 	margin: 1.5rem auto 0 auto;
 }
-
+#output {
+	margin-top: 3rem;
+}
 #input {
 	bottom: 1.5rem;
 	margin-top: 1.5rem;
@@ -94,6 +98,9 @@ form input {
 form input[type="button"] {
 	float: left;
 	margin-right: 1rem;
+}
+input {
+	padding: .5rem;
 }
 
 
