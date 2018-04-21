@@ -6,12 +6,11 @@ from .character import Character
 class Player():
     """ Represent the player. Some information about him is
     recorded in the database, as well as a list of its characters.
-    A login, he must provide those informations, and choose
+    At login, he must provide those informations, and choose
     a character to play."""
 
     # Initialize an enumeration of states
-    CHECKPSEUDO, CREATEPWD, CHECKPWD1, CHECKPWD2, \
-        CHECKPWD3, CONFIRMPWD, EMAIL, CHARACTER, LOGGED = range(9)
+    LOGIN, CHARACTER, LOGGED = range(3)
 
     def __init__(self, db, client):
         self.client = client
@@ -25,8 +24,7 @@ class Player():
         self.login = None
         self.logout = None
         self.characters = []
-        self.state = self.CHECKPSEUDO
-        self.send("Indiquez votre pseudonyme:")
+        self.state = self.LOGIN
 
     def send(self, text):
         # shortcut to send messages
@@ -35,9 +33,9 @@ class Player():
     def setkey(self):
         self.key = "player:" + str(self.id)
 
-    def get(self):
+    def get(self, pseudo):
         """ With the pseudo, extract datas from the db."""
-        self.id = self.db.get("player:" + self.pseudo)
+        self.id = self.db.get("player:" + pseudo)
         if self.id:
             self.setkey()
             data = self.db.get(self.key)
@@ -53,6 +51,7 @@ class Player():
             return False
 
     def put(self):
+        """ Record the player datas in the database. """
         self.setkey()
         self.db.put(self.key, {"pseudo": self.pseudo, "passwd": self.passwd,
             "email": self.email, "creation": self.creation,
@@ -60,87 +59,64 @@ class Player():
             "characters": self.characters })
 
     def new(self):
+        """ Create a new character in the database. """
         self.creation = datetime.now()
         self.login = datetime.now()
         self.id = self.db.new("player")
         self.db.put("player:" + self.pseudo, self.id)
         self.put()
 
-    def checkpseudo(self, text):
-        self.pseudo = text
-        if self.get():
-            self.send("Indiquez votre mot de passe:")
-            self.state = self.CHECKPWD1
+    def parse(self, text):
+        words = text.split()
+        if self.state == Player.LOGIN:
+            if len(words) == 2:
+                self.dologin(words[0], words[1])
+                return
+            if len(words) == 4:
+                self.docreate(words[0], words[1], words[2], words[3])
+                return
+            # Log out everyone else
+            self.client.close()
+        elif self.state == Player.CHARACTER:
+            self.setcharacter(text)
         else:
-            self.send("Création d'un compte sous le pseudonyme «{}».".format(self.pseudo))
-            self.send("Choisissez un mot de passe:")
-            self.state = self.CREATEPWD
+            # we should not arrive here
+            pass
 
-    def checkpwd(self, data):
-        if self.passwd == data:
-            self.login = datetime.now()
-            self.state = self.CHARACTER
-            if self.characters:
-                self.send("Choisissez votre personnage, ou creez-en un nouveau en appuyant sur «Entrée».")
-                self.send("Personnages: {}.".format(self.player.characters))
-            else:
-                self.send("Bienvenue {}. Appuyez sur «Entrée» pour créer un personnage.".format(self.pseudo))
-        else:
-            if self.state == self.CHECKPWD3:
-                self.send("Mot de passe erronné.")
-                self.client.close()
-            else:
-                self.send("Mot de passe erronné. Veuillez ré-essayer:")
-                if self.state == self.CHECKPWD2:
-                    self.state = self.CHECKPWD3
+    def dologin(self, pseudo, passwd):
+        """ Log in an existing player, checking pseudo and password."""
+        if self.get(pseudo):
+            if self.passwd == passwd:
+                self.send("<h2>Éveil</h2>")
+                self.send("<p>Bienvenue {}!</p>".format(self.pseudo))
+                self.state = Player.CHARACTER
+                if self.characters:
+                    self.send("<p>Choisissez votre personnage, ou creez-en un nouveau en appuyant sur «Entrée».</p>")
                 else:
-                    self.state = self.CHECKPWD2
+                    self.send("<p>Appuyez sur «Entrée» pour creer un personnage.</p>")
+                return
+        # Log out everyone else
+        self.client.close()
 
-    def createpwd(self, data):
-        self.passwd = data
-        self.send("Confirmez votre mot de passe:")
-        self.state = self.CONFIRMPWD
-
-    def confirmpwd(self, data):
-        if self.passwd == data:
-            self.send("Veuillez indiquer une adresse mail \
-(les adresses mail ne sont utilisées qu'à votre demande, \
-pour vous communiquer un nouveau mot de passe).")
-            self.state = self.EMAIL
-        else:
-            self.send("La confirmation ne correspond pas au mot de passe. Recommencez s'il vous plaît.")
-            self.send("Choisissez un mot de passe:")
-            self.passwd = None
-            self.state = self.CREATEPWD
-
-    def getemail(self, data):
-        self.email = data
-        self.new()
-        self.send("Bravo, votre compte est bien enregistré!")
-        self.send("Appuyez sur «Entrée» pour créer un personnage.")
-        self.state = self.CHARACTER
+    def docreate(self, pseudo, passwd, confirm, mail):
+        """ Create an account for a new player. """
+        if self.db.get("player:" + pseudo):
+            self.dologin(pseudo, passwd)
+            return
+        if passwd == confirm:
+            self.pseudo = pseudo
+            self.passwd = passwd
+            self.mail = mail
+            self.new()
+            self.send("<h2>Éveil</h2>")
+            self.send("<p>Bienvenue {}! Votre compte est maintenant créé.</p>".format(self.pseudo))
+            self.state = Player.CHARACTER
+            return
+        # Log out everyone else
+        self.client.close()
 
     def setcharacter(self, text):
         self.character = Character(self.db, self)
         self.state = self.LOGGED
         self.character.checkname(text)
-
-    def parse(self, text):
-        if self.state == self.CHECKPSEUDO:
-            self.checkpseudo(text)
-        elif self.state == self.CREATEPWD:
-            self.createpwd(text)
-        elif self.state == self.CHECKPWD1 \
-            or self.state == self.CHECKPWD2 \
-            or self.state == self.CHECKPWD3:
-            self.checkpwd(text)
-        elif self.state == self.CONFIRMPWD:
-            self.confirmpwd(text)
-        elif self.state == self.EMAIL:
-            self.getemail(text)
-        elif self.state == self.CHARACTER:
-            self.setcharacter(text)
-        elif self.state == self.LOGGED:
-            # should not arrive here
-            pass
 

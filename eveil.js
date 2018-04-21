@@ -2,7 +2,6 @@ var pseudo;
 var passwd1;
 var passwd2;
 var email;
-var type;
 
 function doInit()
 {
@@ -31,7 +30,13 @@ function onOpen(evt)
 	document.getElementById("output").style.display = 'block';
 	document.getElementById("login").style.display = 'none';
 	document.getElementById("create").style.display = 'none';
-	doSend(type, pseudo, passwd1, passwd2, email);
+	if (typeof pseudo !== 'undefined' && typeof passwd1 !== 'undefined') {
+		if (typeof passwd2 !== 'undefined' && typeof email !== 'undefined') {
+			doSend(pseudo + ' ' + passwd1 + ' ' + passwd2 + ' ' + email);
+		} else {
+			doSend(pseudo + ' ' + passwd1);
+		}
+	}
 }
 
 function onClose(evt)
@@ -55,7 +60,7 @@ function onError(evt)
 
 function doSend(message)
 {
-	writeToScreen("> " + message); 
+	//writeToScreen("> " + message); 
 	ws.send(message);
 }
 
@@ -71,13 +76,19 @@ function findPos(obj)
     }
 }
 
+function stringToElem(string)
+{
+	// Convert a string do a dom element
+	var template = document.createElement('template');
+	string = string.trim();
+	template.innerHTML = string;
+	return template.content.firstChild;
+}
 
 function writeToScreen(message)
 {
-	var output = document.getElementById('output'),
-	p = document.createElement('p');
-	p.innerHTML = (message);
-	output.appendChild(p);
+	var output = document.getElementById('output');
+	output.appendChild(stringToElem(message));
 	window.scroll(0, findPos(document.getElementById('input')));
 }
 
@@ -85,21 +96,19 @@ function sendText() {
 	doSend( document.getElementById('inputText').value );
 }
 
-function login() {
+function dologin() {
 	var form = document.getElementById('login');
-	type = 'login';
-	pseudo = form.getElementById('pseudo').value;
-	passwd1 = form.getElementById('passwd').value;
+	pseudo = form.pseudo.value;
+	passwd1 = form.passwd.value;
 	doConnect();
 }
 
-function create() {
+function docreate() {
 	var form = document.getElementById('create');
-	type = 'create';
-	pseudo = form.getElementById('pseudo').value;
-	passwd1 = form.getElementById('passwd').value;
-	passwd2 = form.getElementById('confirm').value;
-	email = form.getElementById('email').value;
+	pseudo = form.pseudo.value;
+	passwd1 = form.passwd.value;
+	passwd2 = form.confirm.value;
+	email = form.email.value;
 	doConnect();
 }
 
