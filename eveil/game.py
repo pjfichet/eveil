@@ -11,38 +11,36 @@ class Game():
 
     def __init__(self, queue):
         self.queue = queue
-        self.loop = True
         self.db = Data("data.db")
-        self.parser = Parser()
+        self.parser = Parser(self)
+        self.loop = True
 
     def shutdown(self):
         self.loop = False
         self.db.close()
- 
+
     def run(self):
         while self.loop == True:
             self.parsequeue()
             sleep(.1)
 
     def parsequeue(self):
-        # check queue
         try:
-            # With False, the queue does not block the program
+            # With False, the queue does not block the program.
             # It raises Queue.Empty if empty.
             client, kind, message = self.queue.get(False) 
         except queue.Empty:
             kind = None
         if kind is not None:
-            if message == "shutdown":
-                self.shutdown()
-            elif kind == "connect" and client not in world.clients:
-                world.clients.append(client)
-                player = Player(self.db, client)
-                client.setPlayer(player)
-            elif kind == "disconnect" and client in world.clients:
-                world.clients.remove(client)
-            else:
+            if kind == "text":
                 self.parser.parse(client.player, message)
+            if kind == "connect":
+                player = Player(self.db, client)
+                client.setplayer(player)
+                world.clients.append(client)
+            elif kind == "disconnect":
+                world.clients.remove(client)
             self.queue.task_done()
-      
-  
+
+    def shutdown(self):
+        self.loop = False

@@ -1,8 +1,8 @@
 
 class Parser():
 
-    def __init__(self):
-        pass
+    def __init__(self, game):
+        self.game = game
 
     def parse(self, player, message):
         # Player logging
@@ -10,3 +10,6 @@ class Parser():
             player.parse(message)
             return
         # Character generation commands
+        # Admin commands
+        if message == "shutdown":
+            self.game.shutdown()
