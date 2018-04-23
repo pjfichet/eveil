@@ -3,7 +3,9 @@
 from datetime import datetime
 
 from .character import Character
+from .utils import log
 from . import world
+
 
 
 class Player():
@@ -90,10 +92,8 @@ class Player():
         """ Log in an existing player, checking pseudo and password."""
         if self.get(pseudo):
             if self.passwd == passwd:
-                self.send("<h2>Éveil</h2>")
-                self.send("<p>Bienvenue {}!</p>".format(self.pseudo))
-                self.state = Player.CHARACTER
-                world.players.append(self)
+                log("Player {} logs in.".format(self.pseudo))
+                self.welcome()
                 if self.characters:
                     self.send("<p>Choisissez votre personnage, ou creez-en un nouveau en appuyant sur «Entrée».</p>")
                 else:
@@ -112,13 +112,18 @@ class Player():
             self.passwd = passwd
             self.mail = mail
             self.new()
-            self.send("<h2>Éveil</h2>")
-            self.send("<p>Bienvenue {}! Votre compte est maintenant créé.</p>".format(self.pseudo))
-            self.state = Player.CHARACTER
-            world.players.append(self)
+            log("Player {} created.".format(self.pseudo))
+            self.welcome()
+            self.send("<p>Votre compte est maintenant créé.</p>")
             return
         # Log out everyone else
         self.client.close()
+
+    def welcome(self):
+        self.send("<h2>Éveil</h2>")
+        self.send("<p>Bienvenue {}!</p>".format(self.pseudo))
+        self.state = Player.CHARACTER
+        world.players.append(self)
 
     def setcharacter(self, text):
         self.character = Character(self.db, self)
@@ -131,3 +136,4 @@ class Player():
             self.logout = datetime.now()
             self.put()
         world.players.remove(self)
+        log("Player {} logs out.".format(self.pseudo))

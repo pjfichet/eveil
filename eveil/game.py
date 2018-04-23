@@ -1,9 +1,11 @@
 import queue
 from time import sleep
+from datetime import datetime
 
 from .data import Data
 from .player import Player
 from .parser import Parser
+from .utils import log
 from . import world
 
 
@@ -44,9 +46,11 @@ class Game():
             self.queue.task_done()
 
     def shutdown(self):
+        log("Recording datas before shutdown.")
         self.loop = False
         for client in world.clients:
             client.player.logout
             world.clients.remove(client)
             client.sendMessage("<h3>Au revoir.</h3>")
             client.close()
+        log("Shutting down.")
