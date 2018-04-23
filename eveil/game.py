@@ -45,3 +45,8 @@ class Game():
 
     def shutdown(self):
         self.loop = False
+        for client in world.clients:
+            client.player.logout
+            world.clients.remove(client)
+            client.sendMessage("<h3>Au revoir.</h3>")
+            client.close()
