@@ -39,6 +39,7 @@ class Game():
                 client.setplayer(player)
                 world.clients.append(client)
             elif kind == "disconnect":
+                client.player.logout()
                 world.clients.remove(client)
             self.queue.task_done()
 

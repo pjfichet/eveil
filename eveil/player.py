@@ -125,3 +125,9 @@ class Player():
         self.state = self.LOGGED
         self.character.checkname(text)
 
+    def logout(self):
+        """ Record the player data, and remove the player """
+        if self.state == self.LOGGED:
+            self.logout = datetime.now()
+            self.put()
+        world.players.remove(self)
