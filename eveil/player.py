@@ -1,7 +1,10 @@
 #! python
 
 from datetime import datetime
+
 from .character import Character
+from . import world
+
 
 class Player():
     """ Represent the player. Some information about him is
@@ -28,7 +31,7 @@ class Player():
 
     def send(self, text):
         # shortcut to send messages
-        self.client.sendMessage(text)
+        self.client.sendMessage("<div>" + text + "</div>")
 
     def setkey(self):
         self.key = "player:" + str(self.id)
@@ -90,6 +93,7 @@ class Player():
                 self.send("<h2>Éveil</h2>")
                 self.send("<p>Bienvenue {}!</p>".format(self.pseudo))
                 self.state = Player.CHARACTER
+                world.players.append(self)
                 if self.characters:
                     self.send("<p>Choisissez votre personnage, ou creez-en un nouveau en appuyant sur «Entrée».</p>")
                 else:
@@ -111,6 +115,7 @@ class Player():
             self.send("<h2>Éveil</h2>")
             self.send("<p>Bienvenue {}! Votre compte est maintenant créé.</p>".format(self.pseudo))
             self.state = Player.CHARACTER
+            world.players.append(self)
             return
         # Log out everyone else
         self.client.close()

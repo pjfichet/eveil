@@ -7,7 +7,6 @@ queue = queue.Queue()
 class Server(WebSocket):
 
     def handleMessage(self):
-        #self.sendMessage(self.data)
         queue.put([self, "text", self.data])
 
     def handleConnected(self):

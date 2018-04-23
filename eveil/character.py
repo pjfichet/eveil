@@ -1,3 +1,5 @@
+from . import world
+
 
 class Character():
 
@@ -9,10 +11,13 @@ class Character():
         self.name = None
         self.lastname = None
         self.gender = None
-        self.room = None
+        self.room = world.rooms[0]
         self.longdesc = None
         self.shortdesc = None
         self.stats = []
+
+    def send(self, text):
+        self.player.send(text)
 
     def setkey(self):
         self.key = "character:" + str(self.id)
@@ -52,10 +57,12 @@ class Character():
             if text in self.player.characters:
                 self.name = text
                 self.get()
+                world.characters.append(self)
         self.entergame()
 
     def entergame(self):
-        #todo: enter the game
+        self.room.addcharacter(self)
+        self.room.looklong(self)
         pass
 
 

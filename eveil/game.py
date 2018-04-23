@@ -4,11 +4,12 @@ from time import sleep
 from .data import Data
 from .player import Player
 from .parser import Parser
+from . import world
+
 
 class Game():
 
     def __init__(self, queue):
-        self.clients = []
         self.queue = queue
         self.loop = True
         self.db = Data("data.db")
@@ -34,12 +35,12 @@ class Game():
         if kind is not None:
             if message == "shutdown":
                 self.shutdown()
-            elif kind == "connect" and client not in self.clients:
-                self.clients.append(client)
+            elif kind == "connect" and client not in world.clients:
+                world.clients.append(client)
                 player = Player(self.db, client)
                 client.setPlayer(player)
-            elif kind == "disconnect" and client in self.clients:
-                self.clients.remove(client)
+            elif kind == "disconnect" and client in world.clients:
+                world.clients.remove(client)
             else:
                 self.parser.parse(client.player, message)
             self.queue.task_done()
