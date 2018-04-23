@@ -4,28 +4,43 @@ from SimpleWebSocketServer import WebSocket, SimpleWebSocketServer
 
 queue = queue.Queue()
 
-class Server(WebSocket):
+class Connection(WebSocket):
 
     def handleMessage(self):
-        queue.put([self, "text", self.data])
+        self.queue.put([self, "text", self.data])
 
     def handleConnected(self):
-        queue.put([self, "connect", ""])
+        self.queue.put([self, "connect", ""])
 
     def handleClose(self):
-        queue.put([self, "disconnect", ""])
+        self.queue.put([self, "disconnect", ""])
 
-    def setPlayer(self, player):
+    def setplayer(self, player):
         self.player = player
 
+    def setqueue(self, queue):
+        self.queue = queue
+
+class Server(SimpleWebSocketServer):
+
+    def __init__(self, queue, host, port, websocketclass):
+        SimpleWebSocketServer.__init__(self, host, port, websocketclass)
+        self.queue = queue
+
+    def _constructWebSocket(self, sock, address):
+        connection = self.websocketclass(self, sock, address)
+        connection.setqueue(self.queue)
+        return connection
 
 class ThreadServer(threading.Thread):
 
-    def __init__(self):
+    def __init__(self, queue, host, port):
         threading.Thread.__init__(self)
         self.queue = queue
+        self.host = host
+        self.port = port
 
     def run(self):
-        self.server = SimpleWebSocketServer('', 5678, Server)
+        self.server = Server(self.queue, self.host, self.port, Connection)
         self.server.serveforever()
 
