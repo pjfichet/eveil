@@ -95,7 +95,12 @@ class Player():
                 log("Player {} logs in.".format(self.pseudo))
                 self.welcome()
                 if self.characters:
-                    self.send("<p>Choisissez votre personnage, ou creez-en un nouveau en appuyant sur «Entrée».</p>")
+
+                    if len(self.characters) > 1:
+                        lst = ', '.join(name for name in self.characters)
+                        self.send("<p>Choisissez votre personnage, ou creez-en un nouveau en appuyant sur «Entrée». Vos personnages sont: {}</p>".format(lst))
+                    else:
+                        self.send("<p>Choisissez votre personnage, ou creez-en un nouveau en appuyant sur «Entrée». Votre personnage est: {}.</p>".format(self.characters[0]))
                 else:
                     self.send("<p>Appuyez sur «Entrée» pour creer un personnage.</p>")
                 return
@@ -129,6 +134,10 @@ class Player():
         self.character = Character(self.db, self)
         self.state = self.LOGGED
         self.character.checkname(text)
+
+    def addcharacter(self):
+        self.characters.append(self.character.name)
+        self.put()
 
     def logout(self):
         """ Record the player data, and remove the player """
