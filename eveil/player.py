@@ -29,7 +29,7 @@ account_menu = Template("""
     les commandes suivantes:</p>
     <ul>
         <li><code>pseudo: <i>nouveau_pseudonyme</i></code></li>
-        <li><code>secret: <i>nouveau_mot_de_passe</i></code></li>
+        <li><code>secret: <i>ancien_mdp nouveau_mdp</i></code></li>
         <li><code>email: <i>mail@exemple.net</i></code></li>
     </ul>
 %endif
@@ -61,10 +61,11 @@ class Player():
         self.state = self.LOGIN
 
     def send(self, text):
-        # shortcut to send messages
+        """ A shortcut to send message to the player's client."""
         self.client.sendMessage("<div>" + text + "</div>")
 
     def setkey(self):
+        """ Set the key used to fetch the player datas in the database."""
         self.key = "player:" + str(self.id)
 
     def setcharlist(self):
@@ -105,23 +106,6 @@ class Player():
         self.db.put("player:" + self.pseudo, self.id)
         self.put()
 
-    def parse(self, text):
-        words = text.split()
-        if self.state == Player.LOGIN:
-            if len(words) == 2:
-                self.dologin(words[0], words[1])
-                return
-            if len(words) == 4:
-                self.docreate(words[0], words[1], words[2], words[3])
-                return
-            # Log out everyone else
-            self.client.close()
-        elif self.state == Player.ACCOUNT:
-            self.setcharacter(text)
-        else:
-            # we should not arrive here
-            pass
-
     def dologin(self, pseudo, passwd):
         """ Log in an existing player, checking pseudo and password."""
         if self.get(pseudo):
@@ -158,11 +142,44 @@ class Player():
         self.client.close()
 
     def setcharacter(self, text=None):
+        """ Instanciate a character object for the player. """
         self.character = Character(self.db, self)
         self.state = self.LOGGED
         self.character.checkname(text)
 
+    def setpseudo(self, text):
+        """ player command to change his pseudo. """
+        if self.db.get("player:" + text):
+            # someone uses that pseudo.
+            self.send("Le pseudonyme {} est déjà utilisé.".format(self.pseudo))
+            return
+        # remove the old player entry.
+        self.db.rem("player:" + self.pseudo)
+        # create a new one
+        self.pseudo = text
+        self.db.put("player:" + self.pseudo, self.id)
+        # record the new player data
+        self.put()
+        self.send("<p>Votre pseudonyme est {}.</p>".format(self.pseudo))
+
+    def setpassword(self, old, new):
+        """ Player command to change his password. """
+        if self.passwd != old:
+            self.send("<p>Le mot de passe entré ne correspond pas au votre.</p>")
+            return
+        self.passwd = new
+        self.put()
+        self.send("<p>Votre nouveau mot de passe est enregistré.</p>")
+
+    def setemail(self, text):
+        """ Player command to change his email. """
+        self.email = text
+        self.put()
+        self.send("<p>Votre email est {}.</p>".format(self.email))
+
     def addcharacter(self):
+        """ When a character is created, this method must be called
+        to link the character with the player account. """
         self.characters.append(self.character.name)
         self.put()
 
@@ -173,5 +190,23 @@ class Player():
             self.put()
         world.players.remove(self)
         log("Player {} logs out.".format(self.pseudo))
+
+    def parse(self, text):
+        """ Parse the datas on login and the account commands. """
+        words = text.split()
+        if self.state == Player.LOGIN:
+            if len(words) == 2:
+                self.dologin(words[0], words[1])
+                return
+            if len(words) == 4:
+                self.docreate(words[0], words[1], words[2], words[3])
+                return
+            # Log out everyone else
+            self.client.close()
+        elif self.state == Player.ACCOUNT:
+            self.setcharacter(text)
+        else:
+            # we should not arrive here
+            pass
 
 
