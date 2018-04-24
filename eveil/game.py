@@ -41,7 +41,8 @@ class Game():
                 client.setplayer(player)
                 world.clients.append(client)
             elif kind == "disconnect":
-                client.player.logout()
+                if client.player is not None:
+                    client.player.log_out()
                 world.clients.remove(client)
             self.queue.task_done()
 
@@ -49,7 +50,8 @@ class Game():
         log("Recording datas before shutdown.")
         self.loop = False
         for client in world.clients:
-            client.player.logout
+            if client.player is not None:
+                client.player.log_out()
             world.clients.remove(client)
             client.sendMessage("<h3>Au revoir.</h3>")
             client.close()

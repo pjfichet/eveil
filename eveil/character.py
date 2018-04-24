@@ -62,7 +62,7 @@ class Character():
         """ Check if a given name match with a character name,
         and if the player owns that character. In all case,
         put the player in game, be it in chargen."""
-        if self.player.characters:
+        if self.player.characters and text is not None:
             if text in self.player.characters:
                 self.name = text
                 self.get()
