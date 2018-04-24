@@ -131,7 +131,6 @@ h2, h3, h4 {
 	font-weight: bold;
 }
 h1 { font-size: 1.8rem; line-height: 3rem;}
-h3 {padding-left: .75rem;}
 h4 {margin-bottom: 0;}
 footer p {font-size: .8rem;}
 pre, code {font-family: monospace;}
@@ -139,10 +138,21 @@ pre, code {font-family: monospace;}
 /**********************************************************
 * Fonts and paragraphs
 **********************************************************/
-
 h2 { text-align:center;}
 h4 {font-weight: bold;}
 p { text-align: justify;}
+ul {
+	list-style-type: none;
+	margin: 0;
+	padding-left: 1.5rem;
+}
+
+ul > li:before {
+	display: inline-block;
+	content: "\2014 "; /* endash nbsp*/
+	width: 1.5rem;
+	margin-left: -1.5rem;
+}
 /**********************************************************
 * COLORS handmade, WTFPL license.
 * BLACK: 272727
