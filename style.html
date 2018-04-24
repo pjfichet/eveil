@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang=fr>
+<head>
+	<meta charset="UTF-8"/>
+	<title>Éveil</title>
+	<link rel="stylesheet" href="eveil.css"/>
+</head>
+<body>
+	<header>
+		<h1>Éveil</h1>
+		<p class="subtitle">Jeu de rôle / Improvisation littéraire</p>
+		<nav></nav>
+	</header>
+	<section>
+<h2>Level two header</h2>
+<h3>Level three header</h3>
+<p>Paragraph.
+Lorem ipsum dolor sit amet, consectetuer adipiscing
+elit. Sed non risus. Suspendisse lectus tortor, dignissim
+sitamet, adipiscing nec, ultricies sed, dolor. Cras
+elementum ultrices diam. Maecenas ligula massa, varius a,
+semper congue, euismod non, mi.
+</p>
+<blockquote>Blockquote
+Lorem ipsum dolor sit amet, consectetuer adipiscing
+elit. Sed non risus. Suspendisse lectus tortor, dignissim
+sitamet, adipiscing nec, ultricies sed, dolor. Cras
+elementum ultrices diam. Maecenas ligula massa, varius a,
+semper congue, euismod non, mi.
+</blockquote>
+<p>Paragraph.
+Lorem ipsum dolor sit amet, consectetuer adipiscing
+elit. Sed non risus. Suspendisse lectus tortor, dignissim
+sitamet, adipiscing nec, ultricies sed, dolor. Cras
+elementum ultrices diam. Maecenas ligula massa, varius a,
+semper congue, euismod non, mi.
+</p>
+<ul>
+	<li>List item.
+Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed non risus.
+Suspendisse lectus tortor, dignissim sitamet, adipiscing nec, ultricies sed,
+dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper
+congue, euismod non, mi.
+	</li>
+	<li>List item.
+Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed non risus.
+Suspendisse lectus tortor, dignissim sitamet, adipiscing nec, ultricies sed,
+dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper
+congue, euismod non, mi.
+	</li>
+	<li>List item.
+Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed non risus.
+Suspendisse lectus tortor, dignissim sitamet, adipiscing nec, ultricies sed,
+dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper
+congue, euismod non, mi.
+	</li>
+</ul>
+
+		<form id="login">
+			<label for='pseudo'>Pseudonyme</label>
+			<input type="text" name="pseudo"/>
+			<label for='passwd'>Mot de passe</label>
+			<input type="password" name="passwd"/>
+			<input type="button" value="Créer un compte" onClick="changeForm();"/>
+			<input type="button" value="Jouer" onClick="dologin();"/>
+		</form>
+		<form id="create">
+			<label for='pseudo'>Pseudonyme</label>
+			<input type="text" name="pseudo"/>
+			<label for='passwd'>Mot de passe</label>
+			<input type="password" name="passwd"/>
+			<label for='confirm'>Confirmation du m.d.p.</label>
+			<input type="password" name="confirm"/>
+			<label for='email'>Adresse électronique</label>
+			<input type="text" name="email"/>
+			<input type="button" value="J'ai déjà un compte" onClick="changeForm();"/>
+			<input type="button" value="Jouer" onClick="docreate();"/>
+		</form>
+		<div id="output"></div>
+		<div id="input">
+			<textarea id="inputText"></textarea>
+			<input type="button" id="sendButton" value="Envoyer" onClick="sendText();"/>
+		</div>
+	</section>
+</body>
+</html>
