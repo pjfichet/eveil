@@ -126,30 +126,33 @@ html {
 	line-height: 1.5em; /* 24px */
 }
 body {line-height: 1.5rem;}
-h2, h3, h4 {
-	margin-top: 1.5rem; margin-bottom: 1.5rem;
-	font-weight: bold;
-}
-h1 { font-size: 1.8rem; line-height: 3rem;}
-h4 {margin-bottom: 0;}
+
+h1 { font-size: 1.8rem; line-height: 3rem}
+/*h1 { font-size: 2.4rem; line-height: 3rem;} */
+h2 { font-size: 1.8rem; line-height: 3rem;}
+h3 { font-size: 1.5rem; line-height: 1.5rem;}
 footer p {font-size: .8rem;}
 pre, code {font-family: monospace;}
 
 /**********************************************************
-* Fonts and paragraphs
+* Paragraphs layout
 **********************************************************/
-h2 { text-align:center;}
-h4 {font-weight: bold;}
-p { text-align: justify;}
+h2, h3, h4 {font-weight: bold;}
+h2 {margin-top: 3rem; margin-bottom: 1.5rem; text-align: center;}
+h3 {margin-top: 1.5rem; margin-bottom: 1.5rem;}
+h4 {margin-top: 1.5rem; margin-bottom: 0;}
+h4 {margin-bottom: 0; }
+/*h2:before {content: "\2014 ";} h2:after {content: " \2014";} */
+p, ul, blockquote {text-align: justify;}
+blockquote {padding-left: 1.5rem;}
 ul {
 	list-style-type: none;
 	margin: 0;
 	padding-left: 1.5rem;
 }
-
 ul > li:before {
 	display: inline-block;
-	content: "\2014 "; /* endash nbsp*/
+	content: "\2014 "; /* endash */
 	width: 1.5rem;
 	margin-left: -1.5rem;
 }
