@@ -32,9 +32,9 @@ function onOpen(evt)
 	document.getElementById("create").style.display = 'none';
 	if (typeof pseudo !== 'undefined' && typeof passwd1 !== 'undefined') {
 		if (typeof passwd2 !== 'undefined' && typeof email !== 'undefined') {
-			doSend(pseudo + ' ' + passwd1 + ' ' + passwd2 + ' ' + email);
+			doSend('create ' + pseudo + ' ' + passwd1 + ' ' + passwd2 + ' ' + email);
 		} else {
-			doSend(pseudo + ' ' + passwd1);
+			doSend('login ' + pseudo + ' ' + passwd1);
 		}
 	}
 }
@@ -42,7 +42,7 @@ function onOpen(evt)
 function onClose(evt)
 {
 	document.getElementById("input").style.display = 'none';
-	document.getElementById("output").style.display = 'none';
+	/* document.getElementById("output").style.display = 'none'; */
 	document.getElementById("create").style.display = 'none';
 	document.getElementById("login").style.display = 'block';
 }

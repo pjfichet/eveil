@@ -13,6 +13,7 @@
 		<nav></nav>
 	</header>
 	<section>
+		<div id="output"></div>
 		<form id="login">
 			<label for='pseudo'>Pseudonyme</label>
 			<input type="text" name="pseudo"/>
@@ -33,7 +34,6 @@
 			<input type="button" value="J'ai déjà un compte" onClick="changeForm();"/>
 			<input type="button" value="Jouer" onClick="docreate();"/>
 		</form>
-		<div id="output"></div>
 		<div id="input">
 			<textarea id="inputText"></textarea>
 			<input type="button" id="sendButton" value="Envoyer" onClick="sendText();"/>
