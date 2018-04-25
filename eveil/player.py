@@ -13,7 +13,7 @@ account_menu = Template("""
 <p>Bienvenue, {{player.pseudo}}.</p>
 %else:
 <h3>Bienvenue {{player.pseudo}}</h3>
-    %if player.characters:
+    %if isdef("player.characters"):
         <p>Choisissez votre personnage ou creez-en un nouveau en entrant
         <code>nouveau</code>.
         %if len(player.characters) > 1:
@@ -188,25 +188,7 @@ class Player():
         if self.state == self.LOGGED:
             self.logout = datetime.now()
             self.put()
-        world.players.remove(self)
+        if self in world.players:
+            world.players.remove(self)
         log("Player {} logs out.".format(self.pseudo))
-
-    def parse(self, text):
-        """ Parse the datas on login and the account commands. """
-        words = text.split()
-        if self.state == Player.LOGIN:
-            if len(words) == 2:
-                self.dologin(words[0], words[1])
-                return
-            if len(words) == 4:
-                self.docreate(words[0], words[1], words[2], words[3])
-                return
-            # Log out everyone else
-            self.client.close()
-        elif self.state == Player.ACCOUNT:
-            self.setcharacter(text)
-        else:
-            # we should not arrive here
-            pass
-
 
