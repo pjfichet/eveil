@@ -74,12 +74,16 @@ class Character():
     def set_name(self, name):
         """ Define the name of the character. This is also
         when the character is actually recorded in the database."""
-        self.name = name
+        if self.name:
+            self.name = name
+            self._put()
+        else:
+            self.name = name
+            self._new()
         if self.gender == Character.FEMALE:
             self.player.client.send("<p>Elle se nomme {}.</p>".format(self.name))
         else:
             self.player.client.send("<p>Il se nomme {}.</p>".format(self.name))
-        self._new()
         log("Character {} created.".format(self.name))
 
     def set_gender(self, gender):
@@ -90,6 +94,8 @@ class Character():
         else:
             self.gender = Character.FEMALE
             self.player.client.send("<p>Elle est une femme.</p>")
+        if self.name:
+            self._put()
 
     def set_shortdesc(self, shortdesc):
         """ Define the short description of the character."""
