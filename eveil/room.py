@@ -1,8 +1,5 @@
 from step import Template
 
-from . import world
-
-
 class Exit():
 
     def __init__(db, toroom):
@@ -19,10 +16,11 @@ class Exit():
 
 class Room():
 
-    def __init__(self):
-        world.rooms.append(self)
+    def __init__(self, game):
+        self.game = game
+        self.game.rooms.append(self)
         # get the index of the room in the list of rooms
-        self.id = world.rooms.index(self)
+        self.id = self.game.rooms.index(self)
         self.area = None
         # short and long description must be a Template instance.
         self.shortdesc = None

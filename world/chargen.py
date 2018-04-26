@@ -1,12 +1,12 @@
 from step import Template
 
-from ..room import Exit, Room
-from ..thing import Thing
+from eveil import room
+from eveil import thing
 
 
 # Character generation rooms
 
-cg1 = Room()
+cg1 = room.Room(game)
 cg1.shortdesc = Template("<h3>Le sanctuaire des noms</h3>")
 cg1.longdesc = Template("""
 <p>Au fond d'une profonde vallée, sous l'ombre d'arbres
@@ -30,7 +30,7 @@ pierres porte les noms des hommes, l'autre ceux des femmes.</p>
     <code>nom: <i>nom_choisi<i></code>.</li>
 </ul>
 """)
-hommes = Thing()
+hommes = thing.Thing()
 hommes.desc = Template("""
 <p>Sur la pierre des hommes qui fûrent ou qui seront, sont
 gravés les noms: Abarta, Abcán, Abhean, Abgatiacus, Abortach, Accasbel,
@@ -49,7 +49,7 @@ Nechtan, Neit, Nemglan, Nemon, Nuada, Nuadu, Nuagatt, Ochttriuil, Ogma, Ruadan,
 Sawan, Seibur, Seonaidh, Shoney, Slaine, Somhlth, Tagd, Tat, Tavarn, Tethra,
 Tuan, Tuireann, Ugnach.</p>""")
 
-femmes = Thing()
+femmes = thing.Thing()
 femmes.desc = Template("""
 <p>Sur la pierre des femmes qui furent ou qui seront, sont gravés
 les noms: Achall, Achtland, Adair, Aebh, Áed, Aeval, Aibell,
@@ -76,7 +76,7 @@ Plor, Re, Sadhbh, Scathach, Scenmend, Sheela, Sin, Shannon,
 Smirgat, Tailtiu, Telta, Tephi, Tlachtga, Tuiren, Turrean,
 Uairebhuidhe, Uathach, Uirne, Vera.</p>""")
 
-cg2 = Room()
+cg2 = room.Room(game)
 cg2.shortdesc = Template("<h3>Une petite mare</h3>")
 cg2.longdesc = Template("""
 <p>Dans un creu formé par les racines entortillées d'un veil arbre,
@@ -109,7 +109,7 @@ la lumière ne la transperce pas, mais s'y reflète.
     <code>voir: @character.name</code>.</li>
 </ul>""")
 
-cg3 = Room()
+cg3 = room.Room(game)
 cg3.shortdesc = Template("<h3>Un cercle de pierres</h3>")
 cg3.longdesc = Template("""
 <p>La densité de la forêt ne diminue pas, mais ici, entouré de
@@ -138,7 +138,7 @@ sont gravées des scènes de vies.</p>
     <i>sagesse|intelligence|constitution|force|agileté</i></code>.</li>
 </ul>""")
 
-cg4 = Room()
+cg4 = room.Room(game)
 cg4.shortdesc = Template("<h3>La source du torrent</h3>")
 cg4.longdesc = Template("""
 <p>Du flanc de la colline, entre pierres et racines, jaillit

@@ -5,15 +5,17 @@ from datetime import datetime
 from .data import Data
 from .player import Player
 from .parser import Parser
-from .utils import log
-from . import world
 
 
 class Game():
 
     def __init__(self, queue):
         self.queue = queue
-        self.db = Data("data.db")
+        self.clients = []
+        self.players = []
+        self.characters = []
+        self.rooms = []
+        self.db = Data(self, "data.db")
         self.parser = Parser(self)
         self.loop = True
 
@@ -33,22 +35,25 @@ class Game():
             if kind == "text":
                 self.parser.parse(client.player, message)
             if kind == "connect":
-                player = Player(self.db, client)
+                player = Player(self, client)
                 client.player = player
-                world.clients.append(client)
+                self.clients.append(client)
             elif kind == "disconnect":
                 if client.player is not None:
                     client.player.logout()
-                world.clients.remove(client)
+                self.clients.remove(client)
             self.queue.task_done()
 
+    def log(self, message):
+        print("{}: {}".format(datetime.now(), message))
+
     def shutdown(self):
-        log("Recording datas before shutdown.")
+        self.log("Recording datas before shutdown.")
         self.loop = False
-        for client in world.clients:
+        for client in self.clients:
             if client.player is not None:
                 client.player.logout()
-            world.clients.remove(client)
+            self.clients.remove(client)
             client.send("<h4>Au revoir.</h4>")
             client.close()
-        log("Shutting down.")
+        self.log("Shutting down.")

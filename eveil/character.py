@@ -1,5 +1,3 @@
-from .utils import log
-from . import world
 
 
 class Character():
@@ -7,8 +5,8 @@ class Character():
     SKILLS = ["artisan", "chasseur", "druide", "guerrier", "barde"]
     TALENTS = ["agileté", "constitution", "force", "intelligence", "sagesse"]
 
-    def __init__(self, db, player):
-        self.db = db
+    def __init__(self, game, player):
+        self.game = game
         self.player = player
         self.id = None
         self.key = None
@@ -19,15 +17,15 @@ class Character():
         self.shortdesc = None
         self.skill = None
         self.talent = None
-        self.room = world.rooms[0]
+        self.room = self.game.rooms[0]
         self.roomid = self.room.id
 
     def _get(self):
         """ With the character name, extract datas from the db."""
-        self.id = self.db.get("character:" + self.name)
+        self.id = self.game.db.get("character:" + self.name)
         if self.id:
             self.key = "character:" + str(self.id)
-            data = self.db.get(self.key)
+            data = self.game.db.get(self.key)
             self.lastname = data["lastname"]
             self.gender = data["gender"]
             self.roomid = data["roomid"]
@@ -42,7 +40,7 @@ class Character():
     def _put(self):
         """ Record the datas of the character in the db."""
         self.key = "character:" + str(self.id)
-        self.db.put(
+        self.game.db.put(
             self.key,
             {"name": self.name, "lastname": self.lastname,
             "gender": self.gender, "roomid": self.room.id, 
@@ -52,8 +50,8 @@ class Character():
 
     def _new(self):
         """ Record a new character in the db."""
-        self.id = self.db.new("character")
-        self.db.put("character:" + self.name, self.id)
+        self.id = self.game.db.new("character")
+        self.game.db.put("character:" + self.name, self.id)
         self._put()
         self.player.record_character()
 
@@ -65,8 +63,10 @@ class Character():
             if name in self.player.characters:
                 self.name = name
                 self._get()
-                world.characters.append(self)
-                log("Character {} enters the game in room {}.".format(self.name, self.room.id))
+                self.game.characters.append(self)
+                self.game.log(
+                    "Character {} enters the game in room {}.".format(self.name, self.room.id)
+                    )
         # put the character in game.
         self.room.add_character(self)
         self.room.get_longdesc(self)
@@ -84,7 +84,7 @@ class Character():
             self.player.client.send("<p>Elle se nomme {}.</p>".format(self.name))
         else:
             self.player.client.send("<p>Il se nomme {}.</p>".format(self.name))
-        log("Character {} created.".format(self.name))
+        self.game.log("Character {} created.".format(self.name))
 
     def set_gender(self, gender):
         """ Define the gender of the character """

@@ -1,7 +1,6 @@
 import shelve
 from datetime import datetime
 
-from .utils import log
 
 class Data:
     """
@@ -12,17 +11,18 @@ class Data:
     Dictionaries are used to store various data for a given key.
     """
 
-    def __init__(self, filename):
+    def __init__(self, game, filename):
         """
         Open the file containing the data.
         """
+        self.game = game
         self.filename = filename
         self.db = shelve.open(self.filename)
         init = self.get('init')
         if init:
-            log("Opening {} created on {}".format(self.filename, init))
+            self.game.log("Opening {} created on {}".format(self.filename, init))
         else:
-            log("Creating {}".format(self.filename))
+            self.game.log("Creating {}".format(self.filename))
             self.put('init', datetime.now())
 
     def put(self, key, data):
@@ -71,7 +71,7 @@ class Data:
         """
         Close the database.
         """
-        log("Closing {}.".format(self.filename))
+        self.game.log("Closing {}.".format(self.filename))
         self.db.close()
 
     def serialize(self, key, function):
