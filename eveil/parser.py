@@ -54,7 +54,7 @@ class Parser():
         if matched:
             # execute the relative function
             cmd = matched.group("command")
-            arg = matched.group("arguments")
+            arg = matched.group("arguments") or ''
             getattr(self, "_{}".format(cmd))(player, arg)
 
 
