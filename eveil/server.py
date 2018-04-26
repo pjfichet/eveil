@@ -1,10 +1,13 @@
 import threading
-import queue
 from SimpleWebSocketServer import WebSocket, SimpleWebSocketServer
 
-queue = queue.Queue()
 
 class Connection(WebSocket):
+
+    def __init__(self, server, sock, address):
+        WebSocket.__init__(self, server, sock, address)
+        self.player = None
+        self.queue = None
 
     def handleMessage(self):
         self.queue.put([self, "text", self.data])
@@ -15,11 +18,9 @@ class Connection(WebSocket):
     def handleClose(self):
         self.queue.put([self, "disconnect", ""])
 
-    def setplayer(self, player):
-        self.player = player
+    def send(self, message):
+        self.sendMessage("<div>" + message + "</div>")
 
-    def setqueue(self, queue):
-        self.queue = queue
 
 class Server(SimpleWebSocketServer):
 
@@ -29,8 +30,9 @@ class Server(SimpleWebSocketServer):
 
     def _constructWebSocket(self, sock, address):
         connection = self.websocketclass(self, sock, address)
-        connection.setqueue(self.queue)
+        connection.queue = self.queue
         return connection
+
 
 class ThreadServer(threading.Thread):
 

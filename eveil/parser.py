@@ -22,7 +22,7 @@ ARGUMENT_REGEX = {
         "email <i>mail@example.com</i>" ],
     "nouveau": [ re.compile("^$"),
         "nouveau" ],
-    "jouer": [ re.compile("\s*$"),
+    "jouer": [ re.compile("(\w+)\s*$"),
         "jouer <i>personnage</i>" ],
     # chargen commands
     "genre": [ re.compile("(homme|femme)\s*$"),
@@ -50,7 +50,7 @@ class Parser():
     ### Parser methods ###
 
     def usage(self, player, message):
-        player.send("<p><b>Usage:</b> <code>{}</code></p>".format(message))
+        player.client.send("<p><b>Usage:</b> <code>{}</code></p>".format(message))
 
     def parse(self, player, message):
         """ If the message matches with the command regex,
@@ -67,7 +67,7 @@ class Parser():
                 # arg is a match object:
                 # arg[0] contains the whole matching sentence
                 # arg[1] the first matching group
-                getattr(self, "cmd_{0}".format(cmd))(player, arg)
+                getattr(self, "_{0}".format(cmd))(player, arg)
             else:
                 # TODO: find the correct way to handle special case failures
                 if cmd == "login" or cmd == "create":
@@ -77,53 +77,59 @@ class Parser():
 
         else:
             # TODO: print the list of available commands
-            player.send("<p><code>Arglebargle&nbsp;?</code></p>")
+            player.client.send("<p><code>Arglebargle&nbsp;&8253;</code></p>")
+
+    ### Universal commands ###
+
+    def _quit(self, player, arg):
+        # game._parse_queue handles disconnect correctly
+        player.client.close("Au revoir.")
 
     ### Player commands ###
 
-    def cmd_login(self, player, arg):
-        player.dologin(arg[1], arg[2])
+    def _create(self, player, arg):
+        player.create(arg[1], arg[2], arg[3], arg[4])
 
-    def cmd_create(self, player, arg):
-        player.docreate(arg[1], arg[2], arg[3], arg[4])
+    def _login(self, player, arg):
+        player.login(arg[1], arg[2])
 
-    def cmd_pseudo(self, player, arg):
-        player.setpseudo(arg[0])
+    def _pseudo(self, player, arg):
+        player.set_pseudo(arg[0])
 
-    def cmd_secret(self, player, arg):
-        player.setpassword(arg[1], arg[2])
+    def _secret(self, player, arg):
+        player.set_password(arg[1], arg[2])
 
-    def cmd_email(self, player, arg):
-        player.setemail(arg[0])
+    def _email(self, player, arg):
+        player.set_email(arg[0])
 
-    def cmd_nouveau(self, player, arg):
-        player.setcharacter()
+    def _nouveau(self, player, arg):
+        player.set_character()
 
-    def cmd_jouer(self, player, arg):
-        player.setcharacter(arg[0])
+    def _jouer(self, player, arg):
+        player.set_character(arg[0])
 
     ### character commands ###
 
-    def cmd_genre(self, player, arg):
-        player.character.cmd_gender(arg[0])
+    def _genre(self, player, arg):
+        player.character.set_gender(arg[0])
 
-    def cmd_nom(self, player, arg):
-        player.character.cmd_name(arg[0])
+    def _nom(self, player, arg):
+        player.character.set_name(arg[0])
 
-    def cmd_apparence(self, player, arg):
-        player.character.cmd_shortdesc(arg[0])
+    def _apparence(self, player, arg):
+        player.character.set_shortdesc(arg[0])
 
-    def cmd_description(self, player, arg):
-        player.character.cmd_longdesc(arg[0])
+    def _description(self, player, arg):
+        player.character.set_longdesc(arg[0])
 
-    def cmd_metier(self, player, arg):
-        player.character.cmd_skill(arg[0])
+    def _metier(self, player, arg):
+        player.character.set_skill(arg[0])
 
-    def cmd_talent(self, player, arg):
-        player.character.cmd_talent(arg[0])
+    def _talent(self, player, arg):
+        player.character.set_talent(arg[0])
 
     ### Admin commands ###
 
-    def cmd_shutdown(self, player, arg):
+    def _shutdown(self, player, arg):
         self.game.shutdown()
 

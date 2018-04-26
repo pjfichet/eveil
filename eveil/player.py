@@ -9,18 +9,24 @@ from . import world
 
 account_menu = Template("""
 <h2>Éveil</h2>
-%if player.state != Player.ACCOUNT:
-<p>Bienvenue, {{player.pseudo}}.</p>
-%else:
-<h3>Bienvenue {{player.pseudo}}</h3>
-    %if isdef("player.characters"):
-        <p>Choisissez votre personnage ou creez-en un nouveau en entrant
-        <code>nouveau</code>.
+<h4>Bienvenue, {{player.pseudo}}.</h4>
+%if player.state == Player.ACCOUNT:
+    %if player.characters:
         %if len(player.characters) > 1:
-            Vos personnages sont: {{player.charlist}}.
+            <p>Vous avez plusieurs personnages: {{player.charlist}}.
+            Vous pouvez jouer avec l'un de ces personnages ou en
+            créer un nouveau en entrant:
+            <ul>
+                <li><code>jouer <i>nom_du_personnage</i></code></li>
         %else:
-            Votre personnage est {{player.character[0]}}.
+            <p>Vous avez créé un personnage: {{player.characters[0]}}.
+            Vous pouvez jouer avec ce personnage ou en créer un nouveau
+            en entrant:
+            <ul>
+                <li><code>jouer <i>{{player.characters[0]}}</i></code></li>
         %endif
+                <li><code>nouveau</code></li>
+            </ul>
         </p>
     %else:
         <p>Creez un personnage en entrant <code>nouveau</code>.</p>
@@ -41,7 +47,8 @@ class Player():
     """ Represent the player. Some information about him is
     recorded in the database, as well as a list of its characters.
     At login, he must provide those informations, and choose
-    a character to play."""
+    a character to play.
+    """
 
     # Initialize an enumeration of states
     LOGIN, ACCOUNT, LOGGED = range(3)
@@ -52,143 +59,138 @@ class Player():
         self.id = None
         self.key = None
         self.pseudo = None
-        self.passwd = None
+        self.password = None
         self.email = None
-        self.creation = None
-        self.login = None
-        self.logout = None
+        self.creation_dt = None
+        self.login_dt = None
+        self.logout_dt = None
         self.characters = []
         self.state = self.LOGIN
 
-    def send(self, text):
-        """ A shortcut to send message to the player's client."""
-        self.client.sendMessage("<div>" + text + "</div>")
-
-    def setkey(self):
-        """ Set the key used to fetch the player datas in the database."""
-        self.key = "player:" + str(self.id)
-
-    def setcharlist(self):
-        """ Format a human readable list of characters """
-        self.charlist = ', '.join(name for name in self.characters)
-
-    def get(self, pseudo):
+    def _get(self, pseudo):
         """ With the pseudo, extract datas from the db."""
         self.id = self.db.get("player:" + pseudo)
         if self.id:
-            self.setkey()
+            self.key = "player:" + str(self.id)
             data = self.db.get(self.key)
             self.pseudo = data["pseudo"]
-            self.passwd = data["passwd"]
+            self.password = data["password"]
             self.email = data["email"]
-            self.creation = data["creation"]
-            self.login = data["login"]
-            self.logout = data["logout"]
+            self.creation_dt = data["creation_dt"]
+            self.login_dt = data["login_dt"]
+            self.logout_dt = data["logout_dt"]
             self.characters = data["characters"]
-            self.setcharlist()
+            self.charlist = ', '.join(name for name in self.characters)
             return True
         else:
             return False
 
-    def put(self):
+    def _put(self):
         """ Record the player datas in the database. """
-        self.setkey()
-        self.db.put(self.key, {"pseudo": self.pseudo, "passwd": self.passwd,
-            "email": self.email, "creation": self.creation,
-            "login": self.login, "logout": self.logout,
-            "characters": self.characters })
+        self.key = "player:" + str(self.id)
+        self.db.put(
+                self.key,
+                {"pseudo": self.pseudo, "password": self.password,
+                "email": self.email, "creation_dt": self.creation_dt,
+                "login_dt": self.login_dt, "logout_dt": self.logout_dt,
+                "characters": self.characters
+                })
 
-    def new(self):
-        """ Create a new character in the database. """
-        self.creation = datetime.now()
-        self.login = datetime.now()
+    def _new(self):
+        """ Create a new player in the database. """
+        self.creation_dt = datetime.now()
+        self.login_dt = datetime.now()
         self.id = self.db.new("player")
         self.db.put("player:" + self.pseudo, self.id)
-        self.put()
+        self._put()
 
-    def dologin(self, pseudo, passwd):
+    def create(self, pseudo, password, confirm, email):
+        """ Create an account for a new player. """
+        if self.db.get("player:" + pseudo):
+            self.client.close("Le pseudonyme {} est déjà utilisé.".format(pseudo))
+            return
+        if password == confirm:
+            # Create a new account.
+            self.pseudo = pseudo
+            self.password = password
+            self.email = email
+            self._new()
+            log("Player {} created.".format(self.pseudo))
+            world.players.append(self)
+            # Send a short welcome.
+            self.client.send(account_menu.expand({"player": self, "Player": Player}))
+            # And put the player in chargen.
+            self.set_character()
+        else:
+            self.client.close("Le mot de passe ne correspond pas à sa confirmation.")
+
+    def login(self, pseudo, password):
         """ Log in an existing player, checking pseudo and password."""
-        if self.get(pseudo):
-            if self.passwd == passwd:
+        if self._get(pseudo):
+            if self.password == password:
                 # Login successful, put the player in the account menu.
                 log("Player {} logs in.".format(self.pseudo))
                 self.state = Player.ACCOUNT
                 world.players.append(self)
-                self.send(account_menu.expand({"player": self, "Player": Player}))
+                self.client.send(account_menu.expand(
+                    {"player": self, "Player": Player}
+                    ))
+            else:
+                self.client.close("Mot de passe invalide.")
                 return
-        # Log out everyone else
-        self.client.close()
+        else:
+            self.client.close("Identifiant invalide.")
 
-    def docreate(self, pseudo, passwd, confirm, mail):
-        """ Create an account for a new player. """
-        if self.db.get("player:" + pseudo):
-            # A player with that name exists, try to log him in.
-            self.dologin(pseudo, passwd)
-            return
-        if passwd == confirm:
-            # Create a new account.
-            self.pseudo = pseudo
-            self.passwd = passwd
-            self.mail = mail
-            self.new()
-            log("Player {} created.".format(self.pseudo))
-            world.players.append(self)
-            # Send a short welcome.
-            self.send(account_menu.expand({"player": self, "Player": Player}))
-            # And put the player in chargen.
-            self.setcharacter()
-            return
-        # Log out everyone else
-        self.client.close()
-
-    def setcharacter(self, text=None):
-        """ Instanciate a character object for the player. """
-        self.character = Character(self.db, self)
-        self.state = self.LOGGED
-        self.character.checkname(text)
-
-    def setpseudo(self, text):
-        """ player command to change his pseudo. """
-        if self.db.get("player:" + text):
-            # someone uses that pseudo.
-            self.send("Le pseudonyme {} est déjà utilisé.".format(self.pseudo))
-            return
-        # remove the old player entry.
-        self.db.rem("player:" + self.pseudo)
-        # create a new one
-        self.pseudo = text
-        self.db.put("player:" + self.pseudo, self.id)
-        # record the new player data
-        self.put()
-        self.send("<p>Votre pseudonyme est {}.</p>".format(self.pseudo))
-
-    def setpassword(self, old, new):
-        """ Player command to change his password. """
-        if self.passwd != old:
-            self.send("<p>Le mot de passe entré ne correspond pas au votre.</p>")
-            return
-        self.passwd = new
-        self.put()
-        self.send("<p>Votre nouveau mot de passe est enregistré.</p>")
-
-    def setemail(self, text):
-        """ Player command to change his email. """
-        self.email = text
-        self.put()
-        self.send("<p>Votre email est {}.</p>".format(self.email))
-
-    def addcharacter(self):
-        """ When a character is created, this method must be called
-        to link the character with the player account. """
-        self.characters.append(self.character.name)
-        self.put()
-
-    def log_out(self):
+    def logout(self):
         """ Record the player data, and remove the player """
         if self.state == self.LOGGED:
-            self.logout = datetime.now()
-            self.put()
+            self.logout_dt = datetime.now()
+            self._put()
         if self in world.players:
             world.players.remove(self)
         log("Player {} logs out.".format(self.pseudo))
+
+    def set_pseudo(self, pseudo):
+        """ Player command to change his pseudo. """
+        if self.db.get("player:" + pseudo):
+            # someone uses that pseudo.
+            self.client.send("Le pseudonyme {} est déjà utilisé.".format(self.pseudo))
+        else:
+            # remove the old player entry.
+            self.db.rem("player:" + self.pseudo)
+            # create a new one
+            self.pseudo = pseudo
+            self.db.put("player:" + self.pseudo, self.id)
+            # record the new player data
+            self._put()
+            self.client.send("<p>Votre pseudonyme est {}.</p>".format(self.pseudo))
+
+    def set_password(self, old, new):
+        """ Player command to change his password. """
+        if self.passwordd != old:
+            self.client.send("<p>Le mot de passe entré ne correspond pas au vôtre.</p>")
+        else: 
+            self.password = new
+            self._put()
+            self.client.send("<p>Votre nouveau mot de passe est enregistré.</p>")
+
+    def set_email(self, email):
+        """ Player command to change his email. """
+        self.email = email
+        self._put()
+        self.client.send("<p>Votre email est {}.</p>".format(self.email))
+
+    def set_character(self, text=None):
+        """ Instanciate a character object for the player. """
+        self.state = self.LOGGED
+        self.character = Character(self.db, self)
+        self.character.create(text)
+
+    def record_character(self):
+        """ When a character is actually created, this method must
+        be called to link the character with the player account.
+        """
+        self.characters.append(self.character.name)
+        self._put()
+
 

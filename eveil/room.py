@@ -9,11 +9,11 @@ class Exit():
         self.toroom = toroom
         self.shortdesc = None
         self.longdesc = None
-        self.isopened = True
-        self.closable = False
-        self.isclosed = False
-        self.lockable = False
-        self.islocked = False
+        self.is_opened = True
+        self.can_close = False
+        self.is_closed = False
+        self.can_lock = False
+        self.is_locked = False
         self.key = None
 
 
@@ -24,47 +24,37 @@ class Room():
         # get the index of the room in the list of rooms
         self.id = world.rooms.index(self)
         self.area = None
+        # short and long description must be a Template instance.
         self.shortdesc = None
         self.longdesc = None
         self.exits = []
         self.characters = []
         self.things = []
 
-    def addcharacter(self, character):
+    def add_character(self, character):
         self.characters.append(character)
 
-    def delcharacter(self, character):
+    def del_character(self, character):
         self.characters.remove(character)
 
-    def addthing(self, thing):
-        self.things.append(obj)
+    def add_thing(self, thing):
+        self.things.append(thing)
 
-    def delthing(self, thing):
-        self.things.remove(obj)
+    def del_thing(self, thing):
+        self.things.remove(thing)
 
-    def addexit(self, exit):
+    def add_exit(self, exit):
         self.exits.append(exit)
 
-    def lookshort(self, character):
-        character.send(self.shortdesc.expand(
+    def get_shortdesc(self, character):
+        character.player.client.send(self.shortdesc.expand(
             {"character" : character}
             ))
 
-    def looklong(self, character):
-        self.lookshort(character)
-        character.send(self.longdesc.expand(
+    def get_longdesc(self, character):
+        self.get_shortdesc(character)
+        character.player.client.send(self.longdesc.expand(
             {"character": character}
             ))
 
-    def displayall(self):
-        for character in self.game.character:
-            if character.room == self:
-                self.looklong(character)
 
-    def setshortdesc(self):
-        # self.shortdesc = Template("")
-        pass
-
-    def setlongdesc(self):
-        #self.longdesc = Template("")
-        pass

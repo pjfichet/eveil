@@ -39,7 +39,6 @@ class Data:
             data = self.db[key]
         except KeyError:
             return False
-
         return data
 
     def rem(self, key):

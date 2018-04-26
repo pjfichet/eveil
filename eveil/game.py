@@ -17,16 +17,12 @@ class Game():
         self.parser = Parser(self)
         self.loop = True
 
-    def shutdown(self):
-        self.loop = False
-        self.db.close()
-
     def run(self):
         while self.loop == True:
-            self.parsequeue()
+            self._get_queue()
             sleep(.1)
 
-    def parsequeue(self):
+    def _get_queue(self):
         try:
             # With False, the queue does not block the program.
             # It raises Queue.Empty if empty.
@@ -38,11 +34,11 @@ class Game():
                 self.parser.parse(client.player, message)
             if kind == "connect":
                 player = Player(self.db, client)
-                client.setplayer(player)
+                client.player = player
                 world.clients.append(client)
             elif kind == "disconnect":
                 if client.player is not None:
-                    client.player.log_out()
+                    client.player.logout()
                 world.clients.remove(client)
             self.queue.task_done()
 
@@ -51,8 +47,8 @@ class Game():
         self.loop = False
         for client in world.clients:
             if client.player is not None:
-                client.player.log_out()
+                client.player.logout()
             world.clients.remove(client)
-            client.sendMessage("<h3>Au revoir.</h3>")
+            client.send("<h4>Au revoir.</h4>")
             client.close()
         log("Shutting down.")

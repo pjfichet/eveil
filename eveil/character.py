@@ -4,6 +4,8 @@ from . import world
 
 class Character():
     MALE, FEMALE = range(2)
+    SKILLS = ["artisan", "chasseur", "druide", "guerrier", "barde"]
+    TALENTS = ["agileté", "constitution", "force", "intelligence", "sagesse"]
 
     def __init__(self, db, player):
         self.db = db
@@ -13,24 +15,18 @@ class Character():
         self.name = None
         self.lastname = None
         self.gender = None
-        self.room = world.rooms[0]
-        self.rommid = self.room.id
         self.longdesc = None
         self.shortdesc = None
         self.skill = None
         self.talent = None
+        self.room = world.rooms[0]
+        self.roomid = self.room.id
 
-    def send(self, text):
-        self.player.send(text)
-
-    def setkey(self):
-        self.key = "character:" + str(self.id)
-
-    def get(self):
+    def _get(self):
         """ With the character name, extract datas from the db."""
         self.id = self.db.get("character:" + self.name)
         if self.id:
-            self.setkey()
+            self.key = "character:" + str(self.id)
             data = self.db.get(self.key)
             self.lastname = data["lastname"]
             self.gender = data["gender"]
@@ -43,81 +39,82 @@ class Character():
         else:
             return  False
 
-    def put(self):
+    def _put(self):
         """ Record the datas of the character in the db."""
-        self.setkey()
-        self.db.put(self.key, {"name": self.name, "lastname": self.lastname,
+        self.key = "character:" + str(self.id)
+        self.db.put(
+            self.key,
+            {"name": self.name, "lastname": self.lastname,
             "gender": self.gender, "roomid": self.room.id, 
             "longdesc": self.longdesc, "shortdesc": self.shortdesc,
-            "skill": self.skill, "talent": self.talent })
+            "skill": self.skill, "talent": self.talent
+            })
 
-    def new(self):
-        """ Create a new character, record it in the db."""
+    def _new(self):
+        """ Record a new character in the db."""
         self.id = self.db.new("character")
         self.db.put("character:" + self.name, self.id)
-        self.put()
-        self.player.addcharacter()
+        self._put()
+        self.player.record_character()
 
-    def checkname(self, text):
+    def create(self, name=None):
         """ Check if a given name match with a character name,
         and if the player owns that character. In all case,
         put the player in game, be it in chargen."""
-        if self.player.characters and text is not None:
-            if text in self.player.characters:
-                self.name = text
-                self.get()
+        if self.player.characters and name is not None:
+            if name in self.player.characters:
+                self.name = name
+                self._get()
                 world.characters.append(self)
                 log("Character {} enters the game in room {}.".format(self.name, self.room.id))
         # put the character in game.
-        self.room.addcharacter(self)
-        self.room.looklong(self)
+        self.room.add_character(self)
+        self.room.get_longdesc(self)
 
-    def cmd_gender(self, text):
-        """ Define the gender of the character """
-        if text == "homme":
-            self.gender = Character.MALE
-            self.send("<p>Il sera un homme.</p>")
-        elif text == "femme":
-            self.gender = Character.FEMALE
-            self.send("<p>Elle sera une femme.</p>")
-        else:
-            self.send("<p>genre: [homme|femme]</p>")
-
-    def cmd_name(self, text):
+    def set_name(self, name):
         """ Define the name of the character. This is also
         when the character is actually recorded in the database."""
-        self.name = text
+        self.name = name
         if self.gender == Character.FEMALE:
-            self.send("<p>Elle se nomme {}.</p>".format(self.name))
+            self.player.client.send("<p>Elle se nomme {}.</p>".format(self.name))
         else:
-            self.send("<p>Il se nomme {}.</p>".format(self.name))
-        self.new()
+            self.player.client.send("<p>Il se nomme {}.</p>".format(self.name))
+        self._new()
         log("Character {} created.".format(self.name))
 
-    def cmd_shortdesc(self, text):
+    def set_gender(self, gender):
+        """ Define the gender of the character """
+        if gender == "homme":
+            self.gender = Character.MALE
+            self.player.client.send("<p>Il est un homme.</p>")
+        else:
+            self.gender = Character.FEMALE
+            self.player.client.send("<p>Elle est une femme.</p>")
+
+    def set_shortdesc(self, shortdesc):
         """ Define the short description of the character."""
-        self.shortdesc = text
-        self.send("</p>Apparence enregistrée.</p>")
-        self.put()
+        self.shortdesc = shortdesc
+        self.player.client.send("</p>Apparence enregistrée.</p>")
+        self._put()
 
-    def cmd_longdesc(self, text):
+    def set_longdesc(self, longdesc):
         """ Define the long description of the character."""
-        self.longdesc = text
-        self.send("<p>Description enregistrée.</p>")
-        self.put()
+        self.longdesc = longdesc
+        self.player.client.send("<p>Description enregistrée.</p>")
+        self._put()
 
-    def cmd_skill(self, text):
+    def set_skill(self, skill):
         """ Define the skill of the character. """
-        if text in Character.SKILLS:
-            self.skill = text
-            self.put()
-        else:
-            self.send("<code>métier: <i>artisan|chasseur|druide|guerrier|barde</i></code>")
+        self.skill = Character.SKILLS.index(skill)
+        self.player.client.send(
+                "<p>C'est un {}.".format(Caracter.SKILLS[self.skill])
+                )
+        self._put()
 
-    def cmd_talent(self, text):
+    def set_talent(self, talent):
         """ Define the talent of the character. """
-        if text in Character.TALENTS:
-            self.talent = Character.TALENTS
-            self.put()
-        else:
-            self.send("talent: <i>sagesse|intelligence|constitution|force|agileté</i></code>")
+        self.talent = Character.TALENTS.index(talent)
+        self.player.client.send(
+                "<p>Il est doté d'une {} étonnante.".format(Caracter.TALENTS[self.talent])
+                )
+        self._put()
