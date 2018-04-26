@@ -133,6 +133,8 @@ h2 { font-size: 1.8rem; line-height: 3rem;}
 h3 { font-size: 1.5rem; line-height: 1.5rem;}
 footer p {font-size: .8rem;}
 pre, code {font-family: monospace;}
+i {font-style: italic;}
+b {font-weight: bold;}
 
 /**********************************************************
 * Paragraphs layout

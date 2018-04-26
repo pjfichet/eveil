@@ -24,7 +24,7 @@ class Cmd():
                 return fn(cls, player, m)
             else:
                 return player.client.send(
-                    "<p><b>Usage:</b> <code>{} <i>{}</i></code></p>"
+                    "<p>Usage: <code>{} <i>{}</i></code></p>"
                     .format(self.cmd, self.arg)
                     )
         return decorated
