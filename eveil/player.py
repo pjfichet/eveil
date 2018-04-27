@@ -165,7 +165,7 @@ class Player():
 
     def set_password(self, old, new):
         """ Player command to change his password. """
-        if self.passwordd != old:
+        if self.password != old:
             self.client.send("<p>Le mot de passe entré ne correspond pas au vôtre.</p>")
         else: 
             self.password = new
