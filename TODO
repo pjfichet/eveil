@@ -1,0 +1,17 @@
+* status or rights
+Some commands are reserved to admins, some other to players, some
+others to characters.  Take care of this.
+
+* Separate command name and coded name
+Allow accents to command names, while the coded name will not allow
+it.
+
+* List of commands
+For each status or right, a list of commands should be available.
+
+* Exit names and keywords
+They shoul make sense from all the room they are linked with.
+
+* Pronouns
+A class, a function, or an array, could define all the pronouns for a
+given gender.
