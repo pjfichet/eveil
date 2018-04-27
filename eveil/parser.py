@@ -8,10 +8,10 @@ class Cmd():
     """
     commands = {}
 
-    def __init__(self, cmd, arg, regex):
+    def __init__(self, name, usage, regex):
         #Cmd.commands.append(cmd)
-        self.cmd = cmd # command itself
-        self.arg = arg # human readable argument 
+        self.name = name # Ingame name of the command
+        self.usage = usage # human readable argument
         self.regex = re.compile(regex) # regex matching the argument
 
     def __call__(self, fn):
@@ -19,15 +19,18 @@ class Cmd():
         fn is executed, otherwise, a short usage is sent.
         """
         # We record the function name for that command
-        Cmd.commands[self.cmd] = fn.__name__
+        Cmd.commands[self.name] = fn.__name__
+        # And we decorate the function
         def decorated(cls, player, arg):
             m = self.regex.match(arg)
             if m:
+                # if arguments match, we execute the command
                 return fn(cls, player, m)
             else:
+                # orelse we print a short usage
                 return player.client.send(
                     "<p>Usage: <code>{} <i>{}</i></code></p>"
-                    .format(self.cmd, self.arg)
+                    .format(self.name, self.usage)
                     )
         return decorated
 
@@ -57,7 +60,6 @@ class Parser():
             # execute the relative function
             cmd = matched.group("command")
             arg = matched.group("arguments") or ''
-            #getattr(self, "_{}".format(cmd))(player, arg)
             getattr(self, Cmd.commands[cmd])(player, arg)
         else:
             player.client.send("<p><code>Arglebargle&nbsp;!?</code></p>")
@@ -90,7 +92,7 @@ class Parser():
         player.set_pseudo(arg[0])
 
     @Cmd("secret", "ancien_mdp nouveau_mdp", "(\S+)\s+(\S+)\s*$")
-    def _secret(self, player, arg):
+    def _password(self, player, arg):
         player.set_password(arg[1], arg[2])
 
     @Cmd("email", "mail@example.com", "([^@]+@[^@]+)\s*$")
@@ -98,34 +100,34 @@ class Parser():
         player.set_email(arg[0])
 
     @Cmd("nouveau", "", "^$")
-    def _nouveau(self, player, arg):
+    def _new_character(self, player, arg):
         player.set_character()
 
     @Cmd("jouer", "personnage", "(\w+)\s*$")
-    def _jouer(self, player, arg):
+    def _play(self, player, arg):
         player.set_character(arg[0])
 
     ### chargen commands ###
    
     @Cmd("genre", "homme|femme", "(homme|femme)\s*$")
-    def _genre(self, player, arg):
+    def _gender(self, player, arg):
         player.character.set_gender(arg[0])
 
     @Cmd("nom", "nom", "(\w+)\s*$")
-    def _nom(self, player, arg):
+    def _name(self, player, arg):
         player.character.set_name(arg[0])
 
     @Cmd("apparence", "courte description", "(\w[\s\w]+)\s*$")
-    def _apparence(self, player, arg):
+    def _shortdesc(self, player, arg):
         player.character.set_shortdesc(arg[0])
 
     @Cmd("description", "longue description", "(\w[\s\w]+)\s*$")
-    def _description(self, player, arg):
+    def _longdesc(self, player, arg):
         player.character.set_longdesc(arg[0])
 
     @Cmd("metier", "artisan|barde|chasseur|druide|guerrier",
             "(artisan|barde|chasseur|druide|guerrier)\s*$")
-    def _metier(self, player, arg):
+    def _skill(self, player, arg):
         player.character.set_skill(arg[0])
 
     @Cmd("talent", "agileté|constitution|force|intelligence|sagesse",
@@ -136,7 +138,7 @@ class Parser():
     ### Playing commands ###
 
     @Cmd("vers", "mot_clé", "(\w+)\s*$")
-    def _vers(self, player, arg):
+    def _go(self, player, arg):
         player.character.room.move(player.character, arg[0])
 
     ### Admin commands ###
