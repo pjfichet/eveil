@@ -24,7 +24,6 @@ class Exit():
 
     def move(self, character):
         from_room, to_room = self.get_rooms(character.room)
-        print("rooms: {} {} {}.".format(character.room.id, from_room.id, to_room.id))
         from_room.send(
             "<p>{} s'en va via {}.</p>".format(
             character.name, self.name

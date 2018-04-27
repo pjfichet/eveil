@@ -71,7 +71,7 @@ class Parser():
 
     ### Universal commands ###
 
-    @Cmd("quit", "", "\s*$")
+    @Cmd("quitter", "", "\s*$")
     def _quit(self, player, arg):
         # game._parse_queue handles disconnect correctly
         player.client.close("Au revoir.")
@@ -107,7 +107,13 @@ class Parser():
     def _play(self, player, arg):
         player.set_character(arg[0])
 
-    ### chargen commands ###
+    ### General character commands ###
+
+    @Cmd("vers", "mot_clé", "(\w+)\s*$")
+    def _go(self, player, arg):
+        player.character.room.move(player.character, arg[0])
+
+    ### Chargen commands ###
    
     @Cmd("genre", "homme|femme", "(homme|femme)\s*$")
     def _gender(self, player, arg):
@@ -125,7 +131,7 @@ class Parser():
     def _longdesc(self, player, arg):
         player.character.set_longdesc(arg[0])
 
-    @Cmd("metier", "artisan|barde|chasseur|druide|guerrier",
+    @Cmd("métier", "artisan|barde|chasseur|druide|guerrier",
             "(artisan|barde|chasseur|druide|guerrier)\s*$")
     def _skill(self, player, arg):
         player.character.set_skill(arg[0])
@@ -134,12 +140,6 @@ class Parser():
         "(agileté|constitution|force|intelligence|sagesse)\s*$")
     def _talent(self, player, arg):
         player.character.set_talent(arg[0])
-
-    ### Playing commands ###
-
-    @Cmd("vers", "mot_clé", "(\w+)\s*$")
-    def _go(self, player, arg):
-        player.character.room.move(player.character, arg[0])
 
     ### Admin commands ###
 

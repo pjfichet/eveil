@@ -113,7 +113,7 @@ class Character():
         """ Define the skill of the character. """
         self.skill = Character.SKILLS.index(skill)
         self.player.client.send(
-                "<p>C'est un {}.".format(Caracter.SKILLS[self.skill])
+                "<p>C'est un {}.".format(Character.SKILLS[self.skill])
                 )
         self._put()
 
@@ -121,6 +121,6 @@ class Character():
         """ Define the talent of the character. """
         self.talent = Character.TALENTS.index(talent)
         self.player.client.send(
-                "<p>Il est doté d'une {} étonnante.".format(Caracter.TALENTS[self.talent])
+                "<p>Il est doté d'une {} étonnante.".format(Character.TALENTS[self.talent])
                 )
         self._put()
