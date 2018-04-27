@@ -1,34 +1,34 @@
 #! python
 
 from datetime import datetime
-from step import Template
 
+from .template import Template
 from .character import Character
 
 account_menu = Template("""
 <h2>Éveil</h2>
 <h4>Bienvenue, {{player.pseudo}}.</h4>
-%if player.state == Player.ACCOUNT:
-    %if player.characters:
-        %if len(player.characters) > 1:
+{%if player.state == Player.ACCOUNT %}
+    {% if player.characters %}
+        {% if player.characters|len > 1 %}
             <p>Vous avez plusieurs personnages: {{player.charlist}}.
             Vous pouvez jouer avec l'un de ces personnages ou en
             créer un nouveau en entrant:
             <ul>
                 <li><code>jouer <i>nom_du_personnage</i></code></li>
-        %else:
+        {% else %}
             <p>Vous avez créé un personnage: {{player.characters[0]}}.
             Vous pouvez jouer avec ce personnage ou en créer un nouveau
             en entrant:
             <ul>
                 <li><code>jouer <i>{{player.characters[0]}}</i></code></li>
-        %endif
+        {% endif %}
                 <li><code>nouveau</code></li>
             </ul>
         </p>
-    %else:
+    {% else %}
         <p>Creez un personnage en entrant <code>nouveau</code>.</p>
-    %endif
+    {% endif %}
     <p>Vous pouvez aussi modifier ici les données de votre compte avec
     les commandes suivantes:</p>
     <ul>
@@ -36,8 +36,8 @@ account_menu = Template("""
         <li><code>secret: <i>ancien_mdp nouveau_mdp</i></code></li>
         <li><code>email: <i>mail@exemple.net</i></code></li>
     </ul>
-%endif
-""")
+{% endif %}
+""", {'len': len})
 
 
 
@@ -116,7 +116,7 @@ class Player():
             self.game.log("Player {} created.".format(self.pseudo))
             self.game.players.append(self)
             # Send a short welcome.
-            self.client.send(account_menu.expand({"player": self, "Player": Player}))
+            self.client.send(account_menu.render({"player": self, "Player": Player}))
             # And put the player in chargen.
             self.set_character()
         else:
@@ -130,7 +130,7 @@ class Player():
                 self.game.log("Player {} logs in.".format(self.pseudo))
                 self.state = Player.ACCOUNT
                 self.game.players.append(self)
-                self.client.send(account_menu.expand(
+                self.client.send(account_menu.render(
                     {"player": self, "Player": Player}
                     ))
             else:

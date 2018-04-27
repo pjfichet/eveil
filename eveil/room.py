@@ -1,4 +1,3 @@
-from step import Template
 
 class Exit():
 
@@ -45,13 +44,13 @@ class Room():
         self.exits.append(exit)
 
     def get_shortdesc(self, character):
-        character.player.client.send(self.shortdesc.expand(
+        character.player.client.send(self.shortdesc.render(
             {"character" : character}
             ))
 
     def get_longdesc(self, character):
         self.get_shortdesc(character)
-        character.player.client.send(self.longdesc.expand(
+        character.player.client.send(self.longdesc.render(
             {"character": character}
             ))
 

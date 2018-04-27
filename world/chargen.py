@@ -1,23 +1,22 @@
-from step import Template
-
-from eveil import room
-from eveil import thing
+from eveil.room import Room
+from eveil.thing import Thing
+from eveil.template import Template
 
 
 # Character generation rooms
 
-cg1 = room.Room(game)
+cg1 = Room(game)
 cg1.shortdesc = Template("<h3>Le sanctuaire des noms</h3>")
 cg1.longdesc = Template("""
 <p>Au fond d'une profonde vallée, sous l'ombre d'arbres
 centenaires, en partie recouvertes de mousse, gîsent deux vieilles
 pierres. Le peu de lumière perçant le feuillage illumine les runes
 gravées sur leurs
-%if character.name:
+{% if character.name %}
     flancs. {{character.name}} y reconnaît son nom, parmis de nombreux autres:
-%else:
+{% else %}
     flancs:
-%endif
+{% endif %}
 Les noms de ceux qui vivèrent et de ceux qui vivront. L'une des
 pierres porte les noms des hommes, l'autre ceux des femmes.</p>
 <ul>
@@ -30,7 +29,7 @@ pierres porte les noms des hommes, l'autre ceux des femmes.</p>
     <code>nom: <i>nom_choisi<i></code>.</li>
 </ul>
 """)
-hommes = thing.Thing()
+hommes = Thing()
 hommes.desc = Template("""
 <p>Sur la pierre des hommes qui fûrent ou qui seront, sont
 gravés les noms: Abarta, Abcán, Abhean, Abgatiacus, Abortach, Accasbel,
@@ -49,7 +48,7 @@ Nechtan, Neit, Nemglan, Nemon, Nuada, Nuadu, Nuagatt, Ochttriuil, Ogma, Ruadan,
 Sawan, Seibur, Seonaidh, Shoney, Slaine, Somhlth, Tagd, Tat, Tavarn, Tethra,
 Tuan, Tuireann, Ugnach.</p>""")
 
-femmes = thing.Thing()
+femmes = Thing()
 femmes.desc = Template("""
 <p>Sur la pierre des femmes qui furent ou qui seront, sont gravés
 les noms: Achall, Achtland, Adair, Aebh, Áed, Aeval, Aibell,
@@ -76,40 +75,32 @@ Plor, Re, Sadhbh, Scathach, Scenmend, Sheela, Sin, Shannon,
 Smirgat, Tailtiu, Telta, Tephi, Tlachtga, Tuiren, Turrean,
 Uairebhuidhe, Uathach, Uirne, Vera.</p>""")
 
-cg2 = room.Room(game)
+cg2 = Room(game)
 cg2.shortdesc = Template("<h3>Une petite mare</h3>")
 cg2.longdesc = Template("""
-<p>Dans un creu formé par les racines entortillées d'un veil arbre,
-l'eau de pluie s'est accumulée en une petite mare. Profonde et sombre,
-la lumière ne la transperce pas, mais s'y reflète.
-#if @character.name:
-    En s'approchant de son rebors, @character.name voit son apparence miroiter.
-#else
-    L'ombre s'approchant de son rebors voit son apparence miroiter.
-#end
-#if @character.longdesc:
-    À première vue, @character.pronom découvre @character.shortdesc. En y
-    regardant de plus près, @character.pronom voit:</p>
-    <blockquote>@character.longdesc</blockquote>
-#else
+<p>Dans un creu formé par les racines entortillées d'un veil arbre, l'eau de
+pluie s'est accumulée en une petite mare. Profonde et sombre, la lumière ne la
+transperce pas, mais s'y reflète. En s'approchant de son rebors,
+{{character.name}} voit son apparence miroiter.
+{% if character.shortdesc %}
+    À première vue, @character.pronom découvre {{character.shortdesc}}.
+{% endif %}
+{% if character.longdesc %}
+En y regardant de plus près, {{character.pronom}} voit:</p>
+    <blockquote>{{character.longdesc}}</blockquote>
+{% else %}
     </p>
-#end
+{% endif %}
 <ul>
-    <li>Pour décrire
-    #if @character.name:
-        @character.name,
-    #else
-        votre personnage,
-    #end
-    entrez:
+    <li>Pour décrire {{character.name}}
     <code>description: <i>Longue description...</i></code>.</li>
-    <li>Pour définir la courte description de votre personnage,
+    <li>Pour définir la courte description de {{character.name}},
     entrez: <code>apparence: <i>quelques mots</i></code>.</li>
-    <li>Pour voir @character.name, entrez:
-    <code>voir: @character.name</code>.</li>
+    <li>Pour voir {{character.name}}, entrez:
+    <code>voir: <i>{{character.name}}</i></code>.</li>
 </ul>""")
 
-cg3 = room.Room(game)
+cg3 = Room(game)
 cg3.shortdesc = Template("<h3>Un cercle de pierres</h3>")
 cg3.longdesc = Template("""
 <p>La densité de la forêt ne diminue pas, mais ici, entouré de
@@ -118,17 +109,17 @@ semble-t-il depuis toujours. Sur chacune des pierres est gravée
 une rune: celle de l'artisan, celle du chasseur, celle du druide,
 celle du guerrier, celle du barde. Sur chacune de ces pierres,
 sont gravées des scènes de vies.</p>
-#if character.skill == "crafter":
+{% if character.skill == "crafter" %}
     <p>Un rayon de lumière éclaire la pierre de l'artisan.</p>
-#elseif character.skill == "hunter":
+{% elif character.skill == "hunter" %}
     <p>Un rayon de lumière éclaire la pierre du chasseur.</p>
-#elseif character.skill == "druid":
+{% elif character.skill == "druid" %}
     <p>Un rayon de lumière éclaire la pierre du druide.</p>
-#elseif character.skill == "warrior":
+{% elif character.skill == "warrior" %}
     <p>Un rayon de lumière éclaire la pierre du guerrier.</p>
-#elseif character.skill == "bard":
+{% elif character.skill == "bard" %}
     <p>Un rayon de lumière éclaire la pierre du barde.</p>
-#end
+{% endif %}
 <ul>
     <li>Pour choisir un métier, entrez:
     <code>métier:
@@ -138,7 +129,7 @@ sont gravées des scènes de vies.</p>
     <i>sagesse|intelligence|constitution|force|agileté</i></code>.</li>
 </ul>""")
 
-cg4 = room.Room(game)
+cg4 = Room(game)
 cg4.shortdesc = Template("<h3>La source du torrent</h3>")
 cg4.longdesc = Template("""
 <p>Du flanc de la colline, entre pierres et racines, jaillit
