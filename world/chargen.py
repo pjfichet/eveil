@@ -5,6 +5,7 @@ from eveil.template import Template
 
 # Character generation rooms
 
+# We create the first room 
 cg1 = Room(game)
 cg1.shortdesc = Template("<h3>Le sanctuaire des noms</h3>")
 cg1.longdesc = Template("""
@@ -26,9 +27,18 @@ pierres porte les noms des hommes, l'autre ceux des femmes.</p>
     <li>Pour choisir le genre de votre personnage, entrez:
     <code>genre: [homme|femme]</code>.
     <li>Pour nommer votre personnage, entrez
-    <code>nom: <i>nom_choisi<i></code>.</li>
+    <code>nom: <i>nom_choisi</i></code>.</li>
 </ul>
+<p>{{character.name}} peut s'enfoncer dans la <b>forêt</b> (entrez
+    <code>vers <i>forêt</i></code>
+pour déplacer {{character.name}}).</p>
 """)
+# We create an empty second room to link it with the first
+cg2 = Room(game)
+cg1.add_exit(cg2, "forêt")
+
+
+
 hommes = Thing()
 hommes.desc = Template("""
 <p>Sur la pierre des hommes qui fûrent ou qui seront, sont
@@ -75,7 +85,6 @@ Plor, Re, Sadhbh, Scathach, Scenmend, Sheela, Sin, Shannon,
 Smirgat, Tailtiu, Telta, Tephi, Tlachtga, Tuiren, Turrean,
 Uairebhuidhe, Uathach, Uirne, Vera.</p>""")
 
-cg2 = Room(game)
 cg2.shortdesc = Template("<h3>Une petite mare</h3>")
 cg2.longdesc = Template("""
 <p>Dans un creu formé par les racines entortillées d'un veil arbre, l'eau de

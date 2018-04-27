@@ -102,7 +102,7 @@ class Parser():
     def _jouer(self, player, arg):
         player.set_character(arg[0])
 
-    ### character commands ###
+    ### chargen commands ###
    
     @Cmd("genre", "homme|femme", "(homme|femme)\s*$")
     def _genre(self, player, arg):
@@ -129,6 +129,12 @@ class Parser():
         "(agileté|constitution|force|intelligence|sagesse)\s*$")
     def _talent(self, player, arg):
         player.character.set_talent(arg[0])
+
+    ### Playing commands ###
+
+    @Cmd("vers", "mot_clé", "(\w+)\s*$")
+    def _vers(self, player, arg):
+        player.character.room.move(player.character, arg[0])
 
     ### Admin commands ###
 
