@@ -56,6 +56,8 @@ class Parser():
             cmd = matched.group("command")
             arg = matched.group("arguments") or ''
             getattr(self, "_{}".format(cmd))(player, arg)
+        else:
+            player.client.send("<p><code>Arglebargle&nbsp;!?</code></p>")
 
 
     ### Commands
