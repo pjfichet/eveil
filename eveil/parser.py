@@ -1,23 +1,25 @@
 import re
 
 class Cmd():
-    """ This class implements a decorator used to match the
-    user input with commands name and arguments, and print
-    a short usage if the arguments don't match.
+    """ This class implements a decorator used to:
+    - record the ingame name and function name of a user command,
+    - match the user input with the command name and arguments,
+    - print a short usage if the arguments don't match.
     """
-    commands = []
+    commands = {}
 
     def __init__(self, cmd, arg, regex):
-        Cmd.commands.append(cmd)
+        #Cmd.commands.append(cmd)
         self.cmd = cmd # command itself
         self.arg = arg # human readable argument 
         self.regex = re.compile(regex) # regex matching the argument
 
     def __call__(self, fn):
-        """ the decorator itself.
-        If arguments match, fn is executed,
-        otherwise, a short usage is sent.
+        """ the decorator itself. If the arguments match,
+        fn is executed, otherwise, a short usage is sent.
         """
+        # We record the function name for that command
+        Cmd.commands[self.cmd] = fn.__name__
         def decorated(cls, player, arg):
             m = self.regex.match(arg)
             if m:
@@ -55,7 +57,8 @@ class Parser():
             # execute the relative function
             cmd = matched.group("command")
             arg = matched.group("arguments") or ''
-            getattr(self, "_{}".format(cmd))(player, arg)
+            #getattr(self, "_{}".format(cmd))(player, arg)
+            getattr(self, Cmd.commands[cmd])(player, arg)
         else:
             player.client.send("<p><code>Arglebargle&nbsp;!?</code></p>")
 
