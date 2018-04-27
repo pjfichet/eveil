@@ -11,7 +11,3 @@ doc
 
 # Other packages
 SimpleWebSocketServer
-bottle
-step.py
-templite.py
-utemplate.py
