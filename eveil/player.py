@@ -4,11 +4,12 @@ from datetime import datetime
 
 from .template import Template
 from .character import Character
+from .parser import State
 
 account_menu = Template("""
 <h2>Éveil</h2>
 <h4>Bienvenue, {{player.pseudo}}.</h4>
-{%if player.state == Player.ACCOUNT %}
+{%if player.state == State.ACCOUNT %}
     {% if player.characters %}
         {% if player.characters|len > 1 %}
             <p>Vous avez plusieurs personnages: {{player.charlist}}.
@@ -63,7 +64,7 @@ class Player():
         self.login_dt = None
         self.logout_dt = None
         self.characters = []
-        self.state = self.LOGIN
+        self.state = State.LOGIN
 
     def _get(self, pseudo):
         """ With the pseudo, extract datas from the db."""
@@ -116,7 +117,7 @@ class Player():
             self.game.log("Player {} created.".format(self.pseudo))
             self.game.players.append(self)
             # Send a short welcome.
-            self.client.send(account_menu.render({"player": self, "Player": Player}))
+            self.client.send(account_menu.render({"player": self, "State": State}))
             # And put the player in chargen.
             self.set_character()
         else:
@@ -128,10 +129,10 @@ class Player():
             if self.password == password:
                 # Login successful, put the player in the account menu.
                 self.game.log("Player {} logs in.".format(self.pseudo))
-                self.state = Player.ACCOUNT
+                self.state = State.ACCOUNT
                 self.game.players.append(self)
                 self.client.send(account_menu.render(
-                    {"player": self, "Player": Player}
+                    {"player": self, "State": State}
                     ))
             else:
                 self.client.close("Mot de passe invalide.")
@@ -141,7 +142,7 @@ class Player():
 
     def logout(self):
         """ Record the player data, and remove the player """
-        if self.state == self.LOGGED:
+        if self.state == State.CHARGEN:
             self.logout_dt = datetime.now()
             self._put()
         if self in self.game.players:
@@ -180,7 +181,7 @@ class Player():
 
     def set_character(self, text=None):
         """ Instanciate a character object for the player. """
-        self.state = self.LOGGED
+        self.state = State.CHARGEN
         self.character = Character(self.game, self)
         self.character.create(text)
 
