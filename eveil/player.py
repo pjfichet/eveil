@@ -106,7 +106,8 @@ class Player():
     def create(self, pseudo, password, confirm, email):
         """ Create an account for a new player. """
         if self.game.db.get("player:" + pseudo):
-            self.client.close("Le pseudonyme {} est déjà utilisé.".format(pseudo))
+            self.client.send("Le pseudonyme {} est déjà utilisé.".format(pseudo))
+            self.client.close()
             return
         if password == confirm:
             # Create a new account.
@@ -121,7 +122,8 @@ class Player():
             # And put the player in chargen.
             self.set_character()
         else:
-            self.client.close("Le mot de passe ne correspond pas à sa confirmation.")
+            self.client.send("Le mot de passe ne correspond pas à sa confirmation.")
+            self.client.close()
 
     def login(self, pseudo, password):
         """ Log in an existing player, checking pseudo and password."""
@@ -135,10 +137,12 @@ class Player():
                     {"player": self, "State": State}
                     ))
             else:
-                self.client.close("Mot de passe invalide.")
+                self.client.send("Mot de passe invalide.")
+                self.client.close()
                 return
         else:
-            self.client.close("Identifiant invalide.")
+            self.client.send("Identifiant invalide.")
+            self.client.close()
 
     def logout(self):
         """ Record the player data, and remove the player """
