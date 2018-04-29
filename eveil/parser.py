@@ -15,11 +15,12 @@ class Cmd():
     # Dictionary of Cmd() instances
     commands = {}
 
-    def __init__(self, scope, name, usage, regex):
+    def __init__(self, scope, name, usage, regex, onfail = None):
         self.scope = scope # Scope in which the command is available
         self.name = name # Ingame name of the command
         self.usage = usage # human readable argument
         self.regex = re.compile(regex) # regex matching the argument
+        self.onfail = onfail
         self.fn = None # Function name
         Cmd.commands[self.name] = self
 
@@ -37,10 +38,13 @@ class Cmd():
                 return fn(cls, player, m)
             else:
                 # orelse we print a short usage
-                return player.client.send(
-                    "<p>Usage: <code>{} <i>{}</i></code></p>"
-                    .format(self.name, self.usage)
-                    )
+                if self.onfail is not None:
+                    return getattr(cls, self.onfail)(player, arg)
+                else:
+                    return player.client.send(
+                        "<p>Usage: <code>{} <i>{}</i></code></p>"
+                        .format(self.name, self.usage)
+                        )
         return decorated
 
 
@@ -106,21 +110,26 @@ class Parser():
 
     ### Universal commands ###
 
-    @Cmd(State.INGAME, "quitter", "", "\s*$")
+    @Cmd(State.INGAME, "quitter", "", "\s*$",)
     def _quit(self, player, arg):
         # game._parse_queue handles disconnect correctly
-        player.client.close("Au revoir.")
+        player.client.send("<p>Au revoir.</p>")
+        player.client.close()
 
     ### Login commands ###
 
     @Cmd(State.LOGIN, "create", "pseudo password confirm email",
-        "(\w+)\s+(\S+)\s+(\w+)\s+([^@]+@[^@]+)\s*$")
+        "(\w+)\s+(\S+)\s+(\w+)\s+([^@]+@[^@]+)\s*$", "_logout")
     def _create(self, player, arg):
         player.create(arg[1], arg[2], arg[3], arg[4])
 
-    @Cmd(State.LOGIN, "login", "password", "(\w+)\s+(\S+)\s*$")
+    @Cmd(State.LOGIN, "login", "password",
+        "(\w+)\s+(\S+)\s*$", "_logout")
     def _login(self, player, arg):
         player.login(arg[1], arg[2])
+
+    def _logout(self, player, arg):
+        player.client.close()
 
     ### Account commands ###
 
