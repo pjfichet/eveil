@@ -162,8 +162,6 @@ class Room():
             if word in link.target.shortdesc:
                 link.move(character)
                 return
-        character.player.client.send(
-            "<p><code>Aller où?</code></p>"
-            .format(keyword)
-            )
+        print(word)
+        character.player.client.send("<p><code>Aller où?</code></p>")
 
