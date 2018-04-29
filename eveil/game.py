@@ -5,6 +5,7 @@ from datetime import datetime
 from .data import Data
 from .player import Player
 from .parser import Parser
+from .map import Map
 
 
 class Game():
@@ -17,6 +18,7 @@ class Game():
         self.rooms = []
         self.db = Data(self, "data.db")
         self.parser = Parser(self)
+        self.map = Map(self)
         self.loop = True
 
     def run(self):

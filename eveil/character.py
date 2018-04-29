@@ -17,7 +17,7 @@ class Character():
         self.shortdesc = None
         self.skill = None
         self.talent = None
-        self.room = self.game.rooms[0]
+        self.room = self.game.map.rooms[0]
         self.roomid = self.room.id
 
     def _get(self):
@@ -69,7 +69,7 @@ class Character():
                     )
         # put the character in game.
         self.room.add_character(self)
-        self.room.get_longdesc(self)
+        self.room.send_longdesc(self)
 
     def set_name(self, name):
         """ Define the name of the character. This is also
