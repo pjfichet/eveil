@@ -155,9 +155,9 @@ class Parser():
 
     ### General character commands ###
 
-    @Cmd(State.CHARACTER, "vers", "mot_clé", "(\w+)\s*$")
+    @Cmd(State.CHARACTER, "aller", "[vers][ le| la| les] mot_clé", r".*\b(\w+)\s*$")
     def _go(self, player, arg):
-        player.character.room.move(player.character, arg[0])
+        player.character.room.move(player.character, arg[1])
 
     ### Chargen commands ###
    
