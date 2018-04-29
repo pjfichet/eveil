@@ -10,12 +10,13 @@ game = Game(queue)
 #cwd = os.getcwd()
 #world = os.path.join(cwd, 'world')
 for filename in os.listdir('world'):
-    filepath = os.path.join('world', filename)
-    if os.path.isfile(filepath):
-        game.log("Charging {}".format(filepath))
-        exec(
-            compile(open(filepath, "rb").read(), filepath, 'exec')
-            )
+    if filename.endswith('.py'):
+        filepath = os.path.join('world', filename)
+        if os.path.isfile(filepath):
+            game.log("Charging {}".format(filepath))
+            exec(
+                compile(open(filepath, "rb").read(), filepath, 'exec')
+                )
 
 
 server = ThreadServer(queue, '', 5678)
