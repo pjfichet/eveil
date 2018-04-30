@@ -1,6 +1,7 @@
 #! python
 
 from datetime import datetime
+import crypt
 
 from .template import Template
 from .character import Character
@@ -110,6 +111,7 @@ class Player():
             self.client.close()
             return
         if password == confirm:
+            password = crypt.crypt(password)
             # Create a new account.
             self.pseudo = pseudo
             self.password = password
@@ -128,6 +130,7 @@ class Player():
     def login(self, pseudo, password):
         """ Log in an existing player, checking pseudo and password."""
         if self._get(pseudo):
+            password = crypt.crypt(password, self.password)
             if self.password == password:
                 # Login successful, put the player in the account menu.
                 self.game.log("Player {} logs in.".format(self.pseudo))
