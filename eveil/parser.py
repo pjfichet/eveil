@@ -149,7 +149,7 @@ class Parser():
     def _new_character(self, player, arg):
         player.set_character()
 
-    @Cmd(State.ACCOUNT, "jouer", "personnage", "(\w+)\s*$")
+    @Cmd(State.ACCOUNT, "jouer", "nom_du_personnage", "(\w+)\s*$")
     def _play(self, player, arg):
         player.set_character(arg[0])
 
