@@ -6,6 +6,7 @@ from .data import Data
 from .player import Player
 from .parser import Parser
 from .map import Map
+from .time import Time
 
 
 class Game():
@@ -19,11 +20,13 @@ class Game():
         self.db = Data(self, "data.db")
         self.parser = Parser(self)
         self.map = Map(self)
+        self.time = Time(self)
         self.loop = True
 
     def run(self):
         while self.loop == True:
             self._get_queue()
+            self.time.tick()
             sleep(.1)
 
     def _get_queue(self):
