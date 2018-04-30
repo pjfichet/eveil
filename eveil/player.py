@@ -19,11 +19,11 @@ account_menu = Template("""
             <ul>
                 <li><code>jouer <i>nom_du_personnage</i></code></li>
         {% else %}
-            <p>Vous avez créé un personnage: {{player.characters[0]}}.
+            <p>Vous avez créé un personnage: {{player.charlist}}.
             Vous pouvez jouer avec ce personnage ou en créer un nouveau
             en entrant:
             <ul>
-                <li><code>jouer <i>{{player.characters[0]}}</i></code></li>
+                <li><code>jouer <i>{{player.charlist}}</i></code></li>
         {% endif %}
                 <li><code>nouveau</code></li>
             </ul>
@@ -80,7 +80,10 @@ class Player():
             self.login_dt = data["login_dt"]
             self.logout_dt = data["logout_dt"]
             self.characters = data["characters"]
-            self.charlist = ', '.join(name for name in self.characters)
+            if len(self.characters) == 1:
+                self.charlist = self.characters[0]
+            else:
+                self.charlist = ', '.join(name for name in self.characters)
             return True
         else:
             return False
