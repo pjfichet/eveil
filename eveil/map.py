@@ -22,10 +22,10 @@ class Map():
         return room
 
     def new_link(self, source, target):
-        # First, link is a simple list
+        # First, our link is a simple list
         link =  [source, target]
         if link in self.linklists:
-            print("there is yet a link from {} to {}."
+            self.game.log("There is yet a link from room {} to room {}.")
                 .format(source.shortdesc, target.shortdesc)
                 )
             return
@@ -162,6 +162,5 @@ class Room():
             if word in link.target.shortdesc:
                 link.move(character)
                 return
-        print(word)
         character.player.client.send("<p><code>Aller où?</code></p>")
 
