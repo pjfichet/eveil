@@ -64,7 +64,7 @@ class Character():
         self.game.log("Character {} enters the game in room {}."
                 .format(self.name, self.room.id)
                 )
-        self.room_send_longdesc(self)
+        self.room.send_longdesc(self)
         self.room.add_character(self)
         self.room.send_all("<p>{} arrive ici.</p>")
 
