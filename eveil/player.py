@@ -173,6 +173,8 @@ class Player():
 
     def set_password(self, old, new):
         """ Player command to change his password. """
+        old = crypt.crypt(old, self.password)
+        new = crypt.crypt(new)
         if self.password != old:
             self.client.send("<p>Le mot de passe entré ne correspond pas au vôtre.</p>")
         else: 
