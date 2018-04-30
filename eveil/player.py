@@ -106,6 +106,7 @@ class Player():
 
     def create(self, pseudo, password, confirm, email):
         """ Create an account for a new player. """
+        pseudo = pseudo.capitalize()
         if self.game.db.get("player:" + pseudo):
             self.client.send("Le pseudonyme {} est déjà utilisé.".format(pseudo))
             self.client.close()
@@ -129,6 +130,7 @@ class Player():
 
     def login(self, pseudo, password):
         """ Log in an existing player, checking pseudo and password."""
+        pseudo = pseudo.capitalize()
         if self._get(pseudo):
             password = crypt.crypt(password, self.password)
             if self.password == password:
@@ -158,6 +160,7 @@ class Player():
 
     def set_pseudo(self, pseudo):
         """ Player command to change his pseudo. """
+        pseudo = pseudo.capitalize()
         if self.game.db.get("player:" + pseudo):
             # someone uses that pseudo.
             self.client.send("Le pseudonyme {} est déjà utilisé.".format(self.pseudo))

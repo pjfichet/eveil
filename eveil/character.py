@@ -60,6 +60,7 @@ class Character():
         and if the player owns that character. In all case,
         put the player in game, be it in chargen."""
         if self.player.characters and name is not None:
+            name = name.capitalize()
             if name in self.player.characters:
                 self.name = name
                 self._get()
@@ -72,8 +73,9 @@ class Character():
         self.room.send_longdesc(self)
 
     def set_name(self, name):
-        """ Define the name of the character. This is also
-        when the character is actually recorded in the database."""
+        """ Name or rename a character. This is also when the character is
+        actually recorded in the database."""
+        name = name.capitalize()
         if self.name:
             self.name = name
             self._put()
