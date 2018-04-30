@@ -191,11 +191,17 @@ class Player():
         self._put()
         self.client.send("<p>Votre email est {}.</p>".format(self.email))
 
-    def set_character(self, text=None):
+    def set_character(self, name=None):
         """ Instanciate a character object for the player. """
         self.state = State.CHARGEN
         self.character = Character(self.game, self)
-        self.character.create(text)
+        # check if the player owns a character with that name
+        if self.characters and name is not None:
+            name = name.capitalize()
+            if name in self.characters:
+                self.character.name = name
+        # in all case, put the character in game:
+        self.character.create()
 
     def record_character(self):
         """ When a character is actually created, this method must

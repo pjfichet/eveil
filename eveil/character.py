@@ -55,22 +55,18 @@ class Character():
         self._put()
         self.player.record_character()
 
-    def create(self, name=None):
-        """ Check if a given name match with a character name,
-        and if the player owns that character. In all case,
-        put the player in game, be it in chargen."""
-        if self.player.characters and name is not None:
-            name = name.capitalize()
-            if name in self.player.characters:
-                self.name = name
-                self._get()
-                self.game.characters.append(self)
-                self.game.log(
-                    "Character {} enters the game in room {}.".format(self.name, self.room.id)
-                    )
-        # put the character in game.
+    def create(self):
+        """ If the character has data in the db, fetch them,
+        and in all case, put the character in game."""
+        if self.name is not None:
+            self._get()
+            self.game.characters.append(self)
+        self.game.log("Character {} enters the game in room {}."
+                .format(self.name, self.room.id)
+                )
+        self.room_send_longdesc(self)
         self.room.add_character(self)
-        self.room.send_longdesc(self)
+        self.room.send_all("<p>{} arrive ici.</p>")
 
     def set_name(self, name):
         """ Name or rename a character. This is also when the character is
