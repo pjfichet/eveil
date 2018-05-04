@@ -1,6 +1,11 @@
 * List of commands
 For each status or right, a list of commands should be available.
 
+* State
+when the character is in game (outside of chargen), the player
+state should be set accordingly. Or find a better way to manage
+rights.
+
 * Pronouns
 A class, a function, or an array, could define all the pronouns for a
 given gender.
