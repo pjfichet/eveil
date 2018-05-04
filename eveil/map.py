@@ -25,7 +25,7 @@ class Map():
         # First, our link is a simple list
         link =  [source, target]
         if link in self.linklists:
-            self.game.log("There is yet a link from room {} to room {}.")
+            self.game.log("There is yet a link from room {} to room {}."
                 .format(source.shortdesc, target.shortdesc)
                 )
             return
