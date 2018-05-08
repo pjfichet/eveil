@@ -1,7 +1,6 @@
-
+from .grammar import *
 
 class Character():
-    MALE, FEMALE = range(2)
     SKILLS = ["artisan", "chasseur", "druide", "guerrier", "barde"]
     TALENTS = ["agileté", "constitution", "force", "intelligence", "sagesse"]
 
@@ -78,22 +77,24 @@ class Character():
         else:
             self.name = name
             self._new()
-        if self.gender == Character.FEMALE:
-            self.player.client.send("<p>Elle se nomme {}.</p>".format(self.name))
-        else:
-            self.player.client.send("<p>Il se nomme {}.</p>".format(self.name))
+        self.player.client.send("<p>{} se nomme {}.</p>".format(
+            pronoun("il", SINGULAR, self.gender, True),
+            self.name
+            ))
         self.game.log("Character {} created.".format(self.name))
 
     def set_gender(self, gender):
         """ Define the gender of the character """
-        if gender == "homme":
-            self.gender = Character.MALE
-            self.player.client.send("<p>Il est un homme.</p>")
-        else:
-            self.gender = Character.FEMALE
-            self.player.client.send("<p>Elle est une femme.</p>")
+        if gender not in GENDERS:
+            # parser.py takes care of this yet.
+            return
+        self.gender = GENDERS.index(gender)
         if self.name:
             self._put()
+        if self.gender == MASCULINE:
+            self.player.client.send("<p>Il est un homme.</p>")
+        else:
+            self.player.client.send("<p>Elle est une femme.</p>")
 
     def set_shortdesc(self, shortdesc):
         """ Define the short description of the character."""
