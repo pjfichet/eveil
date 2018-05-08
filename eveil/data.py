@@ -1,6 +1,18 @@
 import shelve
 from datetime import datetime
 
+# KEY               DATA
+# gametime          {minute, hour, day, month, season, (weathera, weatherb)}
+# init              datatime
+#
+# player            maxid
+# player:pseudo     id
+# player:id         {pseudo, password, email, creation_dt, login_dt, logout_dt, [characters]}
+# 
+# character         maxid
+# character:name    id
+# character:id      name, lastname, gender, roomid, longdesc, shortdesc, skill, talent}
+
 
 class Data:
     """
