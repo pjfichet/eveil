@@ -1,8 +1,0 @@
-
-player			maxid
-player:pseudo	id
-player:id		{pseudo, passwd, email, creation, login, logout, [characters]}
-
-character		maxid
-character:name	id
-character:id	{name, lastname, gender, room, longdesc, shortdesc, [stats], state}
