@@ -65,7 +65,8 @@ class Character():
                 )
         self.room.send_longdesc(self)
         self.room.add_character(self)
-        self.room.send_all("<p>{} arrive ici.</p>")
+        if self.name is not None:
+            self.room.send_all("<p>{} arrive ici.</p>".format(self.name))
 
     def set_name(self, name):
         """ Name or rename a character. This is also when the character is
