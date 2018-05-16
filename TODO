@@ -1,5 +1,10 @@
+
 * List of commands
 For each status or right, a list of commands should be available.
+
+* Usage
+The short usage could be more verbose. That means implementing
+another way to define the usage than the actual decorator.
 
 * State
 when the character is in game (outside of chargen), the player
@@ -7,5 +12,16 @@ state should be set accordingly. Or find a better way to manage
 rights.
 
 * Pronouns
-A class, a function, or an array, could define all the pronouns for a
-given gender.
+The file grammar.py implements a way to agree pronouns in gender and
+number. Use it.
+
+* Threading
+There are actually two threads: one for the game, another for the
+websocket server. It might not be the best way to implement this.
+- While the websocket send datas to the game through a queue, the game
+directly use the websocket instance: should it use another queue?
+- Another thread dedicated to to flush write the data in the database,
+or flush the database on the disk could make sense.
+- Maybe would it be better to put all the game ticks (set up in game time,
+flush the database on the disk, etc.), in another thread, and save the
+main game loop for handling the user messages.
