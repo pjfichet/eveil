@@ -42,7 +42,7 @@ with `make start`. That will create a database in the file `data.db`.
 
 ## License
 
-The game is distributed under the ISC license, except for those two third
+The game is distributed under the ISC license, except for these two third
 party files, distributed under the MIT License:
 - `eveil/template.py`, which is a modification of templite.py by Ned Batchelder,
 distributed as part of the _500 lines_ book,
