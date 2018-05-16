@@ -1,4 +1,3 @@
-from eveil.thing import Thing
 from eveil.template import Template
 
 # Character generation rooms
