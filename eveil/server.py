@@ -1,5 +1,5 @@
 import threading
-from SimpleWebSocketServer import WebSocket, SimpleWebSocketServer
+from .SimpleWebSocketServer import WebSocket, SimpleWebSocketServer
 
 
 class Connection(WebSocket):
