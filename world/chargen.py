@@ -16,30 +16,27 @@ un nom, un genre, une apparence... Et se reconnaît vivante.</p>
 <ul>
 
 {% if character.name %}
-    <li>L'ombre se reconnaît un nom: {{character.name}}</li>
+    <li>L'ombre se reconnaît un nom: {{character.name}}.</li>
 {% else %}
     <li>Pour nommer votre personnage, entrez
     <code>nom <i>nom_choisi</i></code>.</li>
 {% endif %}
 
 {% if character.gender %}
-    <li>
     {% if character.name %}
-        {{character.name}}
+        <li>{{character.name}}
     {% else %}
-        L'ombre
+        <li>L'ombre
     {% endif %}
-    reconnaît qu'{{character.pronoun('il')}}
-    est {{character.pronoun('un')}}
-    {{character.GENDERS[character.gender]}}.
-    </li>
+    reconnaît qu'{{character.grammar.il}} est
+    {{character.grammar.un}} {{character.grammar.homme}}.</li>
 {% else %}
     <li>Pour choisir son genre entrez:
-    <code>genre [homme|femme]</code>.</li>
+    <code>genre [masculin|féminin]</code>.</li>
 {% endif %}
 
 {% if character.shortdesc %}
-    <li>{{character.pronoun('il')}} apparaît ainsi:
+    <li>{{character.grammar.il|capitalize}} apparaît ainsi:
     {{character.shortdesc}}</li>
 {% else %}
     <li>Pour définir son apparence, entrez:
@@ -65,7 +62,7 @@ un nom, un genre, une apparence... Et se reconnaît vivante.</p>
     </p>
 {% endif %}
 {% endif %}
-""", {'capitalize': str.capitalize,})
+""", {'capitalize': str.capitalize})
 
 # We create an empty second room to link it with the first
 room2 = game.map.new_room()
