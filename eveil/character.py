@@ -15,7 +15,7 @@
 
 from .grammar import Grammar
 
-class Character(Grammar):
+class Character():
     SKILLS = ["artisan", "chasseur", "druide", "guerrier", "barde"]
     TALENTS = ["agileté", "constitution", "force", "intelligence", "sagesse"]
 
@@ -33,6 +33,10 @@ class Character(Grammar):
         self.talent = None
         self.room = self.game.map.rooms[0]
         self.roomid = self.room.id
+        self.grammar = Grammar(
+                Grammar.NUMBERS.index("singulier"),
+                Grammar.GENDERS.index("neutre"),
+                )
 
     def _get(self):
         """ With the character name, extract datas from the db."""
@@ -47,6 +51,7 @@ class Character(Grammar):
             self.shortdesc = data["shortdesc"]
             self.skill = data["skill"]
             self.talent = data["talent"]
+            self.grammar.agree(Grammar.NUMBERS.index("singulier"), self.gender)
             return True
         else:
             return  False
@@ -94,7 +99,7 @@ class Character(Grammar):
             self.name = name
             self._new()
         self.player.client.send("<p>{} se nomme {}.</p>".format(
-            pronoun("il", SINGULAR, self.gender, True),
+            self.pronoun("il", True),
             self.name
             ))
         self.game.log("Character {} created.".format(self.name))
@@ -105,12 +110,18 @@ class Character(Grammar):
             # parser.py takes care of this yet.
             return
         self.gender = Grammar.GENDERS.index(gender)
+        self.grammar.agree(Grammar.NUMBERS.index("singulier"), self.gender)
         if self.name:
+            self.game.log("{} is a {}.".format(
+                self.name,
+                self.gender
+                ))
             self._put()
-        if self.gender == Grammar.MASCULINE:
-            self.player.client.send("<p>Il est un homme.</p>")
-        else:
-            self.player.client.send("<p>Elle est une femme.</p>")
+        self.player.client.send("<p>{} est {} {}.</p>".format(
+                self.grammar.il.capitalize(),
+                self.grammar.un,
+                self.grammar.homme
+                ))
 
     def set_shortdesc(self, shortdesc):
         """ Define the short description of the character."""
@@ -128,7 +139,9 @@ class Character(Grammar):
         """ Define the skill of the character. """
         self.skill = Character.SKILLS.index(skill)
         self.player.client.send(
-                "<p>C'est un {}.".format(Character.SKILLS[self.skill])
+                "<p>C'est {} {}.".format(
+                    self.grammar.un,
+                    Character.SKILLS[self.skill])
                 )
         self._put()
 
@@ -136,6 +149,8 @@ class Character(Grammar):
         """ Define the talent of the character. """
         self.talent = Character.TALENTS.index(talent)
         self.player.client.send(
-                "<p>Il est doté d'une {} étonnante.".format(Character.TALENTS[self.talent])
+                "<p>{} est doté d'une {} étonnante.".format(
+                    self.grammar.il.capitalize(),
+                    Character.TALENTS[self.talent])
                 )
         self._put()

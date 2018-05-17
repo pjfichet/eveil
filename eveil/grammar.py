@@ -14,34 +14,54 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 class Grammar():
-    """Meta class to agree heritating objects in number and gender."""
-    GENDERS = ["homme", "femme"]
-    MASCULINE = 0
-    FEMININE = 1
-    SINGULAR = 0
-    PLURAL = 1
-    PRONOUNS = {
-        # pronoun: {
-        #   [singular masculine, singular feminine],
-        #   [plural masculine, plural feminine]
-        # }
-        'ce': [['ce', 'cette'], ['ces', 'ces']],
-        'du': [['du', 'de la'], ['des', 'des']],
-        'il': [['il', 'elle'], ['ils', 'elles']],
-        'son': [['son', 'sa'], ['leur', 'leur']],
-        'un': [['un', 'une'], ['des', 'des' ]],
-    }
-
-
-    def __init__(self):
-        self.gender = None
-        self.number = None
-
-    def pronoun(self, pronoun, capitalize=False):
-        """ Shortcut to agree pronouns in number and gender. """
-        if capitalize:
-        	return Grammar.PRONOUNS[pronoun][self.number][self.gender].capitalize()
-        else:
-        	return Grammar.PRONOUNS[pronoun][self.number][self.gender]
-
+    """Class to agree objects in number and gender."""
     
+    GENDERS = ["neutre", "masculin", "féminin"]
+    NUMBERS = ["singulier", "pluriel"]
+    WORDS = {
+        "neutre": {
+            "pronom_sujet": "il",
+            "pronom_cod": "le",
+            "pronom_coi": "lui",
+            "pronom_disjoint": "se",
+            "article": "un",
+            "determinant_possessif": "son",
+            "mot_homme": "homme",
+            },
+        "masculin": {
+            "pronom_sujet": "il",
+            "pronom_cod": "le",
+            "pronom_coi": "lui",
+            "pronom_disjoint": "se",
+            "article": "un",
+            "determinant_possessif": "son",
+            "mot_homme": "homme",
+            },
+        "feminin": {
+            "pronom_sujet": "elle",
+            "pronom_cod": "la",
+            "pronom_coi": "lui",
+            "pronom_disjoint": "se",
+            "article": "une",
+            "determinant_possessif": "sa",
+            "mot_homme": "femme",
+            },
+    }
+ 
+    def __init__(self, number_id=0, gender_id=0):
+        self.agree(number_id, gender_id)
+
+    def agree(self, number_id, gender_id):
+        self.number = Grammar.NUMBERS[number_id]
+        self.gender = Grammar.GENDERS[gender_id]
+        self.il = self._get_word("pronom_sujet")
+        self.le = self._get_word("pronom_cod")
+        self.lui = self._get_word("pronom_coi")
+        self.se = self._get_word("pronom_disjoint")
+        self.un = self._get_word("article")
+        self.son = self._get_word("determinant_possessif")
+        self.homme = self._get_word("mot_homme")
+
+    def _get_word(self, word):
+        """ Shortcut to fetch a word in the WORDS dictionary."""
+        return Grammar.WORDS[self.gender][word]

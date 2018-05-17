@@ -174,9 +174,17 @@ class Parser():
     def _go(self, player, arg):
         player.character.room.move(player.character, arg[1])
 
+    @Cmd(State.CHARACTER, "voir", "voir [objet]", "(\w+)?\s*$")
+    def _look(self, player, arg):
+        if arg[1]:
+            # TODO
+            pass
+        else:
+            player.character.room.send_longdesc(player.character)
+
     ### Chargen commands ###
    
-    @Cmd(State.CHARGEN, "genre", "homme|femme", "(homme|femme)\s*$")
+    @Cmd(State.CHARGEN, "genre", "masculin|féminin", "(masculin|féminin)\s*$")
     def _gender(self, player, arg):
         player.character.set_gender(arg[0])
 
