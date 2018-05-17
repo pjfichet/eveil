@@ -13,9 +13,9 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-from .grammar import *
+from .grammar import Grammar
 
-class Character():
+class Character(Grammar):
     SKILLS = ["artisan", "chasseur", "druide", "guerrier", "barde"]
     TALENTS = ["agileté", "constitution", "force", "intelligence", "sagesse"]
 
@@ -101,13 +101,13 @@ class Character():
 
     def set_gender(self, gender):
         """ Define the gender of the character """
-        if gender not in GENDERS:
+        if gender not in Grammar.GENDERS:
             # parser.py takes care of this yet.
             return
-        self.gender = GENDERS.index(gender)
+        self.gender = Grammar.GENDERS.index(gender)
         if self.name:
             self._put()
-        if self.gender == MASCULINE:
+        if self.gender == Grammar.MASCULINE:
             self.player.client.send("<p>Il est un homme.</p>")
         else:
             self.player.client.send("<p>Elle est une femme.</p>")
