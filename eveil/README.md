@@ -18,24 +18,24 @@ setups the server to be started in a dedicated thread, using the Thread module.
 ## __init__.py
 
 It starts the game. It creates a server instance and a game instance. It
-creates a queue used to send datas from the server to the game.it loads
+creates a queue used to send datas from the server to the game. It loads
 each python script contained in the _world/_ directory. It starts the
 server in a dedicated thread, and eventually starts the game.
 
 ## game.py
 
-The main game loop. It initializes the database, the map, the game time,
-the parser, and listens for messages comming from the server through the
-queue: it deals with connection and disconnection by creating or recording
-a player instance, and sends received messages to the parser. It also
-handles properly the shutdown.
+The main game loop. At startup, it initializes the database, the map,
+the game time, the parser. Then, it listens for messages comming from
+the server through the queue: it deals with connection and disconnection
+by creating or recording a player instance, and sends received messages
+to the parser. It also handles properly the shutdown.
 
 ## data.py
 
 The connection to the database. It uses the standart shelve module as
 database, which in turns will use gdbm if available. It implements a
-reddis like database. Keys are of the form `key:id`, with `id` starting at
-1. The last `id` of a given key is stored in the key `key`. Dictionaries
+reddis like database. Keys are of the form `key:id`, with `id` starting
+at 1. The last `id` of a given key is stored in the key `key`. Dictionaries
 are used to store various data on a given key. The main  methods publicly
 exposed are:
 - Data.put(key, data): record `data` in key `key`. It should only be
