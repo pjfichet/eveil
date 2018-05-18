@@ -38,9 +38,7 @@ reddis like database. Keys are of the form `key:id`, with `id` starting
 at 1. The last `id` of a given key is stored in the key `key`. Dictionaries
 are used to store various data on a given key. The main  methods publicly
 exposed are:
-- Data.put(key, data): record `data` in key `key`. It should only be
-used to update an entry, to add a new entry to the database, Data.add
-should be used instead.
+- Data.put(key, data): record `data` in key `key`.
 - Data.get(key): gets the data from key `key`. Returns false if there's
 no such key in the database.
 - Data.rem(key): removes (delete) an entry from the database.
