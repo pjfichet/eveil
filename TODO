@@ -11,9 +11,14 @@ when the character is in game (outside of chargen), the player
 state should be set accordingly. Or find a better way to manage
 rights.
 
-* Pronouns
-The file grammar.py implements a way to agree pronouns in gender and
-number. Use it.
+* Containers
+There are various containers: each room is one, each container item
+is one, the player has an inventory and worn things. Should they
+all use the same container object?
+
+* Remember list
+Character should not recognize others characters by their name unless they
+remember them, but only see their shortdesc. Implement a remember list.
 
 * Threading
 There are actually two threads: one for the game, another for the
@@ -25,3 +30,4 @@ or flush the database on the disk could make sense.
 - Maybe would it be better to put all the game ticks (set up in game time,
 flush the database on the disk, etc.), in another thread, and save the
 main game loop for handling the user messages.
+- Maybe that the asyncio module should be preferred over threads.
