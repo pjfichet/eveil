@@ -15,6 +15,8 @@ rights.
 There are various containers: each room is one, each container item
 is one, the player has an inventory and worn things. Should they
 all use the same container object?
+If so, should we implement a component entity system to avoid code
+duplication, and use it for both rooms and characters?
 
 * Remember list
 Character should not recognize others characters by their name unless they
