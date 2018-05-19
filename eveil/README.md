@@ -129,7 +129,8 @@ link_2_1.dynadesc = "leaving the second room"
 
 # item.py
 
-A set of classes used to define the items in game. It uses a kind of
-Entity-Component approach: the Item class is only a support for various
-attributes. Each attribute is defined as an independant class. There are,
-for example, an attribute value, quality, wearable, etc.
+Two classes used to define the items in game and their properties. The
+Container class defines a container, and keeps track of the items it
+contains. The Item class defines an item. Its properties are recorded
+in a dictionary.
+
