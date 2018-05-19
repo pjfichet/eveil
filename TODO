@@ -25,3 +25,7 @@ flush the database on the disk, etc.), in another thread, and save the
 main game loop for handling the user messages.
 - Maybe that the asyncio module should be preferred over threads.
 
+* Reboot
+The game should be able to reboot without disconnecting each user. Ie, it
+should be possible to shutdown and restart the game without stopping the
+server.
