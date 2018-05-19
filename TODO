@@ -1,9 +1,7 @@
 
-* List of commands
-For each status or right, a list of commands should be available.
-
-* Usage
-The short usage could be more verbose. That means implementing
+* Document ingame commands
+- For each status or right, a list of commands should be available.
+- The short usage could be more verbose. That means implementing
 another way to define the usage than the actual decorator.
 
 * State
@@ -26,3 +24,4 @@ or flush the database on the disk could make sense.
 flush the database on the disk, etc.), in another thread, and save the
 main game loop for handling the user messages.
 - Maybe that the asyncio module should be preferred over threads.
+
