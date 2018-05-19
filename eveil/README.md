@@ -134,3 +134,22 @@ Container class defines a container, and keeps track of the items it
 contains. The Item class defines an item. Its properties are recorded
 in a dictionary.
 
+# time.py
+
+Define the ingame time. At a given interval, it increments the game
+minutes, and, if it is time to do so, it increments the game hour,
+day, month and season.
+
+It also randomly chooses a weather each day, using a markov chain
+algorythm: the probability of the current weather depends on the weather
+of the past few days. The common weather of each month is defined
+as a chain of letters, where each letter represents the weather of a
+day. Based on that chain, a dictionnary is built to list the possible
+weather considering the weather of the past two days. Eventually, a
+method called each ingame day, uses that dictionary to randomly choose
+the current weather amongst the possible ones. As a result, there's one
+weather per ingame day, and though random, the weather of each ingame
+month should approximate the real world weather.
+
+Real world weather data can be found online, and used to create the
+monthly weather chains.
