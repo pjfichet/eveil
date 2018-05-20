@@ -4,78 +4,71 @@ from eveil.template import Template
 
 # We create the first room 
 room1 = game.map.new_room()
-room1.shortdesc = "le gouffre"
+room1.shortdesc = "la création du personnage"
 room1.longdesc = Template("""
-<h3>{{room.shortdesc|capitalize}}</h3>
-<p>Au fin fond du gouffre, le cœur sombre de la terre n'est peuplé que
-d'ombres dormantes. Du profond de leur sommeil, les ombres sont habitées
-d'une rumeur: Il est dit que c'est du fin fond du gouffre, que naissent
-les âmes. Parfois, une ombre, s'éveille au son de
-cet appel. Et celle qui n'était qu'ombre parmis les ombres, se reconnaît
-un nom, un genre, une apparence... Et se reconnaît vivante.</p>
+<p>Plusieurs paramètres définissent un personnage: son nom, son genre,
+son apparence et sa description. Par défaut, les autres personnages ne
+voient pas le nom du vôtre, ils ne voient que son <i>apparence</i>.
+L'<i>apparence</i> est donc une courte description physique, qui ne
+doit comporter aucune mention du caractère ni des vêtements. La
+<i>description</i> est celle qui est communiquée lorsque l'on
+<code>regarde</code> explicitement votre personnage. Vous pouvez définir
+nom, genre, apparence et description avec les commandes suivantes:</p>
 <ul>
 
 {% if character.name %}
-    <li>L'ombre se reconnaît un nom: {{character.name}}.</li>
+    <li><code>nom <i>{{character.name}}</i></code></li>
 {% else %}
-    <li>Pour nommer votre personnage, entrez
-    <code>nom <i>nom_choisi</i></code>.</li>
+    <li><code>nom <i>nom_choisi</i></code></li>
 {% endif %}
 
 {% if character.gender %}
-    {% if character.name %}
-        <li>{{character.name}}
-    {% else %}
-        <li>L'ombre
-    {% endif %}
-    reconnaît qu'{{character.grammar.il}} est
-    {{character.grammar.un}} {{character.grammar.homme}}.</li>
+    <li><code>genre <i>{{character.gender}}</i></code></li>
 {% else %}
-    <li>Pour choisir son genre entrez:
-    <code>genre [masculin|féminin]</code>.</li>
+    <li><code>genre <i>[masculin|féminin]</i></code>.</li>
 {% endif %}
 
 {% if character.shortdesc %}
-    <li>{{character.grammar.il|capitalize}} apparaît ainsi:
-    {{character.shortdesc}}</li>
+    <li><code>apparence <i>{{character.shortdesc}}</i></code></li>
 {% else %}
-    <li>Pour définir son apparence, entrez:
-    <code>apparence <i>quelques mots</i></code>.</li>
+    <code>apparence <i>quelques mots</i></code></li>
 {% endif %}
 
 {% if character.longdesc %}
-    <li>{{character.longdesc}}</li>
+    <li><code>description <i>{{character.longdesc}}</i></code></li>
 {% else %}
-    <li>Pour définir sa longue description, entrez:
-    <code>description <i>Longue description...</i></code>.</li>
+    <code>description <i>Longue description...</i></code></li>
 {% endif %}
-
-<li>Entrez <code>voir</code> lorsque vous avez fini.</li>
 </ul>
-
-{% if character.name and character.gender %}
-{% if character.shortdesc and character.longdesc %}
-    <p>
-    {% for link in room.targets %}
-        En {{link.dynadesc}}, {{character.name}} peut rejoindre {{link.target.shortdesc}}.
-    {% endfor %}
-    </p>
-{% endif %}
-{% endif %}
+<p>Pour passer à l'étape suivante, entrez <code>aller vers
+<i>mot_clé</i></code>.</p>
 """, {'capitalize': str.capitalize})
 
 # We create an empty second room to link it with the first
 room2 = game.map.new_room()
-link1 = game.map.new_link(room1, room2)
-link1.dynadesc = "s'élevant vers la surface"
-link2 = game.map.new_link(room2, room1)
-link2.dynadesc = "descendant dans les profondeurs du gouffre"
+link1_2 = game.map.new_link(room1, room2)
+link1_2.dynadesc = "passant à la seconde étape"
+link2_1 = game.map.new_link(room2, room1)
+link2_1.dynadesc = "retournant à la première étape"
 
-# Second room description
-room2.shortdesc = "Une caverne"
+# Third room description
+room2.shortdesc = "la création des vêtements"
 room2.longdesc = Template("""
-<h3>{{room.shortdesc|capitalize}}</h3>
-<p>TODO</p>
-""", {"capitalize": str.capitalize})
-
-
+<p>{{character.name}} peut créer se propres vêtements avec
+la commande <code>item vêtement</créer></code>. Ensuite, la commande
+<code>def</code> permet de définir les propriétés d'un item. <code>def
+<i>item_à_définir</i></code> définit l'item sur lequel la commande
+<code>def</code> agira, et indique les propriétés de l'item. Ainsi,
+vous pouvez créer des vêtements avec les commandes suivantes:</p>
+<ul>
+    <li><code>item <i>vêtement</i></code></li>
+    <li><code>def vêtement</code></li>
+    <li><code>def apparence <i>courte description du vêtement tel que
+    vu dans l'inventaire</i></code></li>
+    <li><code>def description <i>longue description visible lorsqu'on
+    regarde le vêtement</i></code></li>
+    <li><code>def porté <i>description du vêtement vue lorsqu'il est
+    porté par un personnage.</i></code></li>
+</ul>
+<p>Enfin, {{character.name}} peut porter ses vêtements avec la commande
+<code>porter <i>mot_clé_de_l'item</i></code>.</p>""")
