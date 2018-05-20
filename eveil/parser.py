@@ -192,11 +192,11 @@ class Parser():
     def _name(self, player, arg):
         player.character.set_name(arg[0])
 
-    @Cmd(State.CHARGEN, "apparence", "courte description", "(\w[\s\w]+)\s*$")
+    @Cmd(State.CHARGEN, "apparence", "courte description", "(.+)\s*$")
     def _shortdesc(self, player, arg):
         player.character.set_shortdesc(arg[0])
 
-    @Cmd(State.CHARGEN, "description", "longue description", "(\w[\s\w]+)\s*$")
+    @Cmd(State.CHARGEN, "description", "longue description", "(.+)\s*$")
     def _longdesc(self, player, arg):
         player.character.set_longdesc(arg[0])
 
