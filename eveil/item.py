@@ -67,7 +67,7 @@ class Item():
         "longdesc" : "the long description.",
         "roomdesc" : "the description shown when the item is in a room.",
         "worndesc" : "the item is wearable, description when worn.",
-        "wornplace" : "where the item is worn: underwear, outerwear, head, cloak."
+        "wornplace" : "where the item is worn: underwear, outerwear, head, cloak.",
         "gender" : "the gender of the item: masculine or feminine.",
         "number" : "the number of the itme: singular or plural.",
         "volume" : "the inimal volume of the item (when folded), in dm3.",
