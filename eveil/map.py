@@ -19,6 +19,8 @@
 # Some other ideas come from:
 # https://triangleinequality.wordpress.com/2013/08/21/graphs-as-objects-in-python/
 
+from .template import Template
+from .item import Container
 
 class Map():
     """The Map class implements a graph: rooms are nodes, and links
@@ -118,6 +120,23 @@ class Door():
 
 
 class Room():
+    top_template = Template(
+    """<h3>{{room.shortdesc|capitalize}}</h3>""",
+    {'capitalize': str.capitalize}
+    )
+
+    bottom_template = Template(
+"""<ul>
+{% for item in room.container.items %}
+    <li>{{item.roomdesc}}</li>
+{% endfor %}
+</ul>
+<p>
+{% for link in room.targets %}
+    En {{link.dynadesc}}, {{character.name}} peut rejoindre {{link.target.shortdesc}}.
+{% endfor %}
+</p>""")
+
     def __init__(self, game):
         self.game = game
         self.id = None
@@ -127,6 +146,7 @@ class Room():
         self.sources = []
         self.targets = []
         self.characters = []
+        self.container = Container(self.game)
 
     def add_link(self, link):
         if self in link.rooms and link not in self.links:
@@ -162,7 +182,14 @@ class Room():
 
     def send_longdesc(self, character):
         """ Send the long description to a character."""
+        character.player.client.send(Room.top_template.render({
+                "room": self,
+                }))
         character.player.client.send(self.longdesc.render({
+                    "character": character,
+                    "room": self,
+                }))            
+        character.player.client.send(Room.bottom_template.render({
                     "character": character,
                     "room": self,
                 }))
