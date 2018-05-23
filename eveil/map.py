@@ -147,6 +147,7 @@ class Room():
         self.targets = []
         self.characters = []
         self.container = Container(self.game)
+        self.container.max_volume = 10000
 
     def add_link(self, link):
         if self in link.rooms and link not in self.links:
