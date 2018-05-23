@@ -36,10 +36,10 @@ to define and ponder the user interface.
 - From now, `item` lists the available attribute fields and their
 content. Remember that some attributes are read only.
 - `item <field_name> <text|value>` sets the content of a field, ie:
-..- `item apparence <item short description>`
-..- `item description <item long description>`
-..- `item posé <item description as seen on a room>`
-..- `item porté <item description as seen when worn>`
+  - `item apparence <item short description>`
+  - `item description <item long description>`
+  - `item posé <item description as seen on a room>`
+  - `item porté <item description as seen when worn>`
 - `item fabrique` creates the item, reset all fields.
 - `item <object_in_inventory>` delete the object, but fill the item fields
 with the attributes of the object, allowing one to edit the attributes
