@@ -47,9 +47,9 @@ account_menu = Template("""
     <p>Vous pouvez aussi modifier ici les données de votre compte avec
     les commandes suivantes:</p>
     <ul>
-        <li><code>pseudo: <i>nouveau_pseudonyme</i></code></li>
-        <li><code>secret: <i>ancien_mdp nouveau_mdp</i></code></li>
-        <li><code>email: <i>mail@exemple.net</i></code></li>
+        <li><code>pseudo <i>nouveau_pseudonyme</i></code></li>
+        <li><code>secret <i>ancien_mdp nouveau_mdp</i></code></li>
+        <li><code>email <i>mail@exemple.net</i></code></li>
     </ul>
 {% endif %}
 """, {'len': len})
