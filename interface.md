@@ -43,7 +43,7 @@ content. Remember that some attributes are read only.
 - `item fabrique` creates the item, reset all fields.
 - `item <object_in_inventory>` delete the object, but fill the item fields
 with the attributes of the object, allowing one to edit the attributes
-and create the object again. That could should probably be reserved to the
+and create the object again. That should probably be reserved to the
 initial creator of the object.
 
 ## admin commands
