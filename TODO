@@ -29,3 +29,10 @@ main game loop for handling the user messages.
 The game should be able to reboot without disconnecting each user. Ie, it
 should be possible to shutdown and restart the game without stopping the
 server.
+
+* Form Fields editor
+Some actions will require the user to fill form fields. A kind of form
+fields editor should be implemented in way that any kind of data can
+be processed. It is probably a character attribute, ie, each character
+can fill one form at once, and the form is kept in memory as long
+as the character requires it.
