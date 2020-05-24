@@ -22,7 +22,7 @@ from .parser import State
 
 account_menu = Template("""
 <h2>Éveil</h2>
-<h4>Bienvenue, {{player.pseudo}}.</h4>
+<h3>Bienvenue {{player.pseudo}},</h3>
 {%if player.state == State.ACCOUNT %}
     {% if player.characters %}
         {% if player.characters|len > 1 %}
@@ -59,7 +59,7 @@ account_menu = Template("""
 class Player():
     """ Represent the player. Some information about him is
     recorded in the database, as well as a list of its characters.
-    At login, he must provide those informations, and choose
+    At login, he must provide these informations, and choose
     a character to play.
     """
 

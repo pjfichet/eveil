@@ -18,7 +18,7 @@ from datetime import datetime
 
 # KEY               DATA
 # gametime          {minute, hour, day, month, season, (weathera, weatherb)}
-# init              datatime
+# init              datetime
 #
 # player            maxid
 # player:pseudo     id
@@ -26,7 +26,7 @@ from datetime import datetime
 # 
 # character         maxid
 # character:name    id
-# character:id      name, lastname, gender, roomid, longdesc, shortdesc, skill, talent}
+# character:id      {name, lastname, gender, roomid, longdesc, shortdesc, skill, talent}
 
 
 class Data:

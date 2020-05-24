@@ -69,7 +69,7 @@ class Item():
         "worndesc" : "the item is wearable, description when worn.",
         "wornplace" : "where the item is worn: underwear, outerwear, head, cloak.",
         "gender" : "the gender of the item: masculine or feminine.",
-        "number" : "the number of the itme: singular or plural.",
+        "number" : "the number of the item: singular or plural.",
         "volume" : "the inimal volume of the item (when folded), in dm3.",
         "inner_volume" : "the maximal volume of the container, in dm3.",
         "container" : "the item is a container, the id of the container.",
