@@ -37,7 +37,7 @@ class Grammar():
             "determinant_possessif": "son",
             "mot_homme": "homme",
             },
-        "feminin": {
+        "féminin": {
             "pronom_sujet": "elle",
             "pronom_cod": "la",
             "pronom_coi": "lui",

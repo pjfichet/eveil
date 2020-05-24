@@ -98,8 +98,7 @@ class Character():
         else:
             self.name = name
             self._new()
-        self.player.client.send("<p>{} se nomme {}.</p>".format(
-            self.pronoun("il", True),
+        self.player.client.send("<p>Votre personnage se nomme {}.</p>".format(
             self.name
             ))
         self.game.log("Character {} created.".format(self.name))
@@ -112,9 +111,10 @@ class Character():
         self.gender = Grammar.GENDERS.index(gender)
         self.grammar.agree(Grammar.NUMBERS.index("singulier"), self.gender)
         if self.name:
-            self.game.log("{} is a {}.".format(
+            self.game.log("{} is of gender {} ({}).".format(
                 self.name,
                 self.gender
+                self.grammar.gender
                 ))
             self._put()
         self.player.client.send("<p>{} est {} {}.</p>".format(
