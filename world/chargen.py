@@ -23,7 +23,7 @@ nom, genre, apparence et description avec les commandes suivantes:</p>
 {% endif %}
 
 {% if character.gender %}
-    <li><code>genre <i>{{character.gender}}</i></code></li>
+    <li><code>genre <i>{{character.grammar.homme}}</i></code></li>
 {% else %}
     <li><code>genre <i>[masculin|féminin]</i></code>.</li>
 {% endif %}
@@ -31,13 +31,13 @@ nom, genre, apparence et description avec les commandes suivantes:</p>
 {% if character.shortdesc %}
     <li><code>apparence <i>{{character.shortdesc}}</i></code></li>
 {% else %}
-    <code>apparence <i>quelques mots</i></code></li>
+    <li><code>apparence <i>quelques mots</i></code></li>
 {% endif %}
 
 {% if character.longdesc %}
     <li><code>description <i>{{character.longdesc}}</i></code></li>
 {% else %}
-    <code>description <i>Longue description...</i></code></li>
+    <li><code>description <i>Longue description...</i></code></li>
 {% endif %}
 </ul>
 <p>Pour passer à l'étape suivante, entrez <code>aller vers
