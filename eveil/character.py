@@ -113,7 +113,7 @@ class Character():
         if self.name:
             self.game.log("{} is of gender {} ({}).".format(
                 self.name,
-                self.gender
+                self.gender,
                 self.grammar.gender
                 ))
             self._put()
@@ -126,13 +126,16 @@ class Character():
     def set_shortdesc(self, shortdesc):
         """ Define the short description of the character."""
         self.shortdesc = shortdesc
-        self.player.client.send("</p>Apparence enregistrée.</p>")
+        self.player.client.send("</p>{} est {}.</p>".format(
+            self.name,
+            self.shortdesc
+            ))
         self._put()
 
     def set_longdesc(self, longdesc):
         """ Define the long description of the character."""
         self.longdesc = longdesc
-        self.player.client.send("<p>Description enregistrée.</p>")
+        self.player.client.send("<p>{}</p>".format(self.longdesc))
         self._put()
 
     def set_skill(self, skill):
