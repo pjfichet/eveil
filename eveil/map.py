@@ -131,14 +131,7 @@ class Room():
     En {{link.dynadesc}}, {{character.name}} peut rejoindre {{link.target.shortdesc}}.
 {% endfor %}
 </p>
-<p>
-{% for char in room.characters %}
-    {{char.shortdesc.capitalize}} est ici.
-{% endfor %}
-{% for item in room.container.items %}
-    {{item.roomdesc.capitalize}} est ici.
-{% endfor %}
-</p>
+<p>{{list_char}} {{list_item}}</p>
 """)
 
     def __init__(self, game):
@@ -193,10 +186,32 @@ class Room():
         character.player.client.send(self.longdesc.render({
                     "character": character,
                     "room": self,
-                }))            
+                }))
+        list_item = "" 
+        if self.container.items:
+            list_item = "Il y a aussi "
+            for i, item in self.container.items:
+                if i:
+                    list_item += ", " + item.roomdesc
+                else:
+                    list_item = item.roomdesc.capitalize()
+            list_item += "."
+        list_char = ""
+        if self.characters:
+            i = 0
+            for char in self.characters:
+                name = character.get_remember(char)
+                if i:
+                    list_char += ", " + name + " " + char.action
+                else:
+                    list_char = name + " " + char.action
+                    i = 1
+            list_char += "."
         character.player.client.send(Room.bottom_template.render({
                     "character": character,
                     "room": self,
+                    "list_item": list_item,
+                    "list_char": list_char,
                 }))
 
     def send_all(self, message):
