@@ -132,6 +132,11 @@ class Room():
 {% endfor %}
 </ul>
 <p>
+{% for char in room.characters %}
+    {{char.shortdesc.capitalize}} est ici.
+{% endfor %}
+</p>
+<p>
 {% for link in room.targets %}
     En {{link.dynadesc}}, {{character.name}} peut rejoindre {{link.target.shortdesc}}.
 {% endfor %}
