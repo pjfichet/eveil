@@ -183,8 +183,8 @@ class Parser():
             player.character.room.send_longdesc(player.character)
 
     @Cmd(State.CHARACTER, "connaissances", "", "^$")
-    def _get_remember(self, player, arg):
-        player.character.get_remember()
+    def _list_remember(self, player, arg):
+        player.character.list_remember()
 
     @Cmd(State.CHARACTER, "retenir", "mot_clé nom", "(\w+)\s+(\S*)\s*$")
     def _set_remember(self, player, arg):

@@ -185,7 +185,14 @@ class Character():
         self.player.client.send("""<p>Le mot clé <i>{}</i> ne correspond
             à personne ici présent.</p>""".format(keyword))
 
-    def get_remember(self):
+    def get_remember(self, character):
+        if character.name == self.name:
+            return character.name
+        if character.name in self.remember:
+            return self.remember[character.name]
+        return character.shortdesc
+
+    def list_remember(self):
         table = "<table><tr><th>nom</th><th>description</th></tr>"
         for name in self.remember:
             id_ = self.game.db.get("character:" + name)
