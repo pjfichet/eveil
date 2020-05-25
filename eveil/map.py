@@ -126,21 +126,20 @@ class Room():
     )
 
     bottom_template = Template(
-"""<ul>
-{% for item in room.container.items %}
-    <li>{{item.roomdesc}}</li>
+"""<p>
+{% for link in room.targets %}
+    En {{link.dynadesc}}, {{character.name}} peut rejoindre {{link.target.shortdesc}}.
 {% endfor %}
-</ul>
+</p>
 <p>
 {% for char in room.characters %}
     {{char.shortdesc.capitalize}} est ici.
 {% endfor %}
-</p>
-<p>
-{% for link in room.targets %}
-    En {{link.dynadesc}}, {{character.name}} peut rejoindre {{link.target.shortdesc}}.
+{% for item in room.container.items %}
+    {{item.roomdesc.capitalize}} est ici.
 {% endfor %}
-</p>""")
+</p>
+""")
 
     def __init__(self, game):
         self.game = game
