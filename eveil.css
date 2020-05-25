@@ -139,7 +139,7 @@ b {font-weight: bold;}
 /**********************************************************
 * Paragraphs layout
 **********************************************************/
-h2, h3, h4 {font-weight: bold;}
+h2, h3, h4, th {font-weight: bold;}
 h2 {margin-top: 3rem; margin-bottom: 1.5rem; text-align: center;}
 h3 {margin-top: 1.5rem; margin-bottom: 1.5rem;}
 h4 {margin-top: 1.5rem; margin-bottom: 0;}
@@ -158,6 +158,17 @@ ul > li:before {
 	width: 1rem;
 	margin-left: -1rem;
 }
+table {
+    overflow-x: auto;
+	width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem auto;
+    }
+
+th, td {
+    padding: .75rem;
+    text-align: left;
+    }
 /**********************************************************
 * COLORS handmade, WTFPL license.
 * BLACK: 272727
@@ -201,5 +212,8 @@ textarea {
 	border: 1px solid #DADADA;
 	padding: .5rem;
 	color: #626262;
+}
+th, td {
+	border-bottom: 1px solid #D3D3D3;
 }
 
