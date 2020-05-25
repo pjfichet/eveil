@@ -13,6 +13,11 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
+def apostrophe(article, letter):
+    if letter in ('a', 'e', 'i', 'o', 'u'):
+        article = article[:-1] + "'"
+    return article
+
 class Grammar():
     """Class to agree objects in number and gender."""
     
