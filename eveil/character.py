@@ -14,6 +14,7 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 from .grammar import Grammar
+from .grammar import apostrophe
 
 SHADOW = "l'ombre d'un personnage"
 
@@ -33,6 +34,7 @@ class Character():
         self.shortdesc = None
         self.skill = None
         self.talent = None
+        self.remember = {}
         self.room = self.game.map.rooms[0]
         self.roomid = self.room.id
         self.grammar = Grammar(
@@ -53,6 +55,7 @@ class Character():
             self.shortdesc = data["shortdesc"]
             self.skill = data["skill"]
             self.talent = data["talent"]
+            self.remember = data["remember"]
             self.grammar.agree(Grammar.NUMBERS.index("singulier"), self.gender)
             return True
         else:
@@ -66,7 +69,8 @@ class Character():
             {"name": self.name, "lastname": self.lastname,
             "gender": self.gender, "roomid": self.room.id, 
             "longdesc": self.longdesc, "shortdesc": self.shortdesc,
-            "skill": self.skill, "talent": self.talent
+            "skill": self.skill, "talent": self.talent,
+            "remember": self.remember
             })
 
     def _new(self):
@@ -159,3 +163,38 @@ class Character():
                     Character.TALENTS[self.talent])
                 )
         self._put()
+
+    def set_remember(self, keyword, string):
+        """Remembers/register a character name."""
+        keyword = keyword.replace('/', '')
+        for character in self.room.characters:
+            if character == self.name:
+                continue
+            if keyword in character.shortdesc:
+                self.remember[character.name] = string
+                self._put()
+                de = apostrophe("de", character.shortdesc[0])
+                self.player.client.send(
+                    "<p>{} se souviendra {}{} sous le nom «{}».</p>".format(
+                        self.name,
+                        de,
+                        character.shortdesc,
+                        string
+                    ))
+                return
+        self.player.client.send("""<p>Le mot clé <i>{}</i> ne correspond
+            à personne ici présent.</p>""".format(keyword))
+
+    def get_remember(self):
+        table = "<table><tr><th>nom</th><th>description</th></tr>"
+        for name in self.remember:
+            id_ = self.game.db.get("character:" + name)
+            if id_:
+                key = "character:" + str(id_)
+                data = self.game.db.get(key)
+                table += "<tr><td>{}</td><td>{}</td></tr>".format(
+                    self.remember[name],
+                    data["shortdesc"]
+                ) 
+        table += "</table>"
+        self.player.client.send(table)

@@ -182,6 +182,14 @@ class Parser():
         else:
             player.character.room.send_longdesc(player.character)
 
+    @Cmd(State.CHARACTER, "connaissances", "", "^$")
+    def _get_remember(self, player, arg):
+        player.character.get_remember()
+
+    @Cmd(State.CHARACTER, "retenir", "mot_clé nom", "(\w+)\s+(\S*)\s*$")
+    def _set_remember(self, player, arg):
+        player.character.set_remember(arg[1], arg[2])
+
     ### Chargen commands ###
    
     @Cmd(State.CHARGEN, "genre", "masculin|féminin", "(masculin|féminin)\s*$")
