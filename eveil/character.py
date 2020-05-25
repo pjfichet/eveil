@@ -15,6 +15,8 @@
 
 from .grammar import Grammar
 
+SHADOW = "l'ombre d'un personnage"
+
 class Character():
     SKILLS = ["artisan", "chasseur", "druide", "guerrier", "barde"]
     TALENTS = ["agileté", "constitution", "force", "intelligence", "sagesse"]
@@ -24,7 +26,7 @@ class Character():
         self.player = player
         self.id = None
         self.key = None
-        self.name = None
+        self.name = SHADOW
         self.lastname = None
         self.gender = None
         self.longdesc = None
@@ -77,7 +79,7 @@ class Character():
     def create(self):
         """ If the character has data in the db, fetch them,
         and in all case, put the character in game."""
-        if self.name is not None:
+        if self.name is not SHADOW:
             self._get()
             self.game.characters.append(self)
         self.game.log("Character {} enters the game in room {}."
@@ -85,14 +87,14 @@ class Character():
                 )
         self.room.send_longdesc(self)
         self.room.add_character(self)
-        if self.name is not None:
-            self.room.send_all("<p>{} arrive ici.</p>".format(self.name))
+        #if self.name is not SHADOW:
+        self.room.send_all("<p>{} arrive ici.</p>".format(self.name.capitalize()))
 
     def set_name(self, name):
         """ Name or rename a character. This is also when the character is
         actually recorded in the database."""
         name = name.capitalize()
-        if self.name:
+        if self.name is not SHADOW:
             self.name = name
             self._put()
         else:
@@ -110,7 +112,7 @@ class Character():
             return
         self.gender = Grammar.GENDERS.index(gender)
         self.grammar.agree(Grammar.NUMBERS.index("singulier"), self.gender)
-        if self.name:
+        if self.name is not SHADOW:
             self.game.log("{} is of gender {} ({}).".format(
                 self.name,
                 self.gender,

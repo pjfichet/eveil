@@ -1,4 +1,5 @@
 from eveil.template import Template
+from eveil.character import SHADOW
 
 # Character generation rooms
 
@@ -16,7 +17,7 @@ doit comporter aucune mention du caractère ni des vêtements. La
 nom, genre, apparence et description avec les commandes suivantes:</p>
 <ul>
 
-{% if character.name %}
+{% if character.name != shadow %}
     <li><code>nom <i>{{character.name}}</i></code></li>
 {% else %}
     <li><code>nom <i>nom_choisi</i></code></li>
@@ -42,7 +43,7 @@ nom, genre, apparence et description avec les commandes suivantes:</p>
 </ul>
 <p>Pour passer à l'étape suivante, entrez <code>aller vers
 <i>mot_clé</i></code>.</p>
-""", {'capitalize': str.capitalize})
+""", {'capitalize': str.capitalize, 'shadow': SHADOW})
 
 # We create an empty second room to link it with the first
 room2 = game.map.new_room()
@@ -54,7 +55,7 @@ link2_1.dynadesc = "retournant à la première étape"
 # Third room description
 room2.shortdesc = "la création des vêtements"
 room2.longdesc = Template("""
-<p>{{character.name}} peut créer se propres vêtements avec
+<p>{{character.name.capitalize}} peut créer se propres vêtements avec
 la commande <code>item vêtement</créer></code>. Ensuite, la commande
 <code>def</code> permet de définir les propriétés d'un item. <code>def
 <i>item_à_définir</i></code> définit l'item sur lequel la commande
