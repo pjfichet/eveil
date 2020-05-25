@@ -17,6 +17,7 @@ from .grammar import Grammar
 from .grammar import apostrophe
 
 SHADOW = "l'ombre d'un personnage"
+ACTION = "est ici"
 
 class Character():
     SKILLS = ["artisan", "chasseur", "druide", "guerrier", "barde"]
@@ -34,6 +35,7 @@ class Character():
         self.shortdesc = None
         self.skill = None
         self.talent = None
+        self.action = ACTION
         self.remember = {}
         self.room = self.game.map.rooms[0]
         self.roomid = self.room.id
@@ -205,3 +207,11 @@ class Character():
                 ) 
         table += "</table>"
         self.player.client.send(table)
+
+    def set_action(self, action):
+        if action[-1] == '.':
+            action = action[:-1]
+        self.action = action
+        self.room.send_all("<p>{} {}.</p>".format(self.name,
+            self.action))
+

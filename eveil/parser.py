@@ -190,6 +190,10 @@ class Parser():
     def _set_remember(self, player, arg):
         player.character.set_remember(arg[1], arg[2])
 
+    @Cmd(State.CHARACTER, "action", "courte action", "(.+)\s*$")
+    def _set_action(self, player, arg):
+        player.character.set_action(arg[0])
+
     ### Chargen commands ###
    
     @Cmd(State.CHARGEN, "genre", "masculin|féminin", "(masculin|féminin)\s*$")
