@@ -20,7 +20,7 @@ from .expose import expose_all
 class State():
     """ Player sates defining commands availability """
     length = 8
-    LOGIN, INGAME, ACCOUNT, CHARACTER, CHARGEN, IC, OOC, ADMIN = range(8)
+    LOGIN, INGAME, ACCOUNT, CHARACTER, CHARGEN, IC, OOC, ADMIN = range(length)
 
 class Cmd():
     """ This class implements a decorator used to:

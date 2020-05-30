@@ -15,9 +15,7 @@
 
 from .grammar import Grammar
 from .grammar import apostrophe
-from datetime import datetime, timedelta
-
-INTERVAL = timedelta(seconds=10)
+from .delay import Queue
 
 SHADOW = "l'ombre d'un personnage"
 ACTION = "est ici"
@@ -40,8 +38,7 @@ class Character():
         self.talent = None
         self.action = ACTION
         self.remember = {}
-        self.queue_list = [] # queued commands
-        self.next_tick = datetime.now() + INTERVAL
+        self.queue = Queue(10) # 10 second interval
         self.room = self.game.map.rooms[0]
         self.roomid = self.room.id
         self.grammar = Grammar(
@@ -221,12 +218,4 @@ class Character():
             self.action))
 
     def tick(self, now):
-        if now >= self.next_tick:
-            self.next_tick = self.next_tick + INTERVAL
-            if self.queue_list:
-                self.game.parser.parse(self.player, self.queue_list.pop(0))
-
-    def queue(self, command):
-        self.queue_list.append(command)
-        if self.next_tick <= datetime.now():
-            self.next_tick = datetime.now() + INTERVAL
+        self.queue.tick(now)
