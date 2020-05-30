@@ -33,14 +33,20 @@ def expose_one(from_char, to_char, text):
     def find_name(matchobj):
         keyword = matchobj.group(0)
         keyword = keyword[1:] # removes the '/'
+        # /Il /Elle /il /elle refers to the sender's character
+        if keyword in ('Il', 'Elle', 'il', 'elle'):
+            if keyword[0] in ('I', 'E'):
+                return to_char.get_remember(from_char).capitalize()
+            return to_char.get_remember(from_char)
+        # Otherwise, check who that keyword may refer to.
         for char in from_char.room.characters:
             # Search who that keyword refers to from the sender
             # point of view.
             if keyword.lower() in from_char.get_remember(char).lower():
                 # Search how that character is known from the
                 # recipient point of view
-                name = to_char.get_remember(char)
-                return name
+                return to_char.get_remember(char)
+        # If nothing, returns the keyword itself.
         return keyword
 
     # Now, we substitute, and call the find_name function
