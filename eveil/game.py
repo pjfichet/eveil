@@ -42,6 +42,8 @@ class Game():
         while self.loop == True:
             self._get_queue()
             self.time.tick()
+            for character in self.characters:
+                character.tick()
             sleep(.1)
 
     def _get_queue(self):
