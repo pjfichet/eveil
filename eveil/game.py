@@ -40,10 +40,11 @@ class Game():
 
     def run(self):
         while self.loop == True:
+            now = datetime.now()
             self._get_queue()
-            self.time.tick()
+            self.time.tick(now)
             for character in self.characters:
-                character.tick()
+                character.tick(now)
             sleep(.1)
 
     def _get_queue(self):

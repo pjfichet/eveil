@@ -220,8 +220,7 @@ class Character():
         self.room.send_all("<p>{} {}.</p>".format(self.name,
             self.action))
 
-    def tick(self):
-        now = datetime.now()
+    def tick(self, now):
         if now >= self.next_tick:
             self.next_tick = self.next_tick + INTERVAL
             if self.queue_list:

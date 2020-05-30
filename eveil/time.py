@@ -107,8 +107,7 @@ class Time():
             weather = weather[1]
         self.weather = (self.weather[1], weather)
 
-    def tick(self):
-        now = datetime.now()
+    def tick(self, now):
         if now >= self.next_tick:
             self.next_tick = self.next_tick + self.interval
             self._minute()
