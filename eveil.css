@@ -36,6 +36,9 @@ footer, header, hgroup, menu, nav, section {
 /**********************************************************
 * GRID
 **********************************************************/
+html {
+	scroll-behavior: smooth;
+}
 html, body, main {
 	width: 100%;
 }
