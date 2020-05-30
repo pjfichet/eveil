@@ -21,6 +21,7 @@
 
 from .template import Template
 from .item import Container
+from .expose import expose_all
 
 class Map():
     """The Map class implements a graph: rooms are nodes, and links
@@ -89,24 +90,26 @@ class Link():
         self.door = None
 
     def move(self, character):
-        self.source.characters.remove(character)
-        self.source.send_all("<p>En {}, {} s'en va vers {}.</p>"
+
+        expose_all(character, "En {}, /{} se dirige vers {}."
                 .format(self.dynadesc, character.name,
                     self.target.shortdesc)
                 )
-        self.target.send_all("<p>En {}, {} arrive depuis {}.</p>"
+        character.queue.add(self.leave, character)
+
+    def leave(self, character):
+        expose_all(character, "/{} quitte {} pour rejoindre {}."
+                .format(character.name,
+                    self.source.shortdesc, self.target.shortdesc)
+                )
+        self.source.characters.remove(character)
+        self.target.characters.append(character)
+        character.room = self.target
+        self.target.send_longdesc(character)
+        expose_all(character, "En {}, /{} arrive depuis {}."
                 .format(self.dynadesc, character.name,
                     self.source.shortdesc)
                 )
-        character.player.client.send(
-                "<p>En {}, {} quitte {} pour rejoindre {}.</p>"
-                .format(self.dynadesc, character.name,
-                    self.source.shortdesc, self.target.shortdesc)
-                )
-        character.room = self.target
-        self.target.characters.append(character)
-        self.target.send_longdesc(character)
-
 
 class Door():
     """A door."""
