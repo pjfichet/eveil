@@ -14,6 +14,7 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 import re
+from .expose import expose_all
 
 # Player states defining commands availability
 class State():
@@ -193,6 +194,10 @@ class Parser():
     @Cmd(State.CHARACTER, "action", "courte action", "(.+)\s*$")
     def _set_action(self, player, arg):
         player.character.set_action(arg[0])
+
+    @Cmd(State.CHARACTER, "expose", "long text", ".*")
+    def _expose(self, player, arg):
+        expose_all(player.character, arg[0])
 
     ### Chargen commands ###
    
