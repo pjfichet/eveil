@@ -31,7 +31,6 @@ class Game():
         self.clients = []
         self.players = []
         self.characters = []
-        self.rooms = []
         self.db = Data(self, "data.db")
         self.parser = Parser(self)
         self.map = Map(self)
