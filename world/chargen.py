@@ -2,9 +2,8 @@ from eveil.template import Template
 from eveil.character import SHADOW
 
 # We create the first room 
-room1 = game.map.new_room()
-room1.shortdesc = "la création du personnage"
-room1.longdesc = Template("""
+room1 = game.map.new_room("la création du personnage")
+room1.set_desc("""
 <p>Plusieurs paramètres définissent un personnage: son nom, son genre,
 son apparence et sa description. Par défaut, les autres personnages ne
 voient pas le nom du vôtre, ils ne voient que son <i>apparence</i>.
@@ -47,13 +46,12 @@ quelques <i>commandes de base</i>.</p>
 """, {'capitalize': str.capitalize, 'shadow': SHADOW})
 
 # We create an empty second room to link it with the first
-room2 = game.map.new_room()
+room2 = game.map.new_room("les commandes de base")
 link1_2 = game.map.new_link(room1, room2)
 link2_1 = game.map.new_link(room2, room1)
 
 # Second room description
-room2.shortdesc = "les commandes de base"
-room2.longdesc = Template("""
+room2.set_desc("""
 <p>Pour voir à nouveau la
 description de l'environnement (ce texte), utilisez
 <code>regarder</code>. Cette même commande sert à regarder quelqu'un
@@ -77,13 +75,12 @@ ou poursuivre vers la <i>fabrication des vêtements</i>.</p>
 """, {'capitalize': str.capitalize, 'shadow': SHADOW})
 
 # We create an empty third room to link it with the second
-room3 = game.map.new_room()
+room3 = game.map.new_room("la fabrication des vêtements")
 link2_3 = game.map.new_link(room2, room3)
 link3_2 = game.map.new_link(room3, room2)
  
 # Third room description
-room3.shortdesc = "la fabrication des vêtements"
-room3.longdesc = Template("""
+room3.set_desc("""
 <p>{{character.name.capitalize}} peut créer se propres vêtements avec
 la commande <code>item vêtement</créer></code>. Ensuite, la commande
 <code>def</code> permet de définir les propriétés d'un item. <code>def

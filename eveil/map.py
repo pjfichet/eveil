@@ -34,8 +34,8 @@ class Map():
         self.links = []
         self.linklists = []
 
-    def new_room(self):
-        room = Room(self.game)
+    def new_room(self, shortdesc):
+        room = Room(self.game, shortdesc)
         self.rooms.append(room)
         room.id = self.rooms.index(room)
         return room
@@ -118,18 +118,11 @@ class Door():
 
 
 class Room():
-    top_template = Template(
-    """<h3>{{room.shortdesc|capitalize}}</h3>""",
-    {'capitalize': str.capitalize}
-    )
 
-    bottom_template = Template(
-"""<p>{{list_char}}{{list_item}}</p>""")
-
-    def __init__(self, game):
+    def __init__(self, game, shortdesc):
         self.game = game
         self.id = None
-        self.shortdesc = None
+        self.shortdesc = shortdesc
         self.longdesc = None
         self.links = []
         self.sources = []
@@ -137,6 +130,13 @@ class Room():
         self.characters = []
         self.container = Container(self.game)
         self.container.max_volume = 10000
+
+    def set_desc(self, text, dictionary={}):
+        self.longdesc = Template(
+                "<h3>{{room.shortdesc}}</h3>"
+                + text
+                + "<p>{{list_char}}{{list_item}}</p>",
+                dictionary)
 
     def add_link(self, link):
         if self in link.rooms and link not in self.links:
@@ -172,34 +172,21 @@ class Room():
 
     def send_longdesc(self, character):
         """ Send the long description to a character."""
-        character.player.client.send(Room.top_template.render({
-                "room": self,
-                }))
-        character.player.client.send(self.longdesc.render({
-                    "character": character,
-                    "room": self,
-                }))
-
         list_char = ", ".join([expose_format(character, character,
-character.pose) for character in self.characters])
+                character.pose) for character in self.characters])
         if list_char:
             list_char += "."
 
-        list_item = ", ".join([item.roomdesc for item in self.container.items])
+        list_item = ", ".join(
+                [item.roomdesc for item in self.container.items])
         if list_item:
             list_item = " Il y a aussi " + list_item + "."
-
-        character.player.client.send(Room.bottom_template.render({
+        character.player.client.send(self.longdesc.render({
                     "character": character,
                     "room": self,
                     "list_char": list_char,
                     "list_item": list_item,
                 }))
-
-    def send_all(self, message):
-        """ Send a message to all characters in the room. """
-        for character in self.characters:
-            character.player.client.send(message)
 
     def move(self, character, word):
         """ Move a character to an adjacent room. """
