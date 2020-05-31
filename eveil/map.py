@@ -21,7 +21,7 @@
 
 from .template import Template
 from .item import Container
-from .expose import expose_all
+from .expose import pose, expose_format
 
 class Map():
     """The Map class implements a graph: rooms are nodes, and links
@@ -80,36 +80,31 @@ class Link():
         self.rooms = [source, target]
         self.source = source
         self.target = target
-        # dynadesc: a multi-purpose short description
-        # of the form: by climbing up the ridge.
-        # used as follow:
-        # - by $dynadesc, /n can go to $room.
-        # - /n leaves toward $room by $dynadesc.
-        # - $dynadesc, /n arrives from.
-        self.dynadesc = None # "en montant le chemin"
+        # pose_leave and pose_enter define the characters'
+        # automated poses when they leave a room and
+        # enter another.
+        # self.pose_move = None
+        # self.pose_leave = None
+        # self.pose_enter = None
         self.door = None
 
     def move(self, character):
-
-        expose_all(character, "En {}, /{} se dirige vers {}."
-                .format(self.dynadesc, character.name,
-                    self.target.shortdesc)
-                )
-        character.queue.add(self.leave, character)
+        self.leave(character)
+        character.queue.add(self.enter, character)
 
     def leave(self, character):
-        expose_all(character, "/{} quitte {} pour rejoindre {}."
-                .format(character.name,
-                    self.source.shortdesc, self.target.shortdesc)
-                )
+        pose(character, "/Il se dirige vers {}."
+            .format(self.target.shortdesc))
+
+    def enter(self, character):
+        pose(character, "/Il quitte les environs en rejoignant {}."
+                .format(self.target.shortdesc))
         self.source.characters.remove(character)
+        self.target.send_longdesc(character)
         self.target.characters.append(character)
         character.room = self.target
-        self.target.send_longdesc(character)
-        expose_all(character, "En {}, /{} arrive depuis {}."
-                .format(self.dynadesc, character.name,
-                    self.source.shortdesc)
-                )
+        pose(character, "/Il arrive par ici depuis {}."
+                .format(self.source.shortdesc))
 
 class Door():
     """A door."""
@@ -129,13 +124,7 @@ class Room():
     )
 
     bottom_template = Template(
-"""<p>
-{% for link in room.targets %}
-    En {{link.dynadesc}}, {{character.name}} peut rejoindre {{link.target.shortdesc}}.
-{% endfor %}
-</p>
-<p>{{list_char}} {{list_item}}</p>
-""")
+"""<p>{{list_char}}{{list_item}}</p>""")
 
     def __init__(self, game):
         self.game = game
@@ -190,31 +179,21 @@ class Room():
                     "character": character,
                     "room": self,
                 }))
-        list_item = "" 
-        if self.container.items:
-            list_item = "Il y a aussi "
-            for i, item in self.container.items:
-                if i:
-                    list_item += ", " + item.roomdesc
-                else:
-                    list_item = item.roomdesc.capitalize()
-            list_item += "."
-        list_char = ""
-        if self.characters:
-            i = 0
-            for char in self.characters:
-                name = character.get_remember(char)
-                if i:
-                    list_char += ", " + name + " " + char.action
-                else:
-                    list_char = name + " " + char.action
-                    i = 1
+
+        list_char = ", ".join([expose_format(character, character,
+character.pose) for character in self.characters])
+        if list_char:
             list_char += "."
+
+        list_item = ", ".join([item.roomdesc for item in self.container.items])
+        if list_item:
+            list_item = " Il y a aussi " + list_item + "."
+
         character.player.client.send(Room.bottom_template.render({
                     "character": character,
                     "room": self,
-                    "list_item": list_item,
                     "list_char": list_char,
+                    "list_item": list_item,
                 }))
 
     def send_all(self, message):

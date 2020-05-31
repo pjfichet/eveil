@@ -39,23 +39,22 @@ nom, genre, apparence et description avec les commandes suivantes:</p>
     <li><code>description <i>Longue description...</i></code></li>
 {% endif %}
 </ul>
-<p>Pour passer à l'étape suivante, entrez <code>aller vers
-<i>mot_clé</i></code>.</p>
+<p>Ceci fait, vous pouvez déplacer {{character.name.capitalize}} d'un
+espace à un autre avec la commande <code>aller vers <i>mot
+clé</i></code>. Les mots clés sont indiqués en italique en fin de
+description de l'environnement. L'étape suivante du tutoriel explique
+quelques <i>commandes de base</i>.</p>
 """, {'capitalize': str.capitalize, 'shadow': SHADOW})
 
 # We create an empty second room to link it with the first
 room2 = game.map.new_room()
 link1_2 = game.map.new_link(room1, room2)
-link1_2.dynadesc = "passant à la seconde étape"
 link2_1 = game.map.new_link(room2, room1)
-link2_1.dynadesc = "retournant à la première étape"
 
 # Second room description
 room2.shortdesc = "les commandes de base"
 room2.longdesc = Template("""
-<p>Vous pouvez déplacer {{character.name.capitalize}} d'un espace à un
-autre avec la commande
-<code>aller vers <i>mot clé</i></code>. Pour voir à nouveau la
+<p>Pour voir à nouveau la
 description de l'environnement (ce texte), utilisez
 <code>regarder</code>. Cette même commande sert à regarder quelqu'un
 ou quelque chose: 
@@ -73,18 +72,17 @@ remplacés par le nom pour les personnages qui connaissent votre
 personnage et par sa courte description pour les autres. De la même
 manière, pour référer un autre personnage, utilisez <code>/</code>
 devant son nom.</p>
-</ul>
+<p>{{character.name}} peut retourner à la <i>création du personnage</i>
+ou poursuivre vers la <i>fabrication des vêtements</i>.</p>
 """, {'capitalize': str.capitalize, 'shadow': SHADOW})
 
 # We create an empty third room to link it with the second
 room3 = game.map.new_room()
 link2_3 = game.map.new_link(room2, room3)
-link2_3.dynadesc = "passant à la troisième étape"
 link3_2 = game.map.new_link(room3, room2)
-link3_2.dynadesc = "retournant à la seconde étape"
  
 # Third room description
-room3.shortdesc = "la création des vêtements"
+room3.shortdesc = "la fabrication des vêtements"
 room3.longdesc = Template("""
 <p>{{character.name.capitalize}} peut créer se propres vêtements avec
 la commande <code>item vêtement</créer></code>. Ensuite, la commande
