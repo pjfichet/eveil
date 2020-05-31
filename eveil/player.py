@@ -165,7 +165,7 @@ class Player():
 
     def logout(self):
         """ Record the player data, and remove the player """
-        if self.state == State.CHARGEN:
+        if self.state >= State.LOGIN:
             self.logout_dt = datetime.now()
             self._put()
         if self in self.game.players:
