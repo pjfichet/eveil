@@ -15,11 +15,23 @@
 
 import re
 
-def expose_all(from_char, text):
+def pose(from_char, text):
+    "Print a short pose or what some games call an action."
+    if text[-1] in ('.', '!', '?'):
+        text = text[:-1]
     for to_char in from_char.room.characters:
-        expose_one(from_char, to_char, text)
+        newtext = expose_format(from_char, to_char, text)
+        to_char.player.client.send("<p>{}.</p>".format(newtext))
+    from_char.pose = text
 
-def expose_one(from_char, to_char, text):
+def expose(from_char, text):
+    "Print a long expose, ie an emote."
+    for to_char in from_char.room.characters:
+        newtext = expose_format(from_char, to_char, text)
+        to_char.player.client.send("<p><b>{}</b>. — {}</p>".format(
+            to_char.get_remember(from_char), newtext))
+
+def expose_format(from_char, to_char, text):
 
     # We want to subsitute /keyword with a character name.
     # The difficulty is that "keyword" is only valid from the
@@ -51,4 +63,5 @@ def expose_one(from_char, to_char, text):
 
     # Now, we substitute, and call the find_name function
     text = re.sub("/\w+", find_name, text)
-    to_char.player.client.send("<p>— {}</p>".format(text))
+    return text
+

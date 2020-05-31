@@ -16,9 +16,10 @@
 from .grammar import Grammar
 from .grammar import apostrophe
 from .delay import Queue
+from .expose import pose
 
 SHADOW = "l'ombre d'un personnage"
-ACTION = "est ici"
+POSE = "est ici"
 
 class Character():
     SKILLS = ["artisan", "chasseur", "druide", "guerrier", "barde"]
@@ -36,9 +37,9 @@ class Character():
         self.shortdesc = None
         self.skill = None
         self.talent = None
-        self.action = ACTION
+        self.pose = POSE
         self.remember = {}
-        self.queue = Queue(10) # 10 second interval
+        self.queue = Queue(5) # 10 second interval
         self.room = self.game.map.rooms[0]
         self.roomid = self.room.id
         self.grammar = Grammar(
@@ -96,7 +97,7 @@ class Character():
         self.room.send_longdesc(self)
         self.room.add_character(self)
         #if self.name is not SHADOW:
-        self.room.send_all("<p>{} arrive ici.</p>".format(self.name.capitalize()))
+        pose(self, "/Il déambule par ici")
 
     def set_name(self, name):
         """ Name or rename a character. This is also when the character is
@@ -209,13 +210,6 @@ class Character():
                 ) 
         table += "</table>"
         self.player.client.send(table)
-
-    def set_action(self, action):
-        if action[-1] == '.':
-            action = action[:-1]
-        self.action = action
-        self.room.send_all("<p>{} {}.</p>".format(self.name,
-            self.action))
 
     def tick(self, now):
         self.queue.tick(now)

@@ -14,7 +14,7 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 import re
-from .expose import expose_all
+from .expose import pose, expose
 
 # Player states defining commands availability
 class State():
@@ -191,13 +191,13 @@ class Parser():
     def _set_remember(self, player, arg):
         player.character.set_remember(arg[1], arg[2])
 
-    @Cmd(State.CHARACTER, "action", "courte action", "(.+)\s*$")
-    def _set_action(self, player, arg):
-        player.character.set_action(arg[0])
+    @Cmd(State.CHARACTER, "pose", "petite pose", "(.+)\s*$")
+    def _set_pose(self, player, arg):
+        pose(player.character, arg[0])
 
-    @Cmd(State.CHARACTER, "expose", "long text", ".*")
+    @Cmd(State.CHARACTER, "expose", "longue exposition", ".*")
     def _expose(self, player, arg):
-        expose_all(player.character, arg[0])
+        expose(player.character, arg[0])
 
     ### Chargen commands ###
    
