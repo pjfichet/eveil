@@ -15,8 +15,21 @@
 
 import re
 
+def has_name(name, text):
+    name = '/' + name.lower()
+    if re.search("/il|/elle|/{}".format(name), text, re.IGNORECASE):
+        return True
+    else:
+        return False
+
 def pose(from_char, text):
     "Print a short pose or what some games call an action."
+    if not has_name(from_char.name, text):
+        from_char.player.client.send(
+            """<p><code><i>/{}</i>, <i>/il</il> ou <il>/elle</il>,
+            doit apparaître dans la pose.</code></p>"""
+            .format(from_char.name))
+        return
     if text[-1] in ('.', '!', '?'):
         text = text[:-1]
     for to_char in from_char.room.characters:
@@ -25,6 +38,13 @@ def pose(from_char, text):
     from_char.pose = text
 
 def expose(from_char, text):
+    if not has_name(from_char.name, text):
+        from_char.player.client.send(
+            """<p><code><i>/{}</i>, <i>/il</il> ou <il>/elle</il>,
+            doit apparaître dans l'exposition.</code></p>"""
+            .format(from_char.name))
+        return
+
     "Print a long expose, ie an emote."
     for to_char in from_char.room.characters:
         newtext = expose_format(from_char, to_char, text)
