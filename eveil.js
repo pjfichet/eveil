@@ -89,7 +89,10 @@ function writeToScreen(message)
 {
 	var output = document.getElementById('output');
 	output.appendChild(stringToElem(message));
-	window.scroll(0, findPos(document.getElementById('input')));
+	// set the size of #bottom to scroll above the fixed #input
+	var h = document.getElementById("input").offsetHeight;
+	document.getElementById("bottom").setAttribute("style", "height:" + h + "px");
+	window.scroll(0, findPos(document.getElementById('bottom')));
 }
 
 function sendText() {

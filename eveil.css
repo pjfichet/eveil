@@ -60,9 +60,13 @@ section {
 	margin-top: 3rem;
 }
 #input {
-	bottom: 1.5rem;
-	margin-top: 1.5rem;
+	bottom: 0;
 	text-align: center;
+	width: 35rem;
+	max-width: 90%;
+	margin: 0 auto 0 auto;
+	padding-top: 1.5rem;
+	position: fixed;
 }
 textarea {
 	width: 100%;
