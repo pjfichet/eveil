@@ -63,9 +63,6 @@ class Player():
     a character to play.
     """
 
-    # Initialize an enumeration of states
-    LOGIN, ACCOUNT, LOGGED = range(3)
-
     def __init__(self, game, client):
         self.client = client
         self.game = game
