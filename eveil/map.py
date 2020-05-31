@@ -103,6 +103,7 @@ class Link():
         self.target.send_longdesc(character)
         self.target.characters.append(character)
         character.room = self.target
+        character._put() # TODO: decide if _put() is public or not.
         pose(character, "/Il arrive par ici depuis {}."
                 .format(self.source.shortdesc))
 
