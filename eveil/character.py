@@ -28,6 +28,7 @@ class Character():
     def __init__(self, game, player):
         self.game = game
         self.player = player
+        self.player.character = self
         self.id = None
         self.key = None
         self.name = SHADOW
@@ -62,6 +63,10 @@ class Character():
             self.talent = data["talent"]
             self.remember = data["remember"]
             self.grammar.agree(Grammar.NUMBERS.index("singulier"), self.gender)
+            for room in self.game.map.rooms:
+                if room.id == self.roomid:
+                    self.room = room
+                    break
             return True
         else:
             return  False
@@ -84,6 +89,16 @@ class Character():
         self.game.db.put("character:" + self.name, self.id)
         self._put()
         self.player.record_character()
+
+    def logout(self):
+        """ Removes a character from the grid at logout."""
+        if self.name is not SHADOW:
+            self._put()
+        pose(self, "/Il se déconnecte.")
+        self.room.characters.remove(self)
+        self.game.characters.remove(self)
+        self.game.log("Character {} leaves the game from room {}."
+                .format(self.name, self.room.id))
 
     def create(self):
         """ If the character has data in the db, fetch them,

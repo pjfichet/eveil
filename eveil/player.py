@@ -78,6 +78,7 @@ class Player():
         self.login_dt = None
         self.logout_dt = None
         self.characters = []
+        self.character = None
         self.state = State.LOGIN
 
     def _get(self, pseudo):
@@ -172,6 +173,8 @@ class Player():
             self._put()
         if self in self.game.players:
             self.game.players.remove(self)
+        if self.character:
+            self.character.logout()
         self.game.log("Player {} logs out.".format(self.pseudo))
 
     def set_pseudo(self, pseudo):
