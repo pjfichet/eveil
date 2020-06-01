@@ -15,6 +15,10 @@
 
 import re
 
+def info(client, text):
+    "Game information sent to a player."
+    client.send("<p class='info'>{}</p>".format(text))
+
 def has_name(name, text):
     name = '/' + name.lower()
     if re.search("/il|/elle|/{}".format(name), text, re.IGNORECASE):
@@ -38,21 +42,27 @@ def pose(from_char, text):
     from_char.pose = text
 
 def expose(from_char, text):
+    "Print a long expose, ie an emote."
     if not has_name(from_char.name, text):
         from_char.player.client.send(
             """<p><code><i>/{}</i>, <i>/il</il> ou <il>/elle</il>,
             doit apparaître dans l'exposition.</code></p>"""
             .format(from_char.name))
         return
-
-    "Print a long expose, ie an emote."
     for to_char in from_char.room.characters:
         newtext = expose_format(from_char, to_char, text)
         to_char.player.client.send("<p><b>{}</b>. — {}</p>".format(
             to_char.get_remember(from_char), newtext))
 
-def expose_format(from_char, to_char, text):
+def off_topic(from_char, text):
+    "Off topic, or out of character, communication."
+    for to_char in from_char.room.characters:
+        newtext = expose_format(from_char, to_char, text)
+        to_char.player.client.send(
+            "<p class='off_topic'>{}</p>".format(newtext))
 
+def expose_format(from_char, to_char, text):
+    "Format an expose."
     # We want to subsitute /keyword with a character name.
     # The difficulty is that "keyword" is only valid from the
     # sender point of view, and the character name depends on
@@ -60,8 +70,7 @@ def expose_format(from_char, to_char, text):
 
     # First, we define a backend function for re.sub()
     # we have to place it here, because the backend only accepts
-    # one argument. And we need to know who from_char and to_char
-    # are.
+    # one argument, and we need to pass it from_char and to_char.
     def find_name(matchobj):
         keyword = matchobj.group(0)
         keyword = keyword[1:] # removes the '/'
