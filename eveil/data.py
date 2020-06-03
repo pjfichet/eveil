@@ -21,10 +21,7 @@ from datetime import datetime
 # init              datetime
 #
 # player:pseudo     {pseudo, password, email, creation_dt, login_dt, logout_dt, [characters]}
-# 
-# character         maxid
-# character:name    id
-# character:id      {name, lastname, gender, roomid, longdesc, shortdesc, skill, talent}
+# character:name    {name, lastname, gender, roomid, longdesc, shortdesc}
 
 
 class Data:

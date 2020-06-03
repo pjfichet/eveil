@@ -174,7 +174,7 @@ class Room():
     def send_longdesc(self, character):
         """ Send the long description to a character."""
         list_char = ", ".join(
-                [expose_format(char, character, char.pose)
+                [expose_format(char, character, char.data['pose'])
                 for char in self.characters])
         if list_char:
             list_char += "."

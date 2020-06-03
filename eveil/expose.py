@@ -19,7 +19,7 @@ def info(client, text):
     "Game information sent to a player."
     client.send("<p class='info'>{}</p>".format(text))
 
-def has_name(name, text):
+def _has_name(name, text):
     name = '/' + name.lower()
     if re.search("/il|/elle|/{}".format(name), text, re.IGNORECASE):
         return True
@@ -28,26 +28,26 @@ def has_name(name, text):
 
 def pose(from_char, text):
     "Print a short pose or what some games call an action."
-    if not has_name(from_char.name, text):
+    if not _has_name(from_char.data['name'], text):
         from_char.player.client.send(
             """<p><code><i>/{}</i>, <i>/il</il> ou <il>/elle</il>,
             doit apparaître dans la pose.</code></p>"""
-            .format(from_char.name))
+            .format(from_char.data['name']))
         return
     if text[-1] in ('.', '!', '?'):
         text = text[:-1]
     for to_char in from_char.room.characters:
         newtext = expose_format(from_char, to_char, text)
         to_char.player.client.send("<p>{}.</p>".format(newtext))
-    from_char.pose = text
+    from_char.data['pose'] = text
 
 def expose(from_char, text):
     "Print a long expose, ie an emote."
-    if not has_name(from_char.name, text):
+    if not _has_name(from_char.data['name'], text):
         from_char.player.client.send(
             """<p><code><i>/{}</i>, <i>/il</il> ou <il>/elle</il>,
             doit apparaître dans l'exposition.</code></p>"""
-            .format(from_char.name))
+            .format(from_char.data['name']))
         return
     for to_char in from_char.room.characters:
         newtext = expose_format(from_char, to_char, text)

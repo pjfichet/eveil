@@ -197,7 +197,7 @@ class Player():
         if self.data['characters'] and name is not None:
             name = name.capitalize()
             if name in self.data['characters']:
-                self.character.name = name
+                self.character.data['name'] = name
         # in all case, put the character in game:
         self.character.create()
 
@@ -205,8 +205,8 @@ class Player():
         """ When a character is actually created, this method must
         be called to link the character with the player account.
         """
-        if self.character.name not in self.data['characters']:
-            self.data['characters'].append(self.character.name)
+        if self.character.data['name'] not in self.data['characters']:
+            self.data['characters'].append(self.character.data['name'])
             self._put()
 
 

@@ -19,8 +19,9 @@ class Remember():
 
     def __init__(self, game, character):
         self.game = game
+        self.name = character.data['name']
         self.character = character
-        self.key = "remember:" + str(self.character.id)
+        self.key = "remember:" + self.name
         self.remember = {}
         if self.key in self.game.db:
             self._get()
@@ -37,17 +38,17 @@ class Remember():
         """Remembers/registers a character name."""
         keyword = keyword.replace('/', '')
         for character in self.character.room.characters:
-            if character == self.character.name:
+            if character == self.character.data['name']:
                 continue
-            if keyword in character.shortdesc:
-                self.remember[character.name] = string
+            if keyword in character.data['shortdesc']:
+                self.remember[character.data['name']] = string
                 self._put()
-                de = apostrophe("de", character.shortdesc[0])
+                de = apostrophe("de", character.data['shortdesc'][0])
                 self.character.player.client.send(
                     "<p>{} se souviendra {}{} sous le nom «{}».</p>".format(
                         self.name,
                         de,
-                        character.shortdesc,
+                        character.data['shortdesc'],
                         string
                     ))
                 return
@@ -55,11 +56,11 @@ class Remember():
             à personne ici présent.</p>""".format(keyword))
 
     def get_remember(self, character):
-        if self.character.name == self.name:
-            return character.name
-        if character.name in self.remember:
-            return self.remember[character.name]
-        return character.shortdesc
+        if self.character.data['name'] == self.name:
+            return character.data['name']
+        if character.data['name'] in self.remember:
+            return self.remember[character.data['name']]
+        return character.data['shortdesc']
 
     def list_remember(self):
         table = "<table><tr><th>nom</th><th>description</th></tr>"
