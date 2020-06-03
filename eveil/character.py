@@ -22,8 +22,6 @@ SHADOW = "l'ombre d'un personnage"
 POSE = "est ici"
 
 class Character():
-    SKILLS = ["artisan", "chasseur", "druide", "guerrier", "barde"]
-    TALENTS = ["agileté", "constitution", "force", "intelligence", "sagesse"]
 
     def __init__(self, game, player):
         self.game = game
@@ -162,26 +160,6 @@ class Character():
         """ Define the long description of the character."""
         self.longdesc = longdesc
         self.player.client.send("<p>{}</p>".format(self.longdesc))
-        self._put()
-
-    def set_skill(self, skill):
-        """ Define the skill of the character. """
-        self.skill = Character.SKILLS.index(skill)
-        self.player.client.send(
-                "<p>C'est {} {}.".format(
-                    self.grammar.un,
-                    Character.SKILLS[self.skill])
-                )
-        self._put()
-
-    def set_talent(self, talent):
-        """ Define the talent of the character. """
-        self.talent = Character.TALENTS.index(talent)
-        self.player.client.send(
-                "<p>{} est doté d'une {} étonnante.".format(
-                    self.grammar.il.capitalize(),
-                    Character.TALENTS[self.talent])
-                )
         self._put()
 
     def tick(self, now):
