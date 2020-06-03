@@ -20,9 +20,7 @@ from datetime import datetime
 # gametime          {minute, hour, day, month, season, (weathera, weatherb)}
 # init              datetime
 #
-# player            maxid
-# player:pseudo     id
-# player:id         {pseudo, password, email, creation_dt, login_dt, logout_dt, [characters]}
+# player:pseudo     {pseudo, password, email, creation_dt, login_dt, logout_dt, [characters]}
 # 
 # character         maxid
 # character:name    id
