@@ -39,7 +39,7 @@ class Character():
         self.skill = None
         self.talent = None
         self.pose = POSE
-        self.remember = {}
+        self.remember = None
         self.queue = Queue(5) # 10 second interval
         self.room = self.game.map.rooms[0]
         self.roomid = self.room.id
@@ -183,48 +183,6 @@ class Character():
                     Character.TALENTS[self.talent])
                 )
         self._put()
-
-    def set_remember(self, keyword, string):
-        """Remembers/register a character name."""
-        keyword = keyword.replace('/', '')
-        for character in self.room.characters:
-            if character == self.name:
-                continue
-            if keyword in character.shortdesc:
-                self.remember[character.name] = string
-                self._put()
-                de = apostrophe("de", character.shortdesc[0])
-                self.player.client.send(
-                    "<p>{} se souviendra {}{} sous le nom «{}».</p>".format(
-                        self.name,
-                        de,
-                        character.shortdesc,
-                        string
-                    ))
-                return
-        self.player.client.send("""<p>Le mot clé <i>{}</i> ne correspond
-            à personne ici présent.</p>""".format(keyword))
-
-    def get_remember(self, character):
-        if character.name == self.name:
-            return character.name
-        if character.name in self.remember:
-            return self.remember[character.name]
-        return character.shortdesc
-
-    def list_remember(self):
-        table = "<table><tr><th>nom</th><th>description</th></tr>"
-        for name in self.remember:
-            id_ = self.game.db.get("character:" + name)
-            if id_:
-                key = "character:" + str(id_)
-                data = self.game.db.get(key)
-                table += "<tr><td>{}</td><td>{}</td></tr>".format(
-                    self.remember[name],
-                    data["shortdesc"]
-                ) 
-        table += "</table>"
-        self.player.client.send(table)
 
     def tick(self, now):
         self.queue.tick(now)
