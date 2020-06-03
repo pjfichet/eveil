@@ -163,11 +163,11 @@ class Parser():
 
     @Cmd(State.ACCOUNT, "nouveau", "", "^$")
     def _new_character(self, player, arg):
-        player.set_character()
+        player.character.create(arg[0])
 
     @Cmd(State.ACCOUNT, "jouer", "nom_du_personnage", "(\w+)\s*$")
     def _play(self, player, arg):
-        player.set_character(arg[0])
+        player.character.play(arg[0])
 
     ### General character commands ###
 
