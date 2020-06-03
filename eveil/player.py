@@ -23,35 +23,33 @@ from .parser import State
 account_menu = Template("""
 <h2>Éveil</h2>
 <h3>Bienvenue {{player.data.pseudo}},</h3>
-{%if player.state == State.ACCOUNT %}
-    {% if player.data.characters %}
-        {% if player.data.characters|len > 1 %}
-            <p>Vous avez plusieurs personnages: {{player.charlist}}.
-            Vous pouvez jouer avec l'un de ces personnages ou en
-            créer un nouveau en entrant:
-            <ul>
-                <li><code>jouer <i>nom_du_personnage</i></code></li>
-        {% else %}
-            <p>Vous avez créé un personnage: {{player.charlist}}.
-            Vous pouvez jouer avec ce personnage ou en créer un nouveau
-            en entrant:
-            <ul>
-                <li><code>jouer <i>{{player.charlist}}</i></code></li>
-        {% endif %}
-                <li><code>nouveau</code></li>
-            </ul>
-        </p>
+{% if player.data.characters %}
+    {% if player.data.characters|len > 1 %}
+        <p>Vous avez plusieurs personnages: {{player.charlist}}.
+        Vous pouvez jouer avec l'un de ces personnages ou en
+        créer un nouveau en entrant:
+        <ul>
+            <li><code>jouer <i>nom_du_personnage</i></code></li>
     {% else %}
-        <p>Creez un personnage en entrant <code>nouveau</code>.</p>
+        <p>Vous avez créé un personnage: {{player.charlist}}.
+        Vous pouvez jouer avec ce personnage ou en créer un nouveau
+        en entrant:
+        <ul>
+            <li><code>jouer <i>{{player.charlist}}</i></code></li>
     {% endif %}
-    <p>Vous pouvez aussi modifier ici les données de votre compte avec
-    les commandes suivantes:</p>
-    <ul>
-        <li><code>pseudo <i>nouveau_pseudonyme</i></code></li>
-        <li><code>secret <i>ancien_mdp nouveau_mdp</i></code></li>
-        <li><code>email <i>mail@exemple.net</i></code></li>
-    </ul>
+            <li><code>nouveau</code></li>
+        </ul>
+    </p>
+{% else %}
+    <p>Creez un personnage en entrant <code>nouveau</code>.</p>
 {% endif %}
+<p>Vous pouvez aussi modifier ici les données de votre compte avec
+les commandes suivantes:</p>
+<ul>
+    <li><code>pseudo <i>nouveau_pseudonyme</i></code></li>
+    <li><code>secret <i>ancien_mdp nouveau_mdp</i></code></li>
+    <li><code>email <i>mail@exemple.net</i></code></li>
+</ul>
 """, {'len': len})
 
 
