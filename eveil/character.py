@@ -68,30 +68,94 @@ class Character():
         if self.data['state'] > State.ACCOUNT:
             self.game.db.put(self._key(), self.data)
 
+    def _check_name(self, name):
+        """Check if a name is valid."""
+        if len(name) < 4:
+            info(self,
+                "Le nom du personnage doit contenir au moins quatre lettres.")
+            return False
+        if self.player.has_character(name):
+            info(self,
+                "Vous avez déjà un personnage nommé {}."
+                .format(name))
+            return False
+        if self.game.db.get(self._key(name)):
+            info(self,
+                "Il existe déjà un personnage nommé {}."
+                .format(name))
+            return False
+        return True
 
-    def logout(self):
-        """ Removes a character from the grid at logout."""
-        if self.data['name'] is not SHADOW:
-            self._put()
-        pose(self, "/Il se déconnecte.")
-        self.room.characters.remove(self)
-        self.game.characters.remove(self)
-        self.game.log("Character {} leaves the game from room {}."
-                .format(self.data['name'], self.room.id))
+    def create(self, name):
+        """creates a new character, and put it in the game.""" 
+        # Check if the name is valid
+        name = name.capitalize()
+        if not self._check_name(name):
+            return
+        # The name is valid, use it.
+        self.data['name'] = name
+        # Put the character in chargen
+        self.data['state'] = State.CHARGEN
+        self.data['roomid'] = 0
+        self._put()
+        self.player.add_character(self.data['name'])
+        self.game.log("Character {} created.".format(self.data['name']))
+        self._install()
 
-    def create(self):
-        """ If the character has data in the db, fetch them,
-        and in all case, put the character in game."""
-        if self.data['name'] is not SHADOW:
-            self._get()
-            self.game.characters.append(self)
+    def play(self, name):
+        "Plays an existing character."
+        # Check if the player owns that character.
+        name = name.capitalize()
+        if not self.player.has_character(name):
+            info(self,
+                "Vous n'avez créé aucun personnage nommé {}."
+                .format(name))
+            return
+        if self.game.db.get(self._key(name)):
+            # Should'nt 
+            info(self,
+                "Aucun personnage nommé {} n'existe.".format(name))
+            self.game.log("Character {} is not recorded.".format(name))
+            return
+        # the name is valid, fetch the character
+        self.data['name'] = name
+        self._get()
+        self._install()
+
+    def _install(self):
+        """After self.create() and self.play(),
+        install a newly fetched character in game."""
+        # First, set some datas.
+        self.data['login_dt'] = datetime.now()
+        self.grammar.agree(Grammar.NUMBERS.index("singulier"), self.data['gender'])
+        #self.remember = Remember(self.game, self)
+        for room in self.game.map.rooms:
+            if room.id == self.data['roomid']:
+                self.room = room
+                break
+        self.game.characters.append(self)
         self.game.log("Character {} enters the game in room {}."
                 .format(self.data['name'], self.room.id)
                 )
+        # Then, put the character in his room
         self.room.send_longdesc(self)
         self.room.add_character(self)
-        #if self.name is not SHADOW:
         pose(self, "/Il déambule par ici")
+
+    def logout(self):
+        """ Removes a character from the grid at logout."""
+        self.data['logout_dt'] == datetime.now()
+        self.data['play_time'] == self.data['logout_dt'] - self.data['login_dt']
+        self._put()
+        pose(self, "/Il se déconnecte.")
+        self.game.log("Character {} leaves the game from room {}."
+                .format(self.data['name'], self.room.id))
+        if self in self.room.characters:
+            # should be always true
+            self.room.characters.remove(self)
+        if self in self.game.characters:
+            # only true if state > State.ACCOUNT
+            self.game.characters.remove(self)
 
     def set_name(self, name):
         """ Name or rename a character. This is also when the character is
