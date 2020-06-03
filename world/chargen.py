@@ -14,31 +14,31 @@ doit comporter aucune mention du caractère ni des vêtements. La
 nom, genre, apparence et description avec les commandes suivantes:</p>
 <ul>
 
-{% if character.name != shadow %}
-    <li><code>nom <i>{{character.name}}</i></code></li>
+{% if character.data.name != shadow %}
+    <li><code>nom <i>{{character.data.name}}</i></code></li>
 {% else %}
     <li><code>nom <i>nom_choisi</i></code></li>
 {% endif %}
 
-{% if character.gender %}
-    <li><code>genre <i>{{character.grammar.gender}}</i></code></li>
+{% if character.data.gender %}
+    <li><code>genre <i>{{character.grammar.data.gender}}</i></code></li>
 {% else %}
     <li><code>genre <i>[masculin|féminin]</i></code>.</li>
 {% endif %}
 
-{% if character.shortdesc %}
-    <li><code>apparence <i>{{character.shortdesc}}</i></code></li>
+{% if character.data.shortdesc %}
+    <li><code>apparence <i>{{character.data.shortdesc}}</i></code></li>
 {% else %}
     <li><code>apparence <i>quelques mots</i></code></li>
 {% endif %}
 
-{% if character.longdesc %}
-    <li><code>description <i>{{character.longdesc}}</i></code></li>
+{% if character.data.longdesc %}
+    <li><code>description <i>{{character.data.longdesc}}</i></code></li>
 {% else %}
     <li><code>description <i>Longue description...</i></code></li>
 {% endif %}
 </ul>
-<p>Ceci fait, vous pouvez déplacer {{character.name.capitalize}} d'un
+<p>Ceci fait, vous pouvez déplacer {{character.data.name.capitalize}} d'un
 espace à un autre avec la commande <code>aller vers <i>mot
 clé</i></code>. Les mots clés sont indiqués en italique en fin de
 description de l'environnement. L'étape suivante du tutoriel explique
@@ -56,10 +56,10 @@ room2.set_desc("""
 description de l'environnement (ce texte), utilisez
 <code>regarder</code>. Cette même commande sert à regarder quelqu'un
 ou quelque chose: 
-    {% if character.name == shadow %}
+    {% if character.data.name == shadow %}
     <code>regarder <i>mot clé</i></code>.
     {% else %}
-    <code>regarder <i>{{character.name}}</i></code> par exemple.
+    <code>regarder <i>{{character.data.name}}</i></code> par exemple.
     {% endif %}
 </p>
 <p>La commande la plus utilisée est <code>exposer</code>. Cette commande
@@ -70,7 +70,7 @@ remplacés par le nom pour les personnages qui connaissent votre
 personnage et par sa courte description pour les autres. De la même
 manière, pour référer un autre personnage, utilisez <code>/</code>
 devant son nom.</p>
-<p>{{character.name}} peut retourner à la <i>création du personnage</i>
+<p>{{character.data.name}} peut retourner à la <i>création du personnage</i>
 ou poursuivre vers la <i>fabrication des vêtements</i>.</p>
 """, {'capitalize': str.capitalize, 'shadow': SHADOW})
 
@@ -81,7 +81,7 @@ link3_2 = game.map.new_link(room3, room2)
  
 # Third room description
 room3.set_desc("""
-<p>{{character.name.capitalize}} peut créer se propres vêtements avec
+<p>{{character.data.name}} peut créer se propres vêtements avec
 la commande <code>item vêtement</créer></code>. Ensuite, la commande
 <code>def</code> permet de définir les propriétés d'un item. <code>def
 <i>item_à_définir</i></code> définit l'item sur lequel la commande
@@ -97,5 +97,5 @@ vous pouvez créer des vêtements avec les commandes suivantes:</p>
     <li><code>def porté <i>description du vêtement vue lorsqu'il est
     porté par un personnage.</i></code></li>
 </ul>
-<p>Enfin, {{character.name}} peut porter ses vêtements avec la commande
+<p>Enfin, {{character.data.name}} peut porter ses vêtements avec la commande
 <code>porter <i>mot_clé_de_l'item</i></code>.</p>""")
