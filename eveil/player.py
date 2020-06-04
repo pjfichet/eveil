@@ -216,6 +216,7 @@ class Player():
         self.game.log("Character {} created.".format(self.data['name']))
 
     def play_character(self, name):
+        "Plays an existing character."
         name = name.capitalize()
         if name in self.data['characters']:
             self.character = Character(self.game, self, name)
