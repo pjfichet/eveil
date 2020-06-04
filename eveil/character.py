@@ -83,7 +83,9 @@ class Character():
         self.room.send_longdesc(self)
         self.room.add_character(self)
         pose(self, "/Il déambule par ici")
-        self.game.log("Character {} enters the game in room {}.")
+        self.game.log(
+            "Character {} enters the game in room {}."
+            .format(self.data['name'], self.data['roomid']))
 
 
     def _get(self):
