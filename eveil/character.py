@@ -168,6 +168,11 @@ class Character():
         self._put()
         self.player.client.send("<p>{}</p>".format(self.data['longdesc']))
 
+    def set_room(self, room):
+        self.room = room
+        self.data['roomid'] = room.id
+        self._put()
+
     def tick(self, now):
         """ tick all objects. """
         self.queue.tick(now)
