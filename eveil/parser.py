@@ -89,7 +89,7 @@ class Parser():
         self.cmd_regex = [x for x in range(State.length)]
         self.cmd_regex[State.LOGIN] = self._make_regex(Scope.LOGIN)
         self.cmd_regex[State.ACCOUNT] = self._make_regex(
-                Scop.INGAME, Scope.ACCOUNT
+                Scope.INGAME, Scope.ACCOUNT
                 )
         self.cmd_regex[State.CHARGEN] = self._make_regex(
                 Scope.INGAME, Scope.CHARACTER, Scope.CHARGEN
