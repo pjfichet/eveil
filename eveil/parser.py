@@ -228,16 +228,6 @@ class Parser():
     def _longdesc(self, player, arg):
         player.character.set_longdesc(arg[0])
 
-    @Cmd(Scope.CHARGEN, "métier", "artisan|barde|chasseur|druide|guerrier",
-            "(artisan|barde|chasseur|druide|guerrier)\s*$")
-    def _skill(self, player, arg):
-        player.character.set_skill(arg[0])
-
-    @Cmd(Scope.CHARGEN, "talent", "agileté|constitution|force|intelligence|sagesse",
-        "(agileté|constitution|force|intelligence|sagesse)\s*$")
-    def _talent(self, player, arg):
-        player.character.set_talent(arg[0])
-
     ### Admin commands ###
 
     @Cmd(Scope.ADMIN, "shutdown", "", "\s*$")
