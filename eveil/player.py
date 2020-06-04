@@ -156,7 +156,7 @@ class Player():
                 self.game.characters.remove(self.character)
             self.character.logout()
             self.character = None
-        if self.state >= State.LOGIN:
+        if self.state > State.LOGIN:
             self.data['logout_dt'] = datetime.now()
             self._put()
         if self in self.game.players:
