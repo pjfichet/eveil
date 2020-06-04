@@ -23,18 +23,18 @@ from .message import error, info
 
 account_menu = Template("""
 <h2>Éveil</h2>
-<h3>Bienvenue {{player.data.pseudo}},</h3>
+<h4>Bienvenue {{player.data.pseudo}},</h4>
 {% if player.data.characters %}
     {% if player.data.characters|len > 1 %}
-        <p>Vous avez plusieurs personnages: {{player.charlist}}.
+        <p>Vous avez plusieurs personnages : {{player.charlist}}.
         Vous pouvez jouer avec l'un de ces personnages ou en
-        créer un nouveau en entrant:
+        créer un nouveau en entrant :
         <ul>
             <li><code>jouer <i>nom_du_personnage</i></code></li>
     {% else %}
         <p>Vous avez créé un personnage: {{player.charlist}}.
         Vous pouvez jouer avec ce personnage ou en créer un nouveau
-        en entrant:
+        en entrant :
         <ul>
             <li><code>jouer <i>{{player.charlist}}</i></code></li>
     {% endif %}
