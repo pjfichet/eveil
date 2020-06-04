@@ -121,7 +121,6 @@ class Player():
             self.game.log(
                 "Player {} created."
                 .format(self.data['pseudo']))
-            self.game.players.append(self)
             # Send a short welcome.
             self.client.send(account_menu.render({"player": self, "State": State}))
         else:
@@ -140,7 +139,6 @@ class Player():
                     "Player {} logs in."
                     .format(self.data['pseudo']))
                 self.state = State.ACCOUNT
-                self.game.players.append(self)
             else:
                 self.client.send("Mot de passe invalide.")
                 self.client.close()
@@ -152,16 +150,12 @@ class Player():
     def logout(self):
         """ Record the player data, and remove the player """
         if self.character:
-            if self.character in self.game.characters:
-                self.game.characters.remove(self.character)
             self.character.logout()
             self.character = None
         if self.state > State.LOGIN:
             self.data['logout_dt'] = datetime.now()
             self._put()
             self.game.log("Player {} logs out.".format(self.data['pseudo']))
-        if self in self.game.players:
-            self.game.players.remove(self)
 
     def set_pseudo(self, pseudo):
         """ Player command to change his pseudo. """
@@ -216,7 +210,6 @@ class Player():
                 .format(name))
         # the name is valid, use it.
         self.character = Character(self.game, self, name)
-        self.game.characters.append(self.character)
         self.game.log("Character {} created.".format(self.character.data['name']))
 
     def play_character(self, name):

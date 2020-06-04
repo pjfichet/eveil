@@ -29,8 +29,6 @@ class Game():
     def __init__(self, queue):
         self.queue = queue
         self.clients = []
-        self.players = []
-        self.characters = []
         self.db = Data(self, "data.db")
         self.parser = Parser(self)
         self.map = Map(self)
@@ -42,8 +40,9 @@ class Game():
             now = datetime.now()
             self._get_queue()
             self.time.tick(now)
-            for character in self.characters:
-                character.tick(now)
+            for client in self.clients:
+                if client.player.character:
+                    client.player.character.tick(now)
             sleep(.1)
 
     def _get_queue(self):
