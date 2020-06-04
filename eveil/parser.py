@@ -19,7 +19,6 @@ from .expose import pose, expose
 # Player states defining commands availability
 class State():
     """ Player states defining commands availability """
-    length = 7
     LOGIN = 10
     ACCOUNT = 20
     CHARGEN = 30
@@ -86,7 +85,7 @@ class Parser():
     def __init__(self, game):
         self.game = game
         # We build a regex matching all available commands for a player State
-        self.cmd_regex = [x for x in range(State.length)]
+        self.cmd_regex = {}
         self.cmd_regex[State.LOGIN] = self._make_regex(Scope.LOGIN)
         self.cmd_regex[State.ACCOUNT] = self._make_regex(
                 Scope.INGAME, Scope.ACCOUNT
