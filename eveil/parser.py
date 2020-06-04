@@ -174,11 +174,11 @@ class Parser():
 
     @Cmd(Scope.ACCOUNT, "nouveau", "", "^$")
     def _new_character(self, player, arg):
-        player.character.create(arg[0])
+        player.create_character(arg[0])
 
     @Cmd(Scope.ACCOUNT, "jouer", "nom_du_personnage", "(\w+)\s*$")
     def _play(self, player, arg):
-        player.character.play(arg[0])
+        player.play_character(arg[0])
 
     ### General character commands ###
 

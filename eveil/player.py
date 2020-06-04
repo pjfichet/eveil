@@ -17,7 +17,7 @@ from datetime import datetime
 import crypt
 
 from .template import Template
-from .character import Character
+from .character import Character, check_character_name
 from .parser import State
 
 account_menu = Template("""
@@ -51,8 +51,6 @@ les commandes suivantes:</p>
     <li><code>email <i>mail@exemple.net</i></code></li>
 </ul>
 """, {'len': len})
-
-
 
 class Player():
     """ Represent the player. Some information about him is
@@ -193,24 +191,20 @@ class Player():
         self.client.send("<p>Votre email est {}.</p>"
             .format(self.data['email']))
 
-    def set_character(self, name=None):
-        """ Instanciate a character object for the player. """
-        self.state = State.CHARGEN
-        self.character = Character(self.game, self)
-        # check if the player owns a character with that name
-        if self.data['characters'] and name is not None:
-            name = name.capitalize()
-            if name in self.data['characters']:
-                self.character.data['name'] = name
-        # in all case, put the character in game:
-        self.character.create()
+    def create_character(self, name):
+        """ creates a new character."""
+        name = name.capitalize()
+        if not check_character_name(name):
+            return
+        if name in self.data['characters']:
+            self.game.log("Vous avez déjà un personnage nommé {}."
+                .format(name))
+        # the name is valid, use it.
+        self.character = Character(self.game, self, name)
+        self.game.log("Character {} created.".format(self.data['name']))
 
-    def record_character(self):
-        """ When a character is actually created, this method must
-        be called to link the character with the player account.
-        """
-        if self.character.data['name'] not in self.data['characters']:
-            self.data['characters'].append(self.character.data['name'])
-            self._put()
-
+    def play_character(self, name)
+        name = name.capitalize()
+        if name in self.data['characters']:
+            self.character = Character(self.game, self, name)
 
