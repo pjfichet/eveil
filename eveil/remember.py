@@ -14,6 +14,7 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 from .grammar import apostrophe
+from .message import info
 
 class Remember():
     """Characters don't know each others names. They have to share
@@ -47,15 +48,15 @@ class Remember():
                 self.data[character.data['name']] = string
                 self._put()
                 article = apostrophe("de", character.data['shortdesc'][0])
-                self.character.player.client.send(
-                    "<p>{} se souviendra {}{} sous le nom «{}».</p>".format(
+                info(self.character.player,
+                    "{} se souviendra {}{} sous le nom de « {} ».".format(
                         self.character.data['name'],
                         article,
                         character.data['shortdesc'],
                         string
                     ))
                 return
-        self.character.player.client.send(
+        info(self.character.player,
             "<p>Le mot clé <i>{}</i> ne correspond à personne ici présent.</p>"
             .format(keyword))
 
@@ -78,7 +79,7 @@ class Remember():
                     data["shortdesc"]
                 )
         table += "</table>"
-        self.character.player.client.send(table)
+        info(self.character.player, table)
 
     def rename(self, name):
         "after renaming a character, reset the database entry."

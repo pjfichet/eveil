@@ -21,7 +21,7 @@
 
 from .template import Template
 from .item import Container
-from .message import pose, expose_format
+from .message import pose, expose_format, info
 
 class Map():
     """The Map class implements a graph: rooms are nodes, and links
@@ -195,5 +195,5 @@ class Room():
             if word in link.target.shortdesc:
                 link.move(character)
                 return
-        character.player.client.send("<p><code>Aller où?</code></p>")
+        info(character.player, "Aller où?")
 

@@ -14,7 +14,7 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 import re
-from .message import pose, expose
+from .message import pose, expose, info
 
 # Player states defining commands availability
 class State():
@@ -67,8 +67,8 @@ class Cmd():
                 if self.onfail is not None:
                     return getattr(cls, self.onfail)(player, arg)
                 else:
-                    return player.client.send(
-                        "<p>Usage: <code>{} <i>{}</i></code></p>"
+                    return info(player,
+                        "Usage: <code>{} <i>{}</i></code>."
                         .format(self.name, self.usage)
                         )
         return decorated
@@ -130,7 +130,7 @@ class Parser():
             #self.game.log(
             #    "Unknown command <{}> for state {}."
             #    .format(message, player.get_state()))
-            player.client.send("<p><code>Arglebargle&nbsp;!?</code></p>")
+            info(player, "<code>Arglebargle&nbsp;!?</code>")
 
 
     ### Commands
@@ -142,7 +142,7 @@ class Parser():
     @Cmd(Scope.INGAME, "quitter", "", "\s*$",)
     def _quit(self, player, arg):
         # game._parse_queue handles disconnect correctly
-        player.client.send("<p>Au revoir.</p>")
+        info(player, "Au revoir.")
         player.client.close()
 
     ### Login commands ###

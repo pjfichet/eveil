@@ -125,8 +125,8 @@ class Character():
         self.game.log(
             "Character {} renamed {}."
             .format(oldname, self.data['name']))
-        self.player.client.send(
-            "<p>Votre personnage se nomme {}.</p>"
+        info(self.player,
+            "Votre personnage se nomme {}."
             .format(self.data['name']))
 
     def set_gender(self, gender):
@@ -144,7 +144,7 @@ class Character():
             self.data['gender'],
             self.grammar.gender
             ))
-        self.player.client.send("<p>{} est {} {}.</p>".format(
+        info(self.player, "{} est {} {}.".format(
             self.grammar.il.capitalize(),
             self.grammar.un,
             self.grammar.homme
@@ -157,7 +157,7 @@ class Character():
         shortdesc = shortdesc.lower()
         self.data['shortdesc'] = shortdesc
         self._put()
-        self.player.client.send("</p>{} est {}.</p>".format(
+        info(self.player, "{} est {}.".format(
             self.data['name'],
             self.data['shortdesc']
             ))
@@ -166,7 +166,7 @@ class Character():
         """ Define the long description of the character."""
         self.data['longdesc'] = longdesc
         self._put()
-        self.player.client.send("<p>{}</p>".format(self.data['longdesc']))
+        info(self.player, self.data['longdesc'])
 
     def set_room(self, room):
         self.room = room
