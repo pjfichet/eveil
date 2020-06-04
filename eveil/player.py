@@ -1,10 +1,10 @@
 # Copyright (C) 2018 Pierre Jean Fichet
 # <pierrejean dot fichet at posteo dot net>
-# 
+#
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
 # copyright notice and this permission notice appear in all copies.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
 # WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
 # MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
@@ -64,7 +64,8 @@ class Player():
         self.game = game
         self.character = None
         self.charlist = ""
-        self.data = {'pseudo' : None,
+        self.data = {
+            'pseudo' : None,
             'password' : None,
             'email' : None,
             'creation_dt' : None,
@@ -75,16 +76,16 @@ class Player():
         self.state = State.LOGIN
 
     def get_state(self):
+        "Get the player state, which depends on character state."
         if self.character:
             return self.character.data['state']
-        else:
-            return self.state
+        return self.state
 
-    def _key(self, pseudo = None):
+    def _key(self, pseudo=None):
+        "Format the key for the database."
         if pseudo:
             return 'player:' + pseudo
-        else:
-            return 'player:' + self.data['pseudo']
+        return 'player:' + self.data['pseudo']
 
     def _get(self):
         """ With the pseudo, extract datas from the db."""
@@ -92,8 +93,7 @@ class Player():
         if self.data:
             self.charlist = ', '.join(name for name in self.data['characters'])
             return True
-        else:
-            return False
+        return False
 
     def _put(self):
         """ Record the player datas in the database. """
@@ -117,13 +117,13 @@ class Player():
             self.data['creation_dt'] = datetime.now()
             self.data['login_dt'] = datetime.now()
             self._put()
-            self.game.log("Player {} created."
+            self.game.log(
+                "Player {} created."
                 .format(self.data['pseudo']))
             self.game.players.append(self)
             # Send a short welcome.
             self.client.send(account_menu.render({"player": self, "State": State}))
             # And put the player in chargen.
-            self.set_character()
         else:
             self.client.send("Le mot de passe ne correspond pas à sa confirmation.")
             self.client.close()
@@ -136,7 +136,8 @@ class Player():
             password = crypt.crypt(password, self.data['password'])
             if self.data['password'] == password:
                 # Login successful, put the player in the account menu.
-                self.game.log("Player {} logs in."
+                self.game.log(
+                    "Player {} logs in."
                     .format(self.data['pseudo']))
                 self.state = State.ACCOUNT
                 self.game.players.append(self)
@@ -165,7 +166,8 @@ class Player():
         pseudo = pseudo.capitalize()
         if self.game.db.get(self._key(pseudo)):
             # someone uses that pseudo.
-            self.client.send("Le pseudonyme {} est déjà utilisé."
+            self.client.send(
+                "Le pseudonyme {} est déjà utilisé."
                 .format(self.data['pseudo']))
         else:
             # remove the old player entry.
@@ -177,7 +179,8 @@ class Player():
             self._put()
             self.game.log("Player {} renamed {}.".format(
                 oldpseudo, self.data['pseudo']))
-            self.client.send("<p>Votre pseudonyme est {}.</p>"
+            self.client.send(
+                "<p>Votre pseudonyme est {}.</p>"
                 .format(self.data['pseudo']))
 
     def set_password(self, old, new):
@@ -186,7 +189,7 @@ class Player():
         new = crypt.crypt(new)
         if self.data['password'] != old:
             self.client.send("<p>Le mot de passe entré ne correspond pas au vôtre.</p>")
-        else: 
+        else:
             self.data['password'] = new
             self._put()
             self.client.send("<p>Votre nouveau mot de passe est enregistré.</p>")
@@ -195,7 +198,8 @@ class Player():
         """ Player command to change his email. """
         self.data['email'] = email
         self._put()
-        self.client.send("<p>Votre email est {}.</p>"
+        self.client.send(
+            "<p>Votre email est {}.</p>"
             .format(self.data['email']))
 
     def create_character(self, name):
@@ -204,14 +208,14 @@ class Player():
         if not check_character_name(name):
             return
         if name in self.data['characters']:
-            self.game.log("Vous avez déjà un personnage nommé {}."
+            self.game.log(
+                "Vous avez déjà un personnage nommé {}."
                 .format(name))
         # the name is valid, use it.
         self.character = Character(self.game, self, name)
         self.game.log("Character {} created.".format(self.data['name']))
 
-    def play_character(self, name)
+    def play_character(self, name):
         name = name.capitalize()
         if name in self.data['characters']:
             self.character = Character(self.game, self, name)
-
