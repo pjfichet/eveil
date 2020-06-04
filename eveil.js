@@ -101,7 +101,9 @@ function writeToScreen(message)
 }
 
 function sendText() {
-	doSend( document.getElementById('inputText').value );
+	var input = document.getElementById('inputText');
+	doSend( input.value );
+	input.value = '';
 }
 
 function dologin() {
