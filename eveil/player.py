@@ -206,12 +206,13 @@ class Player():
     def create_character(self, name):
         """ creates a new character."""
         name = name.capitalize()
-        if not check_character_name(self, name):
-            return
         if name in self.data['characters']:
-            self.game.log(
+            self.client.send(
                 "Vous avez déjà un personnage nommé {}."
                 .format(name))
+            return
+        if not check_character_name(self, name):
+            return
         # the name is valid, use it.
         self.data['characters'].append(name)
         self._put()
