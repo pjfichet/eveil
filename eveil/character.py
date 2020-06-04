@@ -106,16 +106,17 @@ class Character():
         """ Name or rename a character. This is also when the character is
         actually recorded in the database."""
         name = name.capitalize()
-        if check_character_name(self.player, name):
-            oldname = self.data['name']
-                self.game.db.rem(self.key)
-            self.data['name'] = name
-            self.key = 'character:' + self.data['name']
-            self._put()
-            self.player.client.send("<p>Votre personnage se nomme {}.</p>"
-                .format(self.data['name']))
-            self.game.log("Character {} renamed {}."
-                .format(oldname, self.data['name']))
+        if not check_character_name(self.player, name):
+            return
+        oldname = self.data['name']
+        self.game.db.rem(self.key)
+        self.data['name'] = name
+        self.key = 'character:' + self.data['name']
+        self._put()
+        self.game.log("Character {} renamed {}."
+            .format(oldname, self.data['name']))
+        self.player.client.send("<p>Votre personnage se nomme {}.</p>"
+            .format(self.data['name']))
 
     def set_gender(self, gender):
         """ Define the gender of the character """
@@ -140,17 +141,17 @@ class Character():
     def set_shortdesc(self, shortdesc):
         """ Define the short description of the character."""
         self.data['shortdesc'] = shortdesc
+        self._put()
         self.player.client.send("</p>{} est {}.</p>".format(
             self.data['name'],
             self.data['shortdesc']
             ))
-        self._put()
 
     def set_longdesc(self, longdesc):
         """ Define the long description of the character."""
         self.data['longdesc'] = longdesc
-        self.player.client.send("<p>{}</p>".format(self.data['longdesc']))
         self._put()
+        self.player.client.send("<p>{}</p>".format(self.data['longdesc']))
 
     def tick(self, now):
         self.queue.tick(now)
