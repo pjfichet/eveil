@@ -171,7 +171,7 @@ class Parser():
     def _email(self, player, arg):
         player.set_email(arg[0])
 
-    @Cmd(Scope.ACCOUNT, "nouveau", "", "^$")
+    @Cmd(Scope.ACCOUNT, "créer", "nom_du_personnage", "(\w+)\s*$")
     def _new_character(self, player, arg):
         player.create_character(arg[0])
 
