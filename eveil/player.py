@@ -19,6 +19,7 @@ import crypt
 from .template import Template
 from .character import Character, check_character_name
 from .parser import State
+from .message import error, info
 
 account_menu = Template("""
 <h2>Éveil</h2>
@@ -105,7 +106,7 @@ class Player():
         # and take care to do it at each login attempt.
         pseudo = pseudo.capitalize()
         if self.game.db.get(self._key(pseudo)):
-            self.client.send("Le pseudonyme {} est déjà utilisé.".format(pseudo))
+            error(self, "Le pseudonyme {} est déjà utilisé.".format(pseudo))
             self.client.close()
             return
         if password == confirm:
@@ -124,7 +125,7 @@ class Player():
             # Send a short welcome.
             self.client.send(account_menu.render({"player": self, "State": State}))
         else:
-            self.client.send("Le mot de passe ne correspond pas à sa confirmation.")
+            error(self, "Le mot de passe ne correspond pas à sa confirmation.")
             self.client.close()
 
     def login(self, pseudo, password):
@@ -144,11 +145,11 @@ class Player():
                     account_menu.render(
                     {"player": self, "State": State}))
             else:
-                self.client.send("Mot de passe invalide.")
+                error(self, "Mot de passe invalide.")
                 self.client.close()
                 return
         else:
-            self.client.send("Identifiant invalide.")
+            error(self, "Identifiant invalide.")
             self.client.close()
 
     def logout(self):
@@ -167,7 +168,7 @@ class Player():
         pseudo = pseudo.capitalize()
         if self.game.db.get(self._key(pseudo)):
             # someone uses that pseudo.
-            self.client.send(
+            info(self,
                 "Le pseudonyme {} est déjà utilisé."
                 .format(self.data['pseudo']))
         else:
@@ -180,8 +181,8 @@ class Player():
             self._put()
             self.game.log("Player {} renamed {}.".format(
                 oldpseudo, self.data['pseudo']))
-            self.client.send(
-                "<p>Votre pseudonyme est {}.</p>"
+            info(self,
+                "Votre pseudonyme est {}."
                 .format(self.data['pseudo']))
 
     def set_password(self, old, new):
@@ -189,25 +190,26 @@ class Player():
         old = crypt.crypt(old, self.data['password'])
         new = crypt.crypt(new)
         if self.data['password'] != old:
-            self.client.send("<p>Le mot de passe entré ne correspond pas au vôtre.</p>")
+            info(self,
+                "Le mot de passe entré ne correspond pas au vôtre.")
         else:
             self.data['password'] = new
             self._put()
-            self.client.send("<p>Votre nouveau mot de passe est enregistré.</p>")
+            info(self, "Votre nouveau mot de passe est enregistré.")
 
     def set_email(self, email):
         """ Player command to change his email. """
         self.data['email'] = email
         self._put()
-        self.client.send(
-            "<p>Votre email est {}.</p>"
+        info(self,
+            "Votre adresse électronique est ‹<i>{}</i>›."
             .format(self.data['email']))
 
     def create_character(self, name):
         """ creates a new character."""
         name = name.capitalize()
         if name in self.data['characters']:
-            self.client.send(
+            info(self,
                 "Vous avez déjà un personnage nommé {}."
                 .format(name))
             return
