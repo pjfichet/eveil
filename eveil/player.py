@@ -101,6 +101,8 @@ class Player():
 
     def create(self, pseudo, password, confirm, email):
         """ Create an account for a new player. """
+        # we capitalize the pseudo despite player intention
+        # and take care to do it at each login attempt.
         pseudo = pseudo.capitalize()
         if self.game.db.get(self._key(pseudo)):
             self.client.send("Le pseudonyme {} est déjà utilisé.".format(pseudo))
@@ -128,6 +130,7 @@ class Player():
 
     def login(self, pseudo, password):
         """ Log in an existing player, checking pseudo and password."""
+        # we take care to capitalize the pseudo.
         self.data['pseudo'] = pseudo.capitalize()
         if self._get():
             password = crypt.crypt(password, self.data['password'])
@@ -147,17 +150,18 @@ class Player():
 
     def logout(self):
         """ Record the player data, and remove the player """
+        if self.character:
+            self.character.logout()
         if self.state >= State.LOGIN:
             self.data['logout_dt'] = datetime.now()
             self._put()
         if self in self.game.players:
             self.game.players.remove(self)
-        if self.character:
-            self.character.logout()
         self.game.log("Player {} logs out.".format(self.data['pseudo']))
 
     def set_pseudo(self, pseudo):
         """ Player command to change his pseudo. """
+        # take care to capitalize the pseudo
         pseudo = pseudo.capitalize()
         if self.game.db.get(self._key(pseudo)):
             # someone uses that pseudo.
@@ -165,11 +169,14 @@ class Player():
                 .format(self.data['pseudo']))
         else:
             # remove the old player entry.
+            oldpseudo = self.data['pseudo']
             self.game.db.rem(self._key())
             # create a new one
             self.data['pseudo'] = pseudo
             # record the new player data
             self._put()
+            self.game.log("Player {} renamed {}.".format(
+                oldpseudo, self.data['pseudo']))
             self.client.send("<p>Votre pseudonyme est {}.</p>"
                 .format(self.data['pseudo']))
 
