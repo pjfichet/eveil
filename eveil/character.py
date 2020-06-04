@@ -152,6 +152,9 @@ class Character():
 
     def set_shortdesc(self, shortdesc):
         """ Define the short description of the character."""
+        if shortdesc[-1] in ('.', '?', '!'):
+            shortdesc = shortdesc[:-1]
+        shortdesc = shortdesc.lower()
         self.data['shortdesc'] = shortdesc
         self._put()
         self.player.client.send("</p>{} est {}.</p>".format(
