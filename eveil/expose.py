@@ -15,9 +15,9 @@
 
 import re
 
-def info(client, text):
+def info(player, text):
     "Game information sent to a player."
-    client.send("<p class='info'>{}</p>".format(text))
+    player.client.send("<p class='info'>{}</p>".format(text))
 
 def _has_name(name, text):
     name = '/' + name.lower()
