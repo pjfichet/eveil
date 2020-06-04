@@ -159,9 +159,9 @@ class Player():
         if self.state > State.LOGIN:
             self.data['logout_dt'] = datetime.now()
             self._put()
+            self.game.log("Player {} logs out.".format(self.data['pseudo']))
         if self in self.game.players:
             self.game.players.remove(self)
-        self.game.log("Player {} logs out.".format(self.data['pseudo']))
 
     def set_pseudo(self, pseudo):
         """ Player command to change his pseudo. """
