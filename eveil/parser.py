@@ -14,7 +14,7 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 import re
-from .expose import pose, expose
+from .message import pose, expose
 
 # Player states defining commands availability
 class State():

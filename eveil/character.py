@@ -19,7 +19,7 @@ from .parser import State
 from .grammar import Grammar
 from .delay import Queue
 from .remember import Remember
-from .expose import pose, info
+from .message import pose, info
 
 def check_character_name(player, name):
     """Check if a name is valid."""

@@ -21,7 +21,7 @@
 
 from .template import Template
 from .item import Container
-from .expose import pose, expose_format
+from .message import pose, expose_format
 
 class Map():
     """The Map class implements a graph: rooms are nodes, and links

@@ -20,6 +20,7 @@ def info(player, text):
     player.client.send("<p class='info'>{}</p>".format(text))
 
 def _has_name(name, text):
+    "Check if a player is inserting his character name in his pose."
     name = '/' + name.lower()
     if re.search("/il|/elle|/{}".format(name), text, re.IGNORECASE):
         return True
