@@ -62,12 +62,12 @@ def off_topic(from_char, text):
             "<p class='off_topic'>{}</p>".format(newtext))
 
 def expose_format(from_char, to_char, text):
-    "Format an expose."
-    # We want to subsitute /keyword with a character name.
-    # The difficulty is that "keyword" is only valid from the
-    # sender point of view, and the character name depends on
-    # the recipient point of view.
-
+    """Format an expose.
+    We want to subsitute /keyword with a character name.
+    The difficulty is that "keyword" is only valid from the
+    sender point of view, and the character name depends on
+    the recipient point of view.
+    """
     # First, we define a backend function for re.sub()
     # we have to place it here, because the backend only accepts
     # one argument, and we need to pass it from_char and to_char.
