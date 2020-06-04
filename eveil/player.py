@@ -116,6 +116,7 @@ class Player():
             self.data['email'] = email
             self.data['creation_dt'] = datetime.now()
             self.data['login_dt'] = datetime.now()
+            self.state = State.ACCOUNT
             self._put()
             self.game.log(
                 "Player {} created."
@@ -123,7 +124,6 @@ class Player():
             self.game.players.append(self)
             # Send a short welcome.
             self.client.send(account_menu.render({"player": self, "State": State}))
-            # And put the player in chargen.
         else:
             self.client.send("Le mot de passe ne correspond pas à sa confirmation.")
             self.client.close()
