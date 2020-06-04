@@ -139,6 +139,10 @@ class Player():
                     "Player {} logs in."
                     .format(self.data['pseudo']))
                 self.state = State.ACCOUNT
+                # Send a short welcome.
+                self.client.send(
+                    account_menu.render(
+                    {"player": self, "State": State}))
             else:
                 self.client.send("Mot de passe invalide.")
                 self.client.close()
