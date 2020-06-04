@@ -2,6 +2,7 @@ var pseudo;
 var passwd1;
 var passwd2;
 var email;
+var method;
 
 function doInit()
 {
@@ -30,11 +31,15 @@ function onOpen(evt)
 	document.getElementById("output").style.display = 'block';
 	document.getElementById("login").style.display = 'none';
 	document.getElementById("create").style.display = 'none';
-	if (typeof pseudo !== 'undefined' && typeof passwd1 !== 'undefined') {
-		if (typeof passwd2 !== 'undefined' && typeof email !== 'undefined') {
-			doSend('create ' + pseudo + ' ' + passwd1 + ' ' + passwd2 + ' ' + email);
-		} else {
+	if (method == 'login') {
+		if (typeof pseudo !== 'undefined' && typeof passwd1 !== 'undefined') {
 			doSend('login ' + pseudo + ' ' + passwd1);
+		}
+	}
+	if (method == 'create') {
+		if (typeof pseudo !== 'undefined' && typeof passwd1 !== 'undefined'
+		&& typeof passwd2 !== 'undefined' && typeof email !== 'undefined') {
+			doSend('create ' + pseudo + ' ' + passwd1 + ' ' + passwd2 + ' ' + email);
 		}
 	}
 }
@@ -103,6 +108,7 @@ function dologin() {
 	var form = document.getElementById('login');
 	pseudo = form.pseudo.value;
 	passwd1 = form.passwd.value;
+	method = 'login';
 	doConnect();
 }
 
@@ -112,6 +118,7 @@ function docreate() {
 	passwd1 = form.passwd.value;
 	passwd2 = form.confirm.value;
 	email = form.email.value;
+	method = 'create';
 	doConnect();
 }
 
