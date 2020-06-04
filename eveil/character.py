@@ -107,8 +107,6 @@ class Character():
         if self in self.room.characters:
             # should be always true
             self.room.characters.remove(self)
-        if self in self.game.characters:
-            self.game.characters.remove(self)
 
     def set_name(self, name):
         """ Name or rename a character. This is also when the character is

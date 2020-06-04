@@ -152,7 +152,10 @@ class Player():
     def logout(self):
         """ Record the player data, and remove the player """
         if self.character:
+            if self.character in self.game.characters:
+                self.game.characters.remove(self.character)
             self.character.logout()
+            self.character = None
         if self.state >= State.LOGIN:
             self.data['logout_dt'] = datetime.now()
             self._put()
@@ -213,6 +216,7 @@ class Player():
                 .format(name))
         # the name is valid, use it.
         self.character = Character(self.game, self, name)
+        self.game.characters.append(self.character)
         self.game.log("Character {} created.".format(self.character.data['name']))
 
     def play_character(self, name):
