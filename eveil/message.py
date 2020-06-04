@@ -15,6 +15,10 @@
 
 import re
 
+def error(player, text):
+    "Message detailing a login error."
+    player.client.send("<p class='error'>{}</p>".format(text))
+
 def info(player, text):
     "Game information sent to a player."
     player.client.send("<p class='info'>{}</p>".format(text))
