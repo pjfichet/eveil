@@ -205,7 +205,7 @@ class Player():
     def create_character(self, name):
         """ creates a new character."""
         name = name.capitalize()
-        if not check_character_name(name):
+        if not check_character_name(self, name):
             return
         if name in self.data['characters']:
             self.game.log(
