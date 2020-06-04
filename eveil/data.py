@@ -47,6 +47,11 @@ class Data:
             self.game.log("Creating {}".format(self.filename))
             self.put('init', datetime.now())
 
+    def has(self, key):
+        if key in self.db:
+            return True
+        return False
+
     def put(self, key, data):
         """
         Record a data.
