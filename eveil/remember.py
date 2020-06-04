@@ -1,10 +1,10 @@
 # Copyright (C) 2018 Pierre Jean Fichet
 # <pierrejean dot fichet at posteo dot net>
-# 
+#
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
 # copyright notice and this permission notice appear in all copies.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
 # WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
 # MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
@@ -13,26 +13,29 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
+from .grammar import apostrophe
+
 class Remember():
     """Characters don't know each others names. They have to share
     them and remember them. This system allow them to remember names."""
 
     def __init__(self, game, character):
         self.game = game
-        self.name = character.data['name']
         self.character = character
-        self.key = "remember:" + self.name
-        self.remember = {}
+        self.key = "remember:" + self.character.data['name']
+        self.data = {}
         if self.game.db.has(self.key):
             self._get()
         else:
             self._put()
 
     def _put(self):
-        self.game.db.put(self.key, self.remember)
+        "Record data in the database."
+        self.game.db.put(self.key, self.data)
 
     def _get(self):
-        self.remember = self.game.db.get(self.key)
+        "Get data from the database."
+        self.data = self.game.db.get(self.key)
 
     def set_remember(self, keyword, string):
         """Remembers/registers a character name."""
@@ -41,46 +44,46 @@ class Remember():
             if character == self.character.data['name']:
                 continue
             if keyword in character.data['shortdesc']:
-                self.remember[character.data['name']] = string
+                self.data[character.data['name']] = string
                 self._put()
-                de = apostrophe("de", character.data['shortdesc'][0])
+                article = apostrophe("de", character.data['shortdesc'][0])
                 self.character.player.client.send(
                     "<p>{} se souviendra {}{} sous le nom «{}».</p>".format(
-                        self.name,
-                        de,
+                        self.character.data['name'],
+                        article,
                         character.data['shortdesc'],
                         string
                     ))
                 return
-        self.character.player.client.send("""<p>Le mot clé <i>{}</i> ne correspond
-            à personne ici présent.</p>""".format(keyword))
+        self.character.player.client.send(
+            "<p>Le mot clé <i>{}</i> ne correspond à personne ici présent.</p>"
+            .format(keyword))
 
     def get_remember(self, character):
-        if self.character.data['name'] == self.name:
+        "Get the string by which a character is remembered."
+        if character.data['name'] == self.character.data['name']:
             return character.data['name']
-        if character.data['name'] in self.remember:
-            return self.remember[character.data['name']]
+        if character.data['name'] in self.data:
+            return self.data[character.data['name']]
         return character.data['shortdesc']
 
     def list_remember(self):
+        "List the remembered names and strings."
         table = "<table><tr><th>nom</th><th>description</th></tr>"
-        for name in self.remember:
-            id_ = self.game.db.get("character:" + name)
-            if id_:
-                key = "character:" + str(id_)
-                data = self.game.db.get(key)
+        for name in self.data:
+            data = self.game.db.get("character:" + name)
+            if data:
                 table += "<tr><td>{}</td><td>{}</td></tr>".format(
-                    self.remember[name],
+                    self.data[name],
                     data["shortdesc"]
-                ) 
+                )
         table += "</table>"
-        self.player.client.send(table)
+        self.character.player.client.send(table)
 
     def rename(self, name):
         "after renaming a character, reset the database entry."
-        oldname = self.name
+        oldname = self.character.data['name']
         self.game.db.rem(self.key)
-        self.name = name
         self.key = "remember:" + name
         self._put()
         self.game.log(
