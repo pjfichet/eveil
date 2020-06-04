@@ -52,7 +52,7 @@ def expose(from_char, text):
     for to_char in from_char.room.characters:
         newtext = expose_format(from_char, to_char, text)
         to_char.player.client.send("<p><b>{}</b>. — {}</p>".format(
-            to_char.get_remember(from_char), newtext))
+            to_char.remember.get_remember(from_char), newtext))
 
 def off_topic(from_char, text):
     "Off topic, or out of character, communication."
@@ -77,16 +77,16 @@ def expose_format(from_char, to_char, text):
         # /Il /Elle /il /elle refers to the sender's character
         if keyword in ('Il', 'Elle', 'il', 'elle'):
             if keyword[0] in ('I', 'E'):
-                return to_char.get_remember(from_char).capitalize()
-            return to_char.get_remember(from_char)
+                return to_char.remember.get_remember(from_char).capitalize()
+            return to_char.remember.get_remember(from_char)
         # Otherwise, check who that keyword may refer to.
         for char in from_char.room.characters:
             # Search who that keyword refers to from the sender
             # point of view.
-            if keyword.lower() in from_char.get_remember(char).lower():
+            if keyword.lower() in from_char.remember.get_remember(char).lower():
                 # Search how that character is known from the
                 # recipient point of view
-                return to_char.get_remember(char)
+                return to_char.remember.get_remember(char)
         # If nothing, returns the keyword itself.
         return keyword
 

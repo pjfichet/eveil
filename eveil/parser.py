@@ -198,11 +198,11 @@ class Parser():
 
     @Cmd(Scope.CHARACTER, "connaissances", "", "^$")
     def _list_remember(self, player, arg):
-        player.character.list_remember()
+        player.character.remember.list_remember()
 
     @Cmd(Scope.CHARACTER, "retenir", "mot_clé nom", "(\w+)\s+(\S*)\s*$")
     def _set_remember(self, player, arg):
-        player.character.set_remember(arg[1], arg[2])
+        player.character.remember.set_remember(arg[1], arg[2])
 
     @Cmd(Scope.CHARACTER, "pose", "petite pose", "(.+)\s*$")
     def _set_pose(self, player, arg):
