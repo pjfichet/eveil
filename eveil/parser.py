@@ -127,6 +127,9 @@ class Parser():
             arg = matched.group("arguments") or ''
             getattr(self, Cmd.commands[cmd].fn)(player, arg)
         else:
+            #self.game.log(
+            #    "Unknown command <{}> for state {}."
+            #    .format(message, player.get_state()))
             player.client.send("<p><code>Arglebargle&nbsp;!?</code></p>")
 
 
