@@ -41,7 +41,7 @@ class Remember():
         """Remembers/registers a character name."""
         keyword = keyword.replace('/', '')
         for character in self.character.room.characters:
-            if character == self.character.data['name']:
+            if character == self.character:
                 continue
             if keyword in character.data['shortdesc']:
                 self.data[character.data['name']] = string
