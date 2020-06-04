@@ -41,10 +41,11 @@ class Remember():
     def set_remember(self, keyword, string):
         """Remembers/registers a character name."""
         keyword = keyword.replace('/', '')
+        keyword = keyword.lower()
         for character in self.character.room.characters:
             if character == self.character:
                 continue
-            if keyword in character.data['shortdesc']:
+            if keyword in self.get_remember(character).lower():
                 self.data[character.data['name']] = string
                 self._put()
                 article = apostrophe("de", character.data['shortdesc'][0])
