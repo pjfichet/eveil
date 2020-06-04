@@ -213,6 +213,8 @@ class Player():
                 "Vous avez déjà un personnage nommé {}."
                 .format(name))
         # the name is valid, use it.
+        self.data['characters'].append(name)
+        self._put()
         self.character = Character(self.game, self, name)
         self.game.log("Character {} created.".format(self.character.data['name']))
 
