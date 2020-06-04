@@ -68,7 +68,7 @@ class Cmd():
                     return getattr(cls, self.onfail)(player, arg)
                 else:
                     return info(player,
-                        "Usage: <code>{} <i>{}</i></code>."
+                        "<b>Usage:</b> <code>{} <i>{}</i></code>."
                         .format(self.name, self.usage)
                         )
         return decorated
