@@ -23,7 +23,7 @@ class Remember():
         self.character = character
         self.key = "remember:" + self.name
         self.remember = {}
-        if self.key in self.game.db:
+        if self.game.db.has(self.key):
             self._get()
         else:
             self._put()
@@ -76,3 +76,13 @@ class Remember():
         table += "</table>"
         self.player.client.send(table)
 
+    def rename(self, name):
+        "after renaming a character, reset the database entry."
+        oldname = self.name
+        self.game.db.rem(self.key)
+        self.name = name
+        self.key = "remember:" + name
+        self._put()
+        self.game.log(
+            "Remember {} renamed {}."
+            .format(oldname, self.data['name']))

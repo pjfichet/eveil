@@ -18,6 +18,7 @@ from datetime import datetime
 from .parser import State
 from .grammar import Grammar
 from .delay import Queue
+from .remember import Remember
 from .expose import pose, info
 
 def check_character_name(player, name):
@@ -64,7 +65,7 @@ class Character():
         self.data['login_dt'] = datetime.now()
         self._put()
         # Instanciate character components
-        #self.remember = Remember(name)
+        self.remember = Remember(self.game, self)
         self.queue = Queue(5) # 10 second interval
         self.grammar = Grammar(
             Grammar.NUMBERS.index("singulier"),
@@ -115,6 +116,7 @@ class Character():
         name = name.capitalize()
         if not check_character_name(self.player, name):
             return
+        self.remember.rename(name)
         oldname = self.data['name']
         self.game.db.rem(self.key)
         self.data['name'] = name
