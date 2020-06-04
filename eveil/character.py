@@ -50,7 +50,7 @@ class Character():
         # Fetch or create player datas
         if not self._get():
             self.data = {
-                'name' : 'Ombre',
+                'name' : name
                 'lastname' : 'Ombre',
                 'gender' : Grammar.GENDERS.index("neutre"),
                 'shortdesc' : "l'ombre d'un personnage",

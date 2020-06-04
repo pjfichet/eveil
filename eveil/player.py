@@ -213,7 +213,7 @@ class Player():
                 .format(name))
         # the name is valid, use it.
         self.character = Character(self.game, self, name)
-        self.game.log("Character {} created.".format(self.data['name']))
+        self.game.log("Character {} created.".format(self.character.data['name']))
 
     def play_character(self, name):
         "Plays an existing character."
