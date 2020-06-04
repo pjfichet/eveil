@@ -21,7 +21,7 @@ nom, genre, apparence et description avec les commandes suivantes:</p>
 {% endif %}
 
 {% if character.data.gender %}
-    <li><code>genre <i>{{character.grammar.data.gender}}</i></code></li>
+    <li><code>genre <i>{{character.grammar.gender}}</i></code></li>
 {% else %}
     <li><code>genre <i>[masculin|féminin]</i></code>.</li>
 {% endif %}
