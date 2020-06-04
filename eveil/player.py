@@ -76,6 +76,12 @@ class Player():
             }
         self.state = State.LOGIN
 
+    def get_state(self):
+        if self.character:
+            return self.character.data['state']
+        else:
+            return self.state
+
     def _key(self, pseudo = None):
         if pseudo:
             return 'player:' + pseudo

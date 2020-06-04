@@ -18,9 +18,20 @@ from .expose import pose, expose
 
 # Player states defining commands availability
 class State():
-    """ Player sates defining commands availability """
-    length = 8
-    LOGIN, INGAME, ACCOUNT, CHARACTER, CHARGEN, IC, OOC, ADMIN = range(length)
+    """ Player states defining commands availability """
+    length = 7
+    LOGIN = 10
+    ACCOUNT = 20
+    CHARGEN = 30
+    IC = 40
+    OOC = 50
+    ADMIN = 60
+    GOD = 70
+
+class Scope():
+    """ Scopes in which commands are availables """
+    length = 9
+    LOGIN, INGAME, ACCOUNT, CHARACTER, CHARGEN, IC, OOC, ADMIN, GOD = range(length)
 
 class Cmd():
     """ This class implements a decorator used to:
@@ -76,15 +87,15 @@ class Parser():
         self.game = game
         # We build a regex matching all available commands for a player State
         self.cmd_regex = [x for x in range(State.length)]
-        self.cmd_regex[State.LOGIN] = self._make_regex(State.LOGIN)
+        self.cmd_regex[State.LOGIN] = self._make_regex(Scope.LOGIN)
         self.cmd_regex[State.ACCOUNT] = self._make_regex(
-                State.INGAME, State.ACCOUNT
+                Scop.INGAME, Scope.ACCOUNT
                 )
         self.cmd_regex[State.CHARGEN] = self._make_regex(
-                State.INGAME, State.CHARACTER, State.CHARGEN
+                Scope.INGAME, Scope.CHARACTER, Scope.CHARGEN
                 )
         self.cmd_regex[State.ADMIN] = self._make_regex(
-                State.INGAME, State.CHARACTER, State.ADMIN
+                Scope.INGAME, Scope.CHARACTER, Scope.ADMIN
                 )
 
 
@@ -110,7 +121,7 @@ class Parser():
         for a given player state, execute the function relative to the
         matching command."""
         #test if the message match a command available for the player state
-        matched = self.cmd_regex[player.state].match(message)
+        matched = self.cmd_regex[player.get_state()].match(message)
         if matched:
             # execute the relative function
             cmd = matched.group("command")
@@ -126,7 +137,7 @@ class Parser():
 
     ### Universal commands ###
 
-    @Cmd(State.INGAME, "quitter", "", "\s*$",)
+    @Cmd(Scope.INGAME, "quitter", "", "\s*$",)
     def _quit(self, player, arg):
         # game._parse_queue handles disconnect correctly
         player.client.send("<p>Au revoir.</p>")
@@ -134,12 +145,12 @@ class Parser():
 
     ### Login commands ###
 
-    @Cmd(State.LOGIN, "create", "pseudo password confirm email",
+    @Cmd(Scope.LOGIN, "create", "pseudo password confirm email",
         "(\w+)\s+(\S+)\s+(\w+)\s+([^@]+@[^@]+)\s*$", "_logout")
     def _create(self, player, arg):
         player.create(arg[1], arg[2], arg[3], arg[4])
 
-    @Cmd(State.LOGIN, "login", "password",
+    @Cmd(Scope.LOGIN, "login", "password",
         "(\w+)\s+(\S+)\s*$", "_logout")
     def _login(self, player, arg):
         player.login(arg[1], arg[2])
@@ -149,33 +160,33 @@ class Parser():
 
     ### Account commands ###
 
-    @Cmd(State.ACCOUNT, "pseudo", "nouveau_pseudo", "(\w+)\s*$")
+    @Cmd(Scope.ACCOUNT, "pseudo", "nouveau_pseudo", "(\w+)\s*$")
     def _pseudo(self, player, arg):
         player.set_pseudo(arg[0])
 
-    @Cmd(State.ACCOUNT, "secret", "ancien_mdp nouveau_mdp", "(\S+)\s+(\S+)\s*$")
+    @Cmd(Scope.ACCOUNT, "secret", "ancien_mdp nouveau_mdp", "(\S+)\s+(\S+)\s*$")
     def _password(self, player, arg):
         player.set_password(arg[1], arg[2])
 
-    @Cmd(State.ACCOUNT, "email", "mail@example.com", "([^@]+@[^@]+)\s*$")
+    @Cmd(Scope.ACCOUNT, "email", "mail@example.com", "([^@]+@[^@]+)\s*$")
     def _email(self, player, arg):
         player.set_email(arg[0])
 
-    @Cmd(State.ACCOUNT, "nouveau", "", "^$")
+    @Cmd(Scope.ACCOUNT, "nouveau", "", "^$")
     def _new_character(self, player, arg):
         player.character.create(arg[0])
 
-    @Cmd(State.ACCOUNT, "jouer", "nom_du_personnage", "(\w+)\s*$")
+    @Cmd(Scope.ACCOUNT, "jouer", "nom_du_personnage", "(\w+)\s*$")
     def _play(self, player, arg):
         player.character.play(arg[0])
 
     ### General character commands ###
 
-    @Cmd(State.CHARACTER, "aller", "[vers][ le| la| les] mot_clé", r".*\b(\w+)\s*$")
+    @Cmd(Scope.CHARACTER, "aller", "[vers][ le| la| les] mot_clé", r".*\b(\w+)\s*$")
     def _go(self, player, arg):
         player.character.room.move(player.character, arg[1])
 
-    @Cmd(State.CHARACTER, "voir", "voir [objet]", "(\w+)?\s*$")
+    @Cmd(Scope.CHARACTER, "voir", "voir [objet]", "(\w+)?\s*$")
     def _look(self, player, arg):
         if arg[1]:
             # TODO
@@ -183,53 +194,53 @@ class Parser():
         else:
             player.character.room.send_longdesc(player.character)
 
-    @Cmd(State.CHARACTER, "connaissances", "", "^$")
+    @Cmd(Scope.CHARACTER, "connaissances", "", "^$")
     def _list_remember(self, player, arg):
         player.character.list_remember()
 
-    @Cmd(State.CHARACTER, "retenir", "mot_clé nom", "(\w+)\s+(\S*)\s*$")
+    @Cmd(Scope.CHARACTER, "retenir", "mot_clé nom", "(\w+)\s+(\S*)\s*$")
     def _set_remember(self, player, arg):
         player.character.set_remember(arg[1], arg[2])
 
-    @Cmd(State.CHARACTER, "pose", "petite pose", "(.+)\s*$")
+    @Cmd(Scope.CHARACTER, "pose", "petite pose", "(.+)\s*$")
     def _set_pose(self, player, arg):
         pose(player.character, arg[0])
 
-    @Cmd(State.CHARACTER, "expose", "longue exposition", ".*")
+    @Cmd(Scope.CHARACTER, "expose", "longue exposition", ".*")
     def _expose(self, player, arg):
         expose(player.character, arg[0])
 
     ### Chargen commands ###
    
-    @Cmd(State.CHARGEN, "genre", "masculin|féminin", "(masculin|féminin)\s*$")
+    @Cmd(Scope.CHARGEN, "genre", "masculin|féminin", "(masculin|féminin)\s*$")
     def _gender(self, player, arg):
         player.character.set_gender(arg[0])
 
-    @Cmd(State.CHARGEN, "nom", "nom", "(\w+)\s*$")
+    @Cmd(Scope.CHARGEN, "nom", "nom", "(\w+)\s*$")
     def _name(self, player, arg):
         player.character.set_name(arg[0])
 
-    @Cmd(State.CHARGEN, "apparence", "courte description", "(.+)\s*$")
+    @Cmd(Scope.CHARGEN, "apparence", "courte description", "(.+)\s*$")
     def _shortdesc(self, player, arg):
         player.character.set_shortdesc(arg[0])
 
-    @Cmd(State.CHARGEN, "description", "longue description", "(.+)\s*$")
+    @Cmd(Scope.CHARGEN, "description", "longue description", "(.+)\s*$")
     def _longdesc(self, player, arg):
         player.character.set_longdesc(arg[0])
 
-    @Cmd(State.CHARGEN, "métier", "artisan|barde|chasseur|druide|guerrier",
+    @Cmd(Scope.CHARGEN, "métier", "artisan|barde|chasseur|druide|guerrier",
             "(artisan|barde|chasseur|druide|guerrier)\s*$")
     def _skill(self, player, arg):
         player.character.set_skill(arg[0])
 
-    @Cmd(State.CHARGEN, "talent", "agileté|constitution|force|intelligence|sagesse",
+    @Cmd(Scope.CHARGEN, "talent", "agileté|constitution|force|intelligence|sagesse",
         "(agileté|constitution|force|intelligence|sagesse)\s*$")
     def _talent(self, player, arg):
         player.character.set_talent(arg[0])
 
     ### Admin commands ###
 
-    @Cmd(State.ADMIN, "shutdown", "", "\s*$")
+    @Cmd(Scope.ADMIN, "shutdown", "", "\s*$")
     def _shutdown(self, player, arg):
         self.game.shutdown()
 

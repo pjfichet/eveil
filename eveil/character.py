@@ -64,9 +64,7 @@ class Character():
 
     def _put(self):
         """ Record the datas of the character in the db."""
-        # Don't record the shadow character used by player account.
-        if self.data['state'] > State.ACCOUNT:
-            self.game.db.put(self._key(), self.data)
+        self.game.db.put(self._key(), self.data)
 
     def _check_name(self, name):
         """Check if a name is valid."""
@@ -154,7 +152,6 @@ class Character():
             # should be always true
             self.room.characters.remove(self)
         if self in self.game.characters:
-            # only true if state > State.ACCOUNT
             self.game.characters.remove(self)
 
     def set_name(self, name):
