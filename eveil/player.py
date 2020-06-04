@@ -32,7 +32,7 @@ account_menu = Template("""
         <ul>
             <li><code>jouer <i>nom_du_personnage</i></code></li>
     {% else %}
-        <p>Vous avez créé un personnage: {{player.charlist}}.
+        <p>Vous avez créé un personnage : {{player.charlist}}.
         Vous pouvez jouer avec ce personnage ou en créer un nouveau
         en entrant :
         <ul>
