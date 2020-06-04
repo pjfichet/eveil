@@ -1,10 +1,10 @@
 # Copyright (C) 2018 Pierre Jean Fichet
 # <pierrejean dot fichet at posteo dot net>
-# 
+#
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
 # copyright notice and this permission notice appear in all copies.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
 # WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
 # MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
@@ -13,8 +13,10 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
+from datetime import datetime
+
+from .parser import State
 from .grammar import Grammar
-from .grammar import apostrophe
 from .delay import Queue
 from .expose import pose, info
 
@@ -22,12 +24,12 @@ def check_character_name(player, name):
     """Check if a name is valid."""
     if len(name) < 4:
         info(player,
-            "Le nom du personnage doit contenir au moins quatre lettres.")
+             "Le nom du personnage doit contenir au moins quatre lettres.")
         return False
     if player.game.db.get('character:' + name):
         info(player,
-            "Il existe déjà un personnage nommé {}."
-            .format(name))
+             "Il existe déjà un personnage nommé {}."
+             .format(name))
         return False
     return True
 
@@ -36,6 +38,9 @@ def check_character_name(player, name):
 SHADOW = "Ombre"
 
 class Character():
+    """A character. Characters are created by the player, from the
+    Player class. Their name must be unique. To a character are
+    attached several objects, defining capabilities."""
 
     def __init__(self, game, player, name):
         self.game = game
@@ -43,17 +48,18 @@ class Character():
         self.key = 'character:' + name
         # Fetch or create player datas
         if not self._get():
-            self.data = {'name' : 'Ombre',
-            'lastname' : 'Ombre',
-            'gender' : Grammar.GENDERS.index("neutre"),
-            'shortdesc' : "l'ombre d'un personnage",
-            'longdesc' : "Une ombre informe, vaguement visible.",
-            'pose' : 'est ici',
-            'roomid' : 0,
-            'login_dt' : None,
-            'logout_dt' : None,
-            'play_time' : None,
-            'state' : State.CHARGEN,
+            self.data = {
+                'name' : 'Ombre',
+                'lastname' : 'Ombre',
+                'gender' : Grammar.GENDERS.index("neutre"),
+                'shortdesc' : "l'ombre d'un personnage",
+                'longdesc' : "Une ombre informe, vaguement visible.",
+                'pose' : 'est ici',
+                'roomid' : 0,
+                'login_dt' : None,
+                'logout_dt' : None,
+                'play_time' : None,
+                'state' : State.CHARGEN,
             }
         self.data['login_dt'] = datetime.now()
         self._put()
@@ -61,41 +67,42 @@ class Character():
         #self.remember = Remember(name)
         self.queue = Queue(5) # 10 second interval
         self.grammar = Grammar(
-                Grammar.NUMBERS.index("singulier"),
-                Grammar.GENDERS.index("neutre"),
-                )
-        self.grammar.agree(Grammar.NUMBERS.index("singulier"), self.gender)
+            Grammar.NUMBERS.index("singulier"),
+            Grammar.GENDERS.index("neutre"),
+            )
+        self.grammar.agree(
+            Grammar.NUMBERS.index("singulier"),
+            self.data['gender']
+        )
         # put the character in grid
         for room in self.game.map.rooms:
-            if room.id == self.roomid:
+            if room.id == self.data['roomid']:
                 self.room = room
-                break 
+                break
         self.room.send_longdesc(self)
         self.room.add_character(self)
         pose(self, "/Il déambule par ici")
-        self.game.log("Character {} enters the game in room {}."
+        self.game.log("Character {} enters the game in room {}.")
 
 
     def _get(self):
         """ With the character name, extract datas from the db."""
-        self.data = self.game.db.get(self._key())
-        if self.data:
-            return True
-        else:
-            return  False
+        self.data = self.game.db.get(self.key)
+        return bool(self.data)
 
     def _put(self):
         """ Record the datas of the character in the db."""
-        self.game.db.put(self._key(), self.data)
+        self.game.db.put(self.key, self.data)
 
     def logout(self):
         """ Removes a character from the grid at logout."""
-        self.data['logout_dt'] == datetime.now()
-        self.data['play_time'] == self.data['logout_dt'] - self.data['login_dt']
+        self.data['logout_dt'] = datetime.now()
+        self.data['play_time'] = self.data['logout_dt'] - self.data['login_dt']
         self._put()
         pose(self, "/Il se déconnecte.")
-        self.game.log("Character {} leaves the game from room {}."
-                .format(self.data['name'], self.room.id))
+        self.game.log(
+            "Character {} leaves the game from room {}."
+            .format(self.data['name'], self.room.id))
         if self in self.room.characters:
             # should be always true
             self.room.characters.remove(self)
@@ -113,9 +120,11 @@ class Character():
         self.data['name'] = name
         self.key = 'character:' + self.data['name']
         self._put()
-        self.game.log("Character {} renamed {}."
+        self.game.log(
+            "Character {} renamed {}."
             .format(oldname, self.data['name']))
-        self.player.client.send("<p>Votre personnage se nomme {}.</p>"
+        self.player.client.send(
+            "<p>Votre personnage se nomme {}.</p>"
             .format(self.data['name']))
 
     def set_gender(self, gender):
@@ -124,7 +133,8 @@ class Character():
             # parser.py takes care of this yet.
             return
         self.data['gender'] = Grammar.GENDERS.index(gender)
-        self.grammar.agree(Grammar.NUMBERS.index("singulier"),
+        self.grammar.agree(
+            Grammar.NUMBERS.index("singulier"),
             self.data['gender'])
         self._put()
         self.game.log("{} is of gender {} ({}).".format(
@@ -154,4 +164,5 @@ class Character():
         self.player.client.send("<p>{}</p>".format(self.data['longdesc']))
 
     def tick(self, now):
+        """ tick all objects. """
         self.queue.tick(now)
