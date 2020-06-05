@@ -63,8 +63,8 @@ class Player():
     def __init__(self, game, client):
         self.client = client
         self.game = game
+        self.uid = None
         self.character = None
-        self.charlist = ""
         self.data = {
             'pseudo' : None,
             'password' : None,
@@ -82,43 +82,30 @@ class Player():
             return self.character.data['state']
         return self.state
 
-    def _key(self, pseudo=None):
-        "Format the key for the database."
-        if pseudo:
-            return 'player:' + pseudo
-        return 'player:' + self.data['pseudo']
-
-    def _get(self):
-        """ With the pseudo, extract datas from the db."""
-        self.data = self.game.db.get(self._key())
-        if self.data:
-            self.charlist = ', '.join(name for name in self.data['characters'])
-            return True
-        return False
-
-    def _put(self):
-        """ Record the player datas in the database. """
-        self.game.db.put(self._key(), self.data)
+    def charlist(self):
+        """Returns a formatted list of characters."""
+        return ', '.join(name for name in self.data['characters'])
 
     def create(self, pseudo, password, confirm, email):
         """ Create an account for a new player. """
         # we capitalize the pseudo despite player intention
         # and take care to do it at each login attempt.
         pseudo = pseudo.capitalize()
-        if self.game.db.get(self._key(pseudo)):
+        if self.game.db.has('player', pseudo):
             error(self, "Le pseudonyme {} est déjà utilisé.".format(pseudo))
             self.client.close()
             return
         if password == confirm:
             password = crypt.crypt(password)
             # Create a new account.
+            self.data['uid'] = self.game.db.uid()
             self.data['pseudo'] = pseudo
             self.data['password'] = password
             self.data['email'] = email
             self.data['creation_dt'] = datetime.now()
             self.data['login_dt'] = datetime.now()
             self.state = State.ACCOUNT
-            self._put()
+            self.game.db.put('player', self.data['pseudo'], self.data)
             self.game.log(
                 "Player {} created."
                 .format(self.data['pseudo']))
@@ -131,25 +118,25 @@ class Player():
     def login(self, pseudo, password):
         """ Log in an existing player, checking pseudo and password."""
         # we take care to capitalize the pseudo.
-        self.data['pseudo'] = pseudo.capitalize()
-        if self._get():
-            password = crypt.crypt(password, self.data['password'])
-            if self.data['password'] == password:
-                # Login successful, put the player in the account menu.
-                self.game.log(
-                    "Player {} logs in."
-                    .format(self.data['pseudo']))
-                self.state = State.ACCOUNT
-                # Send a short welcome.
-                self.client.send(
-                    account_menu.render(
-                    {"player": self, "State": State}))
-            else:
-                error(self, "Mot de passe invalide.")
-                self.client.close()
-                return
-        else:
+        pseudo = pseudo.capitalize()
+        if not self.game.db.has('player', pseudo):
             error(self, "Identifiant invalide.")
+            self.client.close()
+            return
+        self.data = self.game.db.get('player', pseudo)
+        password = crypt.crypt(password, self.data['password'])
+        if self.data['password'] == password:
+            # Login successful, put the player in the account menu.
+            self.game.log(
+                "Player {} logs in."
+                .format(self.data['pseudo']))
+            self.state = State.ACCOUNT
+            # Send a short welcome.
+            self.client.send(
+                account_menu.render(
+                {"player": self, "State": State}))
+        else:
+            error(self, "Mot de passe invalide.")
             self.client.close()
 
     def logout(self):
@@ -159,26 +146,24 @@ class Player():
             self.character = None
         if self.state > State.LOGIN:
             self.data['logout_dt'] = datetime.now()
-            self._put()
+            self.game.db.put('player', self.data['pseudo'], self.data)
             self.game.log("Player {} logs out.".format(self.data['pseudo']))
 
     def set_pseudo(self, pseudo):
         """ Player command to change his pseudo. """
         # take care to capitalize the pseudo
         pseudo = pseudo.capitalize()
-        if self.game.db.get(self._key(pseudo)):
+        if self.game.db.has('player', pseudo):
             # someone uses that pseudo.
             info(self,
                 "Le pseudonyme {} est déjà utilisé."
                 .format(self.data['pseudo']))
         else:
-            # remove the old player entry.
+            # rename the database entry.
             oldpseudo = self.data['pseudo']
-            self.game.db.rem(self._key())
-            # create a new one
+            self.game.db.rem('player', oldpseudo)
             self.data['pseudo'] = pseudo
-            # record the new player data
-            self._put()
+            self.game.db.put('player', self.data['pseudo'], self.data)
             self.game.log("Player {} renamed {}.".format(
                 oldpseudo, self.data['pseudo']))
             info(self,
@@ -194,13 +179,13 @@ class Player():
                 "Le mot de passe entré ne correspond pas au vôtre.")
         else:
             self.data['password'] = new
-            self._put()
+            self.game.db.put('player', self.data['pseudo'], self.data)
             info(self, "Votre nouveau mot de passe est enregistré.")
 
     def set_email(self, email):
         """ Player command to change his email. """
         self.data['email'] = email
-        self._put()
+        self.game.db.put('player', self.data['pseudo'], self.data)
         info(self,
             "Votre adresse électronique est ‹<i>{}</i>›."
             .format(self.data['email']))
@@ -217,7 +202,7 @@ class Player():
             return
         # the name is valid, use it.
         self.data['characters'].append(name)
-        self._put()
+        self.game.db.put('player', self.data['pseudo'], self.data)
         self.character = Character(self.game, self, name)
         self.game.log("Character {} created.".format(self.character.data['name']))
 

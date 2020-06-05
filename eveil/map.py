@@ -20,7 +20,7 @@
 # https://triangleinequality.wordpress.com/2013/08/21/graphs-as-objects-in-python/
 
 from .template import Template
-from .item import Container
+#from .item import Container
 from .message import pose, expose_format, info
 
 class Map():
@@ -128,14 +128,15 @@ class Room():
         self.sources = []
         self.targets = []
         self.characters = []
-        self.container = Container(self.game)
-        self.container.max_volume = 10000
+        #self.container = Container(self.game)
+        #self.container.max_volume = 10000
 
     def set_desc(self, text, dictionary={}):
         self.longdesc = Template(
                 "<h3>{{room.shortdesc}}</h3>"
                 + text
-                + "<p>{{list_char}}{{list_item}}</p>",
+                + "<p>{{list_char}}</p>",
+                #+ "<p>{{list_char}}{{list_item}}</p>",
                 dictionary)
 
     def add_link(self, link):
@@ -178,15 +179,15 @@ class Room():
         if list_char:
             list_char += "."
 
-        list_item = ", ".join(
-                [item.roomdesc for item in self.container.items])
-        if list_item:
-            list_item = " Il y a aussi " + list_item + "."
+        #list_item = ", ".join(
+        #        [item.roomdesc for item in self.container.items])
+        #if list_item:
+        #    list_item = " Il y a aussi " + list_item + "."
         character.player.client.send(self.longdesc.render({
                     "character": character,
                     "room": self,
                     "list_char": list_char,
-                    "list_item": list_item,
+        #            "list_item": list_item,
                 }))
 
     def move(self, character, word):

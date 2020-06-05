@@ -13,7 +13,7 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from .parser import State
 from .grammar import Grammar
@@ -27,7 +27,7 @@ def check_character_name(player, name):
         info(player,
              "Le nom du personnage doit contenir au moins quatre lettres.")
         return False
-    if player.game.db.get('character:' + name):
+    if player.game.db.has('character', name):
         info(player,
              "Il existe déjà un personnage nommé {}."
              .format(name))
@@ -46,10 +46,13 @@ class Character():
     def __init__(self, game, player, name):
         self.game = game
         self.player = player
-        self.key = 'character:' + name
         # Fetch or create player datas
-        if not self._get():
+        if self.game.db.has('character', name):
+            self.data = self.game.db.get('character', name)
+            self.data['login_dt'] = datetime.now()
+        else:
             self.data = {
+                'uid' : self.game.db.uid(),
                 'name' : name,
                 'lastname' : 'Ombre',
                 'gender' : Grammar.GENDERS.index("neutre"),
@@ -57,13 +60,12 @@ class Character():
                 'longdesc' : "Une ombre informe, vaguement visible.",
                 'pose' : 'est ici',
                 'roomid' : 0,
-                'login_dt' : None,
+                'login_dt' : datetime.now(),
                 'logout_dt' : None,
-                'play_time' : None,
+                'play_time' : timedelta(seconds=0),
                 'state' : State.CHARGEN,
             }
-        self.data['login_dt'] = datetime.now()
-        self._put()
+        self.game.db.put('character', self.data['name'], self.data)
         # Instanciate character components
         self.remember = Remember(self.game, self)
         self.queue = Queue(5) # 10 second interval
@@ -87,21 +89,12 @@ class Character():
             "Character {} enters the game in room {}."
             .format(self.data['name'], self.data['roomid']))
 
-
-    def _get(self):
-        """ With the character name, extract datas from the db."""
-        self.data = self.game.db.get(self.key)
-        return bool(self.data)
-
-    def _put(self):
-        """ Record the datas of the character in the db."""
-        self.game.db.put(self.key, self.data)
-
     def logout(self):
         """ Removes a character from the grid at logout."""
         self.data['logout_dt'] = datetime.now()
-        self.data['play_time'] = self.data['logout_dt'] - self.data['login_dt']
-        self._put()
+        play_time = self.data['logout_dt'] - self.data['login_dt']
+        self.data['play_time'] = self.data['play_time'] + play_time
+        self.game.db.put('character', self.data['name'], self.data)
         pose(self, "/Il se déconnecte.")
         self.game.log(
             "Character {} leaves the game from room {}."
@@ -116,12 +109,10 @@ class Character():
         name = name.capitalize()
         if not check_character_name(self.player, name):
             return
-        self.remember.rename(name)
         oldname = self.data['name']
-        self.game.db.rem(self.key)
+        self.game.db.rem('character', oldname)
         self.data['name'] = name
-        self.key = 'character:' + self.data['name']
-        self._put()
+        self.game.db.put('character', self.data['name'], self.data)
         self.game.log(
             "Character {} renamed {}."
             .format(oldname, self.data['name']))
@@ -138,7 +129,7 @@ class Character():
         self.grammar.agree(
             Grammar.NUMBERS.index("singulier"),
             self.data['gender'])
-        self._put()
+        self.game.db.put('character', self.data['name'], self.data)
         self.game.log("{} is of gender {} ({}).".format(
             self.data['name'],
             self.data['gender'],
@@ -156,7 +147,7 @@ class Character():
             shortdesc = shortdesc[:-1]
         shortdesc = shortdesc.lower()
         self.data['shortdesc'] = shortdesc
-        self._put()
+        self.game.db.put('character', self.data['name'], self.data)
         info(self.player, "{} est {}.".format(
             self.data['name'],
             self.data['shortdesc']
@@ -165,13 +156,13 @@ class Character():
     def set_longdesc(self, longdesc):
         """ Define the long description of the character."""
         self.data['longdesc'] = longdesc
-        self._put()
+        self.game.db.put('character', self.data['name'], self.data)
         info(self.player, self.data['longdesc'])
 
     def set_room(self, room):
         self.room = room
         self.data['roomid'] = room.id
-        self._put()
+        self.game.db.put('character', self.data['name'], self.data)
 
     def tick(self, now):
         """ tick all objects. """

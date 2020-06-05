@@ -68,7 +68,7 @@ class Time():
             ))
 
     def _get(self):
-        gametime = self.game.db.get("gametime")
+        gametime = self.game.db.get('game', 'time')
         if gametime:
             self.minute = gametime['minute']
             self.hour = gametime['hour']
@@ -79,7 +79,7 @@ class Time():
         self._log()
 
     def _put(self):
-        self.game.db.put("gametime", {
+        self.game.db.put('game', 'time', {
                 "minute": self.minute,
                 "hour": self.hour,
                 "day": self.day,

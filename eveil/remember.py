@@ -23,20 +23,12 @@ class Remember():
     def __init__(self, game, character):
         self.game = game
         self.character = character
-        self.key = "remember:" + self.character.data['name']
-        self.data = {}
-        if self.game.db.has(self.key):
-            self._get()
+        self.uid = self.character.data['uid']
+        if self.game.db.has('remember', self.uid):
+            self.data = self.game.db.get('remember', self.uid)
         else:
-            self._put()
-
-    def _put(self):
-        "Record data in the database."
-        self.game.db.put(self.key, self.data)
-
-    def _get(self):
-        "Get data from the database."
-        self.data = self.game.db.get(self.key)
+            self.data = {}
+            self.game.db.put('remember', self.uid, self.data)
 
     def set_remember(self, keyword, string):
         """Remembers/registers a character name."""
@@ -46,8 +38,12 @@ class Remember():
             if character == self.character:
                 continue
             if keyword in self.get_remember(character).lower():
+                # Since we remember characters by their name,
+                # when they change name the information becomes
+                # useless. That's a design choice: characters changing
+                # name should'nt be remembered.
                 self.data[character.data['name']] = string
-                self._put()
+                self.game.db.put('remember', self.uid, self.data)
                 article = apostrophe("de", character.data['shortdesc'][0])
                 info(self.character.player,
                     "{} se souviendra {}{} sous le nom de « {} ».".format(
@@ -82,12 +78,3 @@ class Remember():
         table += "</table>"
         info(self.character.player, table)
 
-    def rename(self, name):
-        "after renaming a character, reset the database entry."
-        oldname = self.character.data['name']
-        self.game.db.rem(self.key)
-        self.key = "remember:" + name
-        self._put()
-        self.game.log(
-            "Remember {} renamed {}."
-            .format(oldname, self.data['name']))
