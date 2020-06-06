@@ -34,10 +34,10 @@ class Map():
         self.links = []
         self.linklists = []
 
-    def new_room(self, shortdesc):
-        room = Room(self.game, shortdesc)
+
+    def new_room(self, region, uid):
+        room = Room(self.game, region, uid)
         self.rooms.append(room)
-        room.id = self.rooms.index(room)
         return room
 
     def new_link(self, source, target):
@@ -119,10 +119,11 @@ class Door():
 
 class Room():
 
-    def __init__(self, game, shortdesc):
+    def __init__(self, game, region, uid):
         self.game = game
-        self.id = None
-        self.shortdesc = shortdesc
+        self.region = region
+        self.uid = region + '_' + uid
+        self.shortdesc = None
         self.longdesc = None
         self.links = []
         self.sources = []
@@ -131,7 +132,12 @@ class Room():
         #self.container = Container(self.game)
         #self.container.max_volume = 10000
 
-    def set_desc(self, text, dictionary={}):
+    def short(self, text):
+        """Sets the short description (title)."""
+        self.shortdesc = text
+
+    def long(self, text, dictionary={}):
+        """Sets the long description."""
         self.longdesc = Template(
                 "<h3>{{room.shortdesc}}</h3>"
                 + text

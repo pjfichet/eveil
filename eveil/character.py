@@ -59,7 +59,7 @@ class Character():
                 'shortdesc' : "l'ombre d'un personnage",
                 'longdesc' : "Une ombre informe, vaguement visible.",
                 'pose' : 'est ici',
-                'roomid' : 0,
+                'roomuid' : self.game.map.rooms[0].uid,
                 'login_dt' : datetime.now(),
                 'logout_dt' : None,
                 'play_time' : timedelta(seconds=0),
@@ -79,7 +79,7 @@ class Character():
         )
         # put the character in grid
         for room in self.game.map.rooms:
-            if room.id == self.data['roomid']:
+            if room.uid == self.data['roomuid']:
                 self.room = room
                 break
         self.room.send_longdesc(self)
@@ -87,7 +87,7 @@ class Character():
         pose(self, "/Il déambule par ici")
         self.game.log(
             "Character {} enters the game in room {}."
-            .format(self.data['name'], self.data['roomid']))
+            .format(self.data['name'], self.data['roomuid']))
 
     def logout(self):
         """ Removes a character from the grid at logout."""
@@ -98,7 +98,7 @@ class Character():
         pose(self, "/Il se déconnecte.")
         self.game.log(
             "Character {} leaves the game from room {}."
-            .format(self.data['name'], self.room.id))
+            .format(self.data['name'], self.room.uid))
         if self in self.room.characters:
             # should be always true
             self.room.characters.remove(self)
@@ -161,7 +161,7 @@ class Character():
 
     def set_room(self, room):
         self.room = room
-        self.data['roomid'] = room.id
+        self.data['roomuid'] = room.uid
         self.game.db.put('character', self.data['name'], self.data)
 
     def tick(self, now):
