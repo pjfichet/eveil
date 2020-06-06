@@ -29,7 +29,7 @@ class Game():
     def __init__(self, queue):
         self.queue = queue
         self.clients = []
-        self.db = Data(self, "data.db")
+        self.db = Data(self.log, "data.db")
         self.parser = Parser(self)
         self.map = Map(self)
         self.time = Time(self)

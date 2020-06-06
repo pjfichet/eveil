@@ -49,25 +49,25 @@ class Data:
 
     PREFIX = ('game', 'player', 'character', 'remember', 'room', 'container')
 
-    def __init__(self, game, filename):
+    def __init__(self, log, filename):
         """
         Open the file containing the data.
         """
-        self.game = game
+        self.log = log
         self.filename = filename
         self.db = shelve.open(self.filename)
         if self.has('game', 'init'):
             init = self.get('game', 'init')
-            self.game.log("Opening {} created on {}".format(self.filename, init))
+            self.log("Opening {} created on {}".format(self.filename, init))
         else:
-            self.game.log("Creating {}".format(self.filename))
+            self.log("Creating {}".format(self.filename))
             self.put('game', 'init', datetime.now())
 
 
     def _check_prefix(self, prefix):
         """Check the prefix matches one of the accepted prefixes."""
         if prefix not in Data.PREFIX:
-            self.game.log("Invalid data prefix {}.".format(prefix))
+            self.log("Invalid data prefix {}.".format(prefix))
             return False
         return True
 
@@ -92,7 +92,7 @@ class Data:
             i = i + 1
         if i > 1:
             # logs to alert on the lack of randomness.
-            self.game.log("Uid generated in {} rounds.".format(i))
+            self.log("Uid generated in {} rounds.".format(i))
         self.db['uid:' + uid] = 1
         return uid
 
@@ -145,7 +145,7 @@ class Data:
 
     def close(self):
         """Close the database."""
-        self.game.log("Closing {}.".format(self.filename))
+        self.log("Closing {}.".format(self.filename))
         self.db.close()
 
     def serialize(self, function):
