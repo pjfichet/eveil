@@ -20,7 +20,7 @@
 # https://triangleinequality.wordpress.com/2013/08/21/graphs-as-objects-in-python/
 
 from .template import Template
-#from .item import Container
+from .item import Container
 from .message import pose, expose_format, info
 
 class Map():
@@ -129,8 +129,8 @@ class Room():
         self.sources = []
         self.targets = []
         self.characters = []
-        #self.container = Container(self.game)
-        #self.container.max_volume = 10000
+        self.container = Container(self.game, self.uid)
+        self.container.max_volume = 10000
 
     def short(self, text):
         """Sets the short description (title)."""
