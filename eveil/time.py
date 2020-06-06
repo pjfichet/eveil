@@ -48,7 +48,9 @@ class Time():
 
     def __init__(self, game):
         self.game = game
-        self.interval = timedelta(seconds=4)
+        # 1 minute more each 20 seconds:
+        # IC time is 3 times OOC time.
+        self.interval = timedelta(seconds=20)
         self.minute = 0
         self.hour = 0
         self.day = 1
