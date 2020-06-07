@@ -72,6 +72,7 @@ class Player():
             'creation_dt' : None,
             'login_dt' : None,
             'logout_dt' : None,
+            'play_time' : timedelta(seconds=0),
             'characters' : [],
             }
         self.state = State.LOGIN
@@ -146,6 +147,8 @@ class Player():
             self.character = None
         if self.state > State.LOGIN:
             self.data['logout_dt'] = datetime.now()
+            play_time = self.data['logout_dt'] - self.data['login_dt']
+            self.data['play_time'] = self.data['play_time'] + play_time
             self.game.db.put('player', self.data['pseudo'], self.data)
             self.game.log("Player {} logs out.".format(self.data['pseudo']))
 
