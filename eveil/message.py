@@ -58,6 +58,8 @@ def expose(from_char, text):
         newtext = expose_format(from_char, to_char, text)
         to_char.player.client.send("<p><b>{}</b>. — {}</p>".format(
             to_char.remember.get_remember(from_char), newtext))
+    # keep track of last emote time
+    from_char.room.rp()
 
 def off_topic(from_char, text):
     "Off topic, or out of character, communication."

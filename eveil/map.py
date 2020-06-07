@@ -22,6 +22,7 @@
 from .template import Template
 from .item import Container
 from .message import pose, expose_format, info
+from datetime import datetime, timedelta
 
 class Map():
     """The Map class implements a graph: rooms are nodes, and links
@@ -99,9 +100,9 @@ class Link():
     def enter(self, character):
         pose(character, "/Il quitte les environs en rejoignant {}."
                 .format(self.target.shortdesc))
-        self.source.characters.remove(character)
+        self.source.del_character(character)
         self.target.send_longdesc(character)
-        self.target.characters.append(character)
+        self.target.add_character(character)
         character.set_room(self.target)
         pose(character, "/Il arrive par ici depuis {}."
                 .format(self.source.shortdesc))
@@ -118,6 +119,8 @@ class Door():
 
 
 class Room():
+    NEVER = datetime(2000, 1, 1)
+    RPDELTA = timedelta(minutes=15)
 
     def __init__(self, game, region, uid):
         self.game = game
@@ -131,6 +134,7 @@ class Room():
         self.characters = []
         self.container = Container(self.game, self.uid)
         self.container.max_volume = 10000
+        self.next_rp = Room.NEVER
 
     def short(self, text):
         """Sets the short description (title)."""
@@ -176,6 +180,16 @@ class Room():
     def add_character(self, character):
         """ add a character to the room."""
         self.characters.append(character)
+        # Give a chance to players to have RP, even if they're not
+        # exposing yet.
+        self.next_rp = datetime.now() + Room.RPDELTA
+
+    def del_character(self, character):
+        """Removes a character form the rom."""
+        self.characters.remove(character)
+        if len(self.characters) < 2:
+            # A character alone is not having RP.
+            self.next_rp = Room.NEVER
 
     def send_longdesc(self, character):
         """ Send the long description to a character."""
@@ -204,3 +218,12 @@ class Room():
                 return
         info(character.player, "Aller où?")
 
+    def rp(self):
+        """ Update the RP status of the room."""
+        self.next_rp = datetime.now + room.RPDELTA
+
+    def has_rp(self, now):
+        """ Check if the room is RP active."""
+        # self.del_character() takes care a lonely character
+        # won't have RP.
+        return bool(self.next_rp >= now)
