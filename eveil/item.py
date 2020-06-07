@@ -30,19 +30,19 @@ class Container():
         else:
             self.data = {
                 'items': [],
-                'volume' : 0,
+                'used_volume' : 0,
                 'max_volume' : 10
             }
             self.game.db.put('container', self.uid, self.data)
 
     def add_item(self, item):
         """Puts an item in the container."""
-        new_volume = self.data['volume'] + item.data['volume']
+        new_volume = self.data['used_volume'] + item.data['volume']
         if new_volume > self.data['max_volume']:
             return False
         self.items.append(item)
         self.data['items'].append(item.uid)
-        self.data['volume'] = new_volume
+        self.data['used_volume'] = new_volume
         self.game.db.put('container', self.uid, self.data)
         return True
 
@@ -50,7 +50,7 @@ class Container():
         """Remove an item from the container."""
         if item not in self.items:
             return False
-        self.data['volume'] = self.data['volume'] - item.data['volume']
+        self.data['used_volume'] = self.data['used_volume'] - item.data['volume']
         self.items.remove(item)
         self.data['items'].remove(item.uid)
         self.game.db.put('container', self.uid, self.data)
@@ -67,11 +67,11 @@ class Item():
         roomdesc : the description shown when the item is in a room.
         worndesc : the item is wearable, description when worn.
         wornplace : where the item is worn: underwear, outerwear, head, cloak.
-        gender : the gender of the item: masculine or feminine.
+        gender : the gender of the item: masculine, feminine or neutral.
         number : the number of the item: singular or plural.
-        volume : the inimal volume of the item (when folded), in dm3.
-        inner_volume : the maximal volume of the container, in dm3.
-        container : the item is a container, the id of the container.
+        volume : the volume of the item, in dm3.
+        container_id : the item is a container, the id of the container.
+        position_id : the id of the container where the item is.
         value : The value of the item, in coins.
         quality : the quality of the item: rough, normal, or fine.
         weight : the weight of the item, in kg.
@@ -98,8 +98,8 @@ class Item():
                 "gender" : None,
                 "number" : None,
                 "volume" : 0,
-                "inner_volume" : 0,
-                "container" : None,
+                "container_id" : None,
+                "position_id" : None,
                 "value" : 0,
                 "quality" : None,
                 "weight" : 0,
