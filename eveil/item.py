@@ -56,6 +56,10 @@ class Container():
         self.game.db.put('container', self.uid, self.data)
         return True
 
+    def set_volume(self, volume):
+        self.data['max_volume'] = volume
+        self.game.db.put('container', self.uid, self.data)
+
 
 class Item():
     """Defines an item. Items are all kind of ingame objects.

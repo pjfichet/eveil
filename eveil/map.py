@@ -126,14 +126,22 @@ class Room():
         self.game = game
         self.region = region
         self.uid = region + '_' + uid
+        if self.game.db.has('room', self.uid):
+            self.data = self.game.db.get('room', self.uid)
+            self.container = Container(self.game, self.data['container'])
+        else:
+            self.data = {
+                'container': self.game.db.uid()
+            }
+            self.container = Container(self.game, self.data['container'])
+            self.container.set_volume(10000)
+            self.game.db.put('room', self.uid, self.data)
         self.shortdesc = None
         self.longdesc = None
         self.links = []
         self.sources = []
         self.targets = []
         self.characters = []
-        self.container = Container(self.game, self.uid)
-        self.container.max_volume = 10000
         self.next_rp = Room.NEVER
 
     def short(self, text):
