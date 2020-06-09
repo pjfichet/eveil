@@ -19,6 +19,7 @@ from .parser import State
 from .grammar import Grammar
 from .delay import Queue
 from .remember import Remember
+from .item import Container
 from .message import pose, info
 
 def check_character_name(player, name):
@@ -66,9 +67,13 @@ class Character():
                 'play_time' : timedelta(seconds=0),
                 'state' : State.CHARGEN,
                 'xp': 0,
+                'inventory': self.game.db.uid(),
+                'equipment': self.game.db.uid(),
             }
         self.game.db.put('character', self.data['name'], self.data)
         # Instanciate character components
+        self.inventory = Container(self.game, self.data['inventory'])
+        self.equipment = Container(self.game, self.data['equipment'])
         self.remember = Remember(self.game, self)
         self.queue = Queue(5) # 10 second interval
         self.grammar = Grammar(
