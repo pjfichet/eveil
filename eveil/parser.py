@@ -15,6 +15,7 @@
 
 import re
 from .message import pose, expose, info
+from .look import look
 
 # Player states defining commands availability
 class State():
@@ -188,11 +189,10 @@ class Parser():
     def _go(self, player, arg):
         player.character.room.move(player.character, arg[1])
 
-    @Cmd(Scope.CHARACTER, "voir", "voir [objet]", "(\w+)?\s*$")
+    @Cmd(Scope.CHARACTER, "regarder", "regarder [objet]", "(.*)$")
     def _look(self, player, arg):
         if arg[1]:
-            # TODO
-            pass
+            look(player.character, arg[1])
         else:
             player.character.room.send_longdesc(player.character)
 
