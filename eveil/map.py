@@ -190,7 +190,8 @@ class Room():
         self.characters.append(character)
         # Give a chance to players to have RP, even if they're not
         # exposing yet.
-        self.next_rp = datetime.now() + Room.RPDELTA
+        if len(self.characters) > 1:
+            self.next_rp = datetime.now() + Room.RPDELTA
 
     def del_character(self, character):
         """Removes a character form the rom."""

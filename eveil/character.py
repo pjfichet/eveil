@@ -108,7 +108,7 @@ class Character():
             .format(self.data['name'], self.room.uid))
         if self in self.room.characters:
             # should be always true
-            self.room.characters.remove(self)
+            self.room.del_character(self)
 
     def set_name(self, name):
         """ Name or rename a character. This is also when the character is
