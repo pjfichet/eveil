@@ -31,24 +31,17 @@ class Queue():
     """Store a queue of commands, execute them after a delay."""
 
     def __init__(self, seconds):
-        self.interval = timedelta(seconds = seconds)
-        self.next_tick = datetime.now() + self.interval
         self.queue = []
         self.pause = False
 
-    def tick(self, now):
+    def tick(self):
         if self.pause:
             return
-        if now >= self.next_tick:
-            self.next_tick = now + self.interval
-            if self.queue:
-                function = self.queue.pop(0)
-                function.execute()
+        if self.queue:
+            function = self.queue.pop(0)
+            function.execute()
 
     def add(self, function, *args):
-        next_tick = datetime.now() + self.interval
-        if self.next_tick <= next_tick:
-            self.next_tick = next_tick
         fn = QueuedFunction(function, *args)
         self.queue.append(fn)
 

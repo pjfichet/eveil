@@ -47,7 +47,6 @@ class Character():
     def __init__(self, game, player, name):
         self.game = game
         self.player = player
-        self.next_tick = datetime(2000, 1, 1)
         # Fetch or create player datas
         if self.game.db.has('character', name):
             self.data = self.game.db.get('character', name)
@@ -171,26 +170,10 @@ class Character():
         self.data['roomuid'] = room.uid
         self.game.db.put('character', self.data['name'], self.data)
 
-
-    def xp(self, now):
-        """The character gains xp by roleplaying. This function
-        calculates his gain.
-        """
-        # XP is calculated each minutes.
-        # Characters earn 1 XP per minute.
-        # (maybe should that be done in the Game class)
-        if self.next_tick >= now:
-            return
-        self.next_tick = datetime.now() + timedelta(minutes=1)
-        # the room must be RP active
-        # (one expose per 15 minutes)
-        if self.room.has_rp(now):
-                self.game.log("xp")
-                # then, the character earns 1 xp
-                self.data['xp'] = self.data['xp'] + 1
-                self.game.db.put('character', self.data['name'], self.data)
-
     def tick(self, now):
-        """ tick all objects. """
-        self.xp(now)
-        self.queue.tick(now)
+        """ calculate xp gain """
+        # Characters earn 1 XP per minute if they are in an active
+        # room.
+        if self.room.has_rp(now):
+            self.data['xp'] = self.data['xp'] + 1
+            self.game.db.put('character', self.data['name'], self.data)

@@ -50,14 +50,12 @@ class Time():
         self.game = game
         # 1 minute more each 20 seconds:
         # IC time is 3 times OOC time.
-        self.interval = timedelta(seconds=20)
         self.minute = 0
         self.hour = 0
         self.day = 1
         self.month = 1
         self.season = 1
         self.weather = ('s', 's')
-        self.next_tick = datetime.now() + self.interval
         self._get()
         self.models = []
         for chain in CHAINS:
@@ -109,11 +107,9 @@ class Time():
             weather = weather[1]
         self.weather = (self.weather[1], weather)
 
-    def tick(self, now):
-        if now >= self.next_tick:
-            self.next_tick = self.next_tick + self.interval
-            self._minute()
-            self._put()
+    def tick(self):
+        self._minute()
+        self._put()
 
     def _minute(self):
         self.minute += 1

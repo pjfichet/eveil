@@ -15,7 +15,7 @@
 
 import queue
 from time import sleep
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from .data import Data
 from .player import Player
@@ -29,6 +29,13 @@ class Game():
     def __init__(self, queue):
         self.queue = queue
         self.clients = []
+        now = datetime.now()
+        # take care to not tick everything at the same time
+        self.tick = {
+            'delay' : now + timedelta(seconds=1),
+            'time' : now + timedelta(seconds=2),
+            'character' : now + timedelta(seconds = 3),
+            }
         self.db = Data(self.log, "data.db")
         self.parser = Parser(self)
         self.map = Map(self)
@@ -39,10 +46,22 @@ class Game():
         while self.loop == True:
             now = datetime.now()
             self._get_queue()
-            self.time.tick(now)
-            for client in self.clients:
-                if client.player.character:
-                    client.player.character.tick(now)
+            # tick delays every 5 seconds
+            if now >= self.tick['delay']:
+                self.tick['delay'] = now + timedelta(seconds=5)
+                for client in self.clients:
+                    if client.player.character:
+                        client.player.character.queue.tick()
+            # tick time every 20 seconds
+            if now >= self.tick['time']:
+                self.tick['time'] = now + timedelta(seconds=20)
+                self.time.tick()
+            # tick characters every minutes
+            if now >= self.tick['character']:
+                self.tick['character'] = now + timedelta(seconds=60)
+                for client in self.clients:
+                    if client.player.character:
+                        client.player.character.tick(now)
             sleep(.1)
 
     def _get_queue(self):
@@ -77,4 +96,4 @@ class Game():
             self.clients.remove(client)
             client.send("<h4>Au revoir.</h4>")
             client.close()
-        self.log("Shutting down.")
+        self.log("Shutting down.")       
