@@ -101,11 +101,34 @@ def look_at(from_char, keyword):
         "Aucun personnage ni objet ne correspond au mot clé « {} »."
         .format(keyword))
 
+def wornlist(character):
+    if not character.equipment.items:
+        if character.data['gender'] > 1:
+            return "Elle est toute nue."
+        else:
+            return "Il est tout nu."
+    wearlist = {}
+    visible = 0
+    for item in character.equipment.items:
+        # sort items by wornplace
+        key = item.data['wornplace']
+        if key > visible:
+            visible = key
+        if key in wearlist:
+            wearlist[key] = wearlist[key] + ", " + item.data['worndesc']
+        else:
+            wearlist[key] = item.data['worndesc']
+    # we only returns the highest wornplace, since it covers
+    # the other ones.
+    return wearlist[visible]
+
 def look_at_character(from_char, to_char):
     """Look at a character."""
+    items = wornlist(from_char) 
     from_char.player.client.send(
-        "<p>{}</p>"
-        .format(to_char.data['longdesc']))
+        "<p>{}</p><p>{}</p>"
+        .format(to_char.data['longdesc'], items.capitalize()))
+
 
 def look_at_item(from_char, item):
     """Look at an item."""
