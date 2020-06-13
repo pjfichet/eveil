@@ -47,7 +47,8 @@ class Data:
     Implements a simple database.
     """
 
-    PREFIX = ('game', 'player', 'character', 'remember', 'room', 'container')
+    PREFIX = ('game', 'player', 'character', 'remember', 'room',
+              'container', 'item')
 
     def __init__(self, log, filename):
         """

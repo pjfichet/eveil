@@ -16,6 +16,7 @@
 import re
 from .message import pose, expose, info
 from .look import look
+from .tool import tool
 
 # Player states defining commands availability
 class State():
@@ -229,6 +230,10 @@ class Parser():
     @Cmd(Scope.CHARGEN, "description", "longue description", "(.+)\s*$")
     def _longdesc(self, player, arg):
         player.character.set_longdesc(arg[0])
+
+    @Cmd(Scope.CHARGEN, "item", "", ".*\s*$")
+    def _tool(self, player, arg):
+        tool(player.character, arg[0])
 
     ### Admin commands ###
 

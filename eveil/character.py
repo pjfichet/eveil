@@ -68,6 +68,7 @@ class Character():
                 'xp': 0,
                 'inventory': self.game.db.uid(),
                 'equipment': self.game.db.uid(),
+                'tooling': None,
             }
         self.game.db.put('character', self.data['name'], self.data)
         # Instanciate character components

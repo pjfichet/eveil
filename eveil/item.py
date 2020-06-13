@@ -13,6 +13,8 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
+from .list_items import ITEMS
+
 class Container():
     """Defines a container, ie the capacity to contain items.
     Rooms and items can have a container object.
@@ -56,6 +58,13 @@ class Container():
         self.game.db.put('container', self.uid, self.data)
         return True
 
+    def get_item(self, uid):
+        """Finds and returns an item by its uid."""
+        for item in self.items:
+            if item.uid == uid:
+                return item
+        return None
+
     def set_volume(self, volume):
         self.data['max_volume'] = volume
         self.game.db.put('container', self.uid, self.data)
@@ -74,6 +83,7 @@ class Item():
         gender : the gender of the item: masculine, feminine or neutral.
         number : the number of the item: singular or plural.
         volume : the volume of the item, in dm3.
+        inner_volume: the volume of the container.
         container_id : the item is a container, the id of the container.
         position_id : the id of the container where the item is.
         value : The value of the item, in coins.
@@ -91,7 +101,7 @@ class Item():
         if self.game.db.has('item', self.uid):
             self.data = self.game.db.get('item', self.uid)
             if self.data['container']:
-                self.container = Container(self.game, self.uid)
+                self.container = Container(self.game, self.data['container'])
         else:
             self.data = {
                 "shortdesc": None,
@@ -109,3 +119,18 @@ class Item():
                 "weight" : 0,
             }
             self.game.db.put('item', self.uid, self.data)
+
+    def template(self, name):
+        """Creates a new item using list_items."""
+        if name not in ITEMS:
+            self.game.log("There's no item template named {}.".format(name))
+            return
+        self.data = ITEMS[name]
+        if self.data['inner_volume'] > 0:
+            self.data['container'] = self.game.db.uid()
+            self.container = Container(self.game, self.data['container'])
+            self.container.set_volume = self.data['inner_volume']
+        self.game.db.put('item', self.uid, self.data) 
+
+    def put(self):
+        self.game.db.put('item', self.uid, self.data)
