@@ -3,7 +3,7 @@ start:
 	python eveil.py
 
 reset:
-	rm data.db
+	rm -f data.db
 
 new: reset start
 
