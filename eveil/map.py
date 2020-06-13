@@ -153,8 +153,8 @@ class Room():
         self.longdesc = Template(
                 "<h3>{{room.shortdesc}}</h3>"
                 + text
-                + "<p>{{list_char}}</p>",
-                #+ "<p>{{list_char}}{{list_item}}</p>",
+                #+ "<p>{{list_char}}</p>",
+                + "<p>{{list_item}}</p><p>{{list_char}}</p>",
                 dictionary)
 
     def add_link(self, link):
@@ -208,15 +208,16 @@ class Room():
         if list_char:
             list_char += "."
 
-        #list_item = ", ".join(
-        #        [item.roomdesc for item in self.container.items])
-        #if list_item:
-        #    list_item = " Il y a aussi " + list_item + "."
+        list_item = ""
+        if self.container.items:
+            list_item = ", ".join([item.data['roomdesc']
+                                   for item in self.container.items])
+            list_item = list_item.capitalize() + "."
         character.player.client.send(self.longdesc.render({
                     "character": character,
                     "room": self,
                     "list_char": list_char,
-        #            "list_item": list_item,
+                    "list_item": list_item,
                 }))
 
     def move(self, character, word):
