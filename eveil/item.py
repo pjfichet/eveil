@@ -27,6 +27,7 @@ class Container():
         if self.game.db.has('container', self.uid):
             self.data = self.game.db.get('container', self.uid)
             for item_uid in self.data['items']:
+                #self.game.log("logs item {}.".format(item_uid))
                 item = Item(self.game, item_uid)
                 self.items.append(item)
         else:
@@ -100,8 +101,8 @@ class Item():
             self.uid = self.game.db.uid()
         if self.game.db.has('item', self.uid):
             self.data = self.game.db.get('item', self.uid)
-            if self.data['container']:
-                self.container = Container(self.game, self.data['container'])
+            if self.data['container_id']:
+                self.container = Container(self.game, self.data['container_id'])
         else:
             self.data = {
                 "shortdesc": None,
@@ -127,8 +128,8 @@ class Item():
             return
         self.data = ITEMS[name]
         if self.data['inner_volume'] > 0:
-            self.data['container'] = self.game.db.uid()
-            self.container = Container(self.game, self.data['container'])
+            self.data['container_id'] = self.game.db.uid()
+            self.container = Container(self.game, self.data['container_id'])
             self.container.set_volume = self.data['inner_volume']
         self.game.db.put('item', self.uid, self.data) 
 
