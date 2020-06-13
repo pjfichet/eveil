@@ -17,6 +17,7 @@ import re
 from .message import pose, expose, info
 from .look import look, look_in_inventory, look_in_equipment
 from .tool import tool
+from .manipulation import get_item, put_item, wear_item, rem_item
 
 # Player states defining commands availability
 class State():
@@ -204,6 +205,23 @@ class Parser():
     @Cmd(Scope.CHARACTER, "équipement", "", "^$")
     def _equipment(self, player, arg):
         look_in_equipment(player.character, player.character)
+
+    @Cmd(Scope.CHARACTER, "prendre", "prendre objet", "(.+)$")
+    def _get_item(self, player, arg):
+        get_item(player.character, arg[1]) 
+
+    @Cmd(Scope.CHARACTER, "poser", "poser objet", "(.+)$")
+    def _put_item(self, player, arg):
+        put_item(player.character, arg[1])
+
+    @Cmd(Scope.CHARACTER, "porter", "mot_clé", "(\w+)\s*$")
+    def _wear_item(self, player, arg):
+        wear_item(player.character, arg[1])
+
+    @Cmd(Scope.CHARACTER, "enlever", "mot_clé", "(\w+)\s*$")
+    def _remove_item(self, player, arg):
+        rem_item(player.character, arg[1])
+        
 
     @Cmd(Scope.CHARACTER, "connaissances", "", "^$")
     def _list_remember(self, player, arg):
