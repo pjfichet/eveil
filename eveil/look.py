@@ -80,10 +80,17 @@ def look(from_char, command):
 
 def look_at(from_char, keyword):
     """Regarder émilie"""
-    from_char.game.db.log("look: {}".format(keyword))
     for character in from_char.room.characters:
         if keyword in from_char.remember.get_remember(character).lower():
             look_at_character(from_char, character)
+            return
+    for item in from_char.inventory.items:
+        if keyword in item.data['shortdesc'].lower():
+            look_at_item(from_char, item)
+            return
+    for item in from_char.equipment.items:
+        if keyword in item.data['worndesc'].lower():
+            look_at_item(from_char, item)
             return
     for item in from_char.room.container.items:
         if keyword in item.data['roomdesc'].lower():
@@ -117,7 +124,7 @@ def look_in(from_char, keyword):
                 .format(from_char.data["name"], item.data['shortdesc']))
     for character in from_char.room.characters:
         if keyword in from_char.remember.get_remember(character).lower():
-            look_in_character(from_char, character)
+            look_in_equipment(from_char, character)
             return
     info(from_char.player, "Aucun objet ne correspond au mot clé « {} »."
         .format(keyword))
@@ -134,13 +141,23 @@ def look_in_container(from_char, item):
     from_char.player.client.send("<p>{}.</p>"
         .format(list_items.capitalize()))
 
-def look_in_character(from_char, to_char):
+def look_in_equipment(from_char, to_char):
     if not to_char.equipment.items:
         info(from_char.player, "{} ne porte rien.".format(
             to_char.data["name"]))
         return
-    list_items = ", ".join(item.data["shortdesc"]
+    list_items = ", ".join(item.data["worndesc"]
         for item in to_char.equipment.items)
+    from_char.player.client.send(
+        "<p>{}.</p>".format(list_items.capitalize()))
+
+def look_in_inventory(from_char, to_char):
+    if not to_char.inventory.items:
+        info(from_char.player, "{} ne transporte rien.".format(
+             to_char.data["name"]))
+        return
+    list_items = ", ".join(item.data["shortdesc"]
+        for item in to_char.inventory.items)
     from_char.player.client.send(
         "<p>{}.</p>".format(list_items.capitalize()))
 
@@ -148,7 +165,7 @@ def look_at_in(from_char, key_container, key_item):
     "regarder la veste d'émilie."
     for character in from_char.room.characters:
         if key_container in from_char.remember.get_remember(character).lower():
-            look_at_in_character(from_char, character, key_item)
+            look_at_in_equipment(from_char, character, key_item)
             return
     for item in from_char.room.container.items:
         if key_container in item.data['shortdesc'].lower():
@@ -161,7 +178,7 @@ def look_at_in(from_char, key_container, key_item):
         "Aucun personnage ni objet ne correspond au mot clé « {} »."
         .format(key_container))
 
-def look_at_in_character(from_char, to_char, keyword):
+def look_at_in_equipment(from_char, to_char, keyword):
     "regarder la veste d'émilie"
     for item in to_char.equipment.items:
         if keyword in item.data['worndesc'].lower():

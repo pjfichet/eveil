@@ -15,7 +15,7 @@
 
 import re
 from .message import pose, expose, info
-from .look import look
+from .look import look, look_in_inventory, look_in_equipment
 from .tool import tool
 
 # Player states defining commands availability
@@ -196,6 +196,14 @@ class Parser():
             look(player.character, arg[1])
         else:
             player.character.room.send_longdesc(player.character)
+
+    @Cmd(Scope.CHARACTER, "inventaire", "", "^$")
+    def _inventory(self, player, arg):
+        look_in_inventory(player.character, player.character)
+
+    @Cmd(Scope.CHARACTER, "équipement", "", "^$")
+    def _equipment(self, player, arg):
+        look_in_equipment(player.character, player.character)
 
     @Cmd(Scope.CHARACTER, "connaissances", "", "^$")
     def _list_remember(self, player, arg):
