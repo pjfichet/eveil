@@ -1,6 +1,7 @@
 import argparse, sys
 import shelve
 from eveil.data import Data
+from collections.abc import Iterable
 
 DATABASE = 'data.db'
 
@@ -27,6 +28,20 @@ def put(key, dkey, value):
         data[dkey] = value
     db[key] = data
     print(data)
+    db.close()
+
+def search(string):
+    "search for string in the database."
+    db = shelve.open(DATABASE)
+    for key in db:
+        data = db[key]
+        if not isinstance(data, Iterable):
+            continue
+        for dkey in data:
+            if not isinstance(data[dkey], Iterable):
+                continue
+            if string in data[dkey]:
+                print(key)
     db.close()
 
 def keys():
@@ -63,6 +78,8 @@ def main(argv):
         get(args.command[1])
     if args.command[0] == 'put':
         put(args.command[1], args.command[2], args.command[3])
+    if args.command[0] == 'search':
+        search(args.command[1])
     if args.command[0] == 'dump':
         dump()
     if args.command[0] == 'keys':
