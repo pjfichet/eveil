@@ -71,7 +71,7 @@ def get_item_from_room(character, keyword):
         pose(character, "/Il prend {}.".format(item.data["shortdesc"]))
     else:
         character.room.container.add_item(item)
-        info(character,
+        info(character.player,
              "{} transporte trop de choses pour pouvoir prendre {}."
              .format(character.data["name"], item.data["shortdesc"]))
 
@@ -137,19 +137,19 @@ def put_item_in(character, item_kw, container_kw):
     item = character.inventory.get_item('shortdesc', container_kw)
     if item:
         if item.container:
-            put_item_in_container(character, container, item_kw)
+            put_item_in_container(character, item, item_kw)
             return
     # search for the container in the equipment
     item = character.equipment.get_item('worndesc', container_kw)
     if item:
         if item.container:
-            put_item_in_container(character, container, item_kw)
+            put_item_in_container(character, item, item_kw)
             return
     # search for the container in the room
     item = character.room.container.get_item('roomdesc', container_kw)
     if item:
         if container.container:
-            put_item_in_container(character, container, item_kw)
+            put_item_in_container(character, item, item_kw)
             return
     # no container found
     info("Aucun objet ne correspond au mot clé {}.".format(container_kw))
@@ -172,29 +172,29 @@ def put_item_in_container(character, container, item_kw):
 def get_item_from(character, item_kw, container_kw):
     """Get an item from something."""
     # search for the container in the inventory
-    item = charcacter.inventory.get_item('shortdesc', container_kw)
+    item = character.inventory.get_item('shortdesc', container_kw)
     if item:
         if item.container:
-            get_item_from_container(character, container, item_kw)
+            get_item_from_container(character, item, item_kw)
             return
     # search for the container in the equipment
-    item = charcacter.equipment.get_item('worndesc', container_kw)
+    item = character.equipment.get_item('worndesc', container_kw)
     if item:
         if item.container:
-            get_item_from_container(character, container, item_kw)
+            get_item_from_container(character, item, item_kw)
             return
     # search for the container in the room
-    item = charcacter.room.container.get_item('roomdesc', container_kw)
+    item = character.room.container.get_item('roomdesc', container_kw)
     if item:
         if item.container:
-            get_item_from_container(character, container, item_kw)
+            get_item_from_container(character, item, item_kw)
             return
     # nothing found
     info("Aucun objet ne correspond au mot clé {}.".format(container_kw))
 
 def get_item_from_container(character, container, item_kw):
     """Get an item from a container."""
-    item = container.get_item('shortdesc', item_kw)
+    item = container.container.get_item('shortdesc', item_kw)
     if not item:
         info("{} ne contient aucun objet correspondant au mot clé {}."
              .format(container.data['shortdesc'], item_kw))
