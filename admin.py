@@ -16,6 +16,19 @@ def get(key):
         print(db[key])
     db.close()
 
+def put(key, dkey, value):
+    "set data in key."
+    db = shelve.open(DATABASE)
+    if key in db:
+        data = db[key]
+    if dkey in data:
+        if value.isdigit():
+            value = int(value)
+        data[dkey] = value
+    db[key] = data
+    print(data)
+    db.close()
+
 def keys():
     "list keys in the database."
     db = shelve.open(DATABASE)
@@ -48,6 +61,8 @@ def main(argv):
 
     if args.command[0] == 'get':
         get(args.command[1])
+    if args.command[0] == 'put':
+        put(args.command[1], args.command[2], args.command[3])
     if args.command[0] == 'dump':
         dump()
     if args.command[0] == 'keys':
