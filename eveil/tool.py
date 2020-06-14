@@ -15,27 +15,10 @@
 
 """
 Command tool. Allows a character to create and define items.
-kinds: underwear, outerwear, cover
-tool shortdesc <shortdesc>
-tool longdesc <longdesc>
-tool roomdesc <roomdesc>
-tool worndesc <worndesc>
-tool gender [masculin|féminin]
-tool number [singulier|pluriel]
-tool finish
-
-produire, fabriquer
-produire sous-vêtement, vêtement, manteau
-produit apparence <courte description>
-produit description <longue description>
-produit porté <apparence lorsque porté>
-produit posé <apparence lorsque posé>
-produit genre [masculin|féminin]
-produit nombre [singulier|pluriel]
 """
 
 import re
-from .message import info
+from .message import info, pose
 from .list_items import ITEMS
 from .item import Item
 from .grammar import Grammar
@@ -115,8 +98,7 @@ def tool_create(character, name):
     if not character.inventory.add_item(item):
         character.room.container.add_item(item)
     character.data["tooling"] = item.uid
-    info(character.player, "{} a fabriqué {}."
-         .format(character.data["name"], item.data["shortdesc"]))
+    pose(character, "/Il fabrique {}.".format(item.data["shortdesc"]))
 
 def retool(character, keyword):
     """Retool an item."""
@@ -128,8 +110,7 @@ def retool(character, keyword):
     item = character.inventory.get_item('shortdesc', keyword)
     if item:
         character.data["tooling"] = item.uid
-        info(character.player, "{} modifie {}."
-             .format(character.data["name"], item.data["shortdesc"]))
+        pose(character, "/Il modifie {}.".format(item.data["shortdesc"]))
     else:
         info(character.player, "Aucun objet ne correspond au mot clé {}."
              .format(keyword))
@@ -141,7 +122,7 @@ def tool_describe(character, key, description):
         return
     item.data[COMMANDS[key]] = description
     item.put()
-    info(character.player, "{}: {}.".format(key, description))
+    info(character.player, "item {}: {}.".format(key, description))
 
 def tool_gender(character, gender):
     """Set the gender of the item."""
@@ -155,7 +136,7 @@ def tool_gender(character, gender):
         return
     item.data["gender"] = Grammar.GENDERS.index(gender)
     item.put()
-    info(character.player, "genre: {}.".format(gender))
+    info(character.player, "item genre: {}.".format(gender))
 
 def tool_number(character, number):
     """Set the number of the item."""
@@ -169,13 +150,13 @@ def tool_number(character, number):
         return
     item.data["number"] = Grammar.NUMBERS.index(number)
     item.put()
-    info(character.player, "nombre: {}.".format(number))
+    info(character.player, "item nombre: {}.".format(number))
 
 def tool_finalise(character):
     """Finalize an item."""
     item = get_item(character)
     if not item:
         return
-    info(character.player, "{} finalise {}."
-         .format(character.data["name"], item.data["shortdesc"]))
+    pose(character, "/Il apporte les dernières touches à {}."
+         .format(item.data["shortdesc"]))
     character.data["tooling"] = None
