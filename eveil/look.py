@@ -104,7 +104,7 @@ def wornlist(character, top=False):
 def look_in_equipment(from_char, to_char):
     """ Look in equipment, only show visible items."""
     layers = wornlist(from_char)
-    fmt(from_char.player,
+    fmt(from_char,
         "{} regarde son équipement".format(from_char.data['name']),
         layers)
 
@@ -118,14 +118,14 @@ def look_at_character(from_char, to_char):
                     from_char.data['name'],
                     from_char.remember.get_remember(to_char))
     content = "{}</p><p>{}".format(to_char.data['longdesc'], visible)
-    fmt(from_char.player, title, content)
+    fmt(from_char, title, content)
 
 def look_at_item(from_char, item):
     """Look at an item."""
     title = "{} regarde {}".format(
                 from_char.data['name'],
                 item.data['shortdesc'])
-    fmt(from_char.player, title, item.data['longdesc'])
+    fmt(from_char, title, item.data['longdesc'])
 
 def look_in(from_char, keyword):
     """Regarder dans le coffre"""
@@ -149,7 +149,7 @@ def look_in(from_char, keyword):
     # look in something in equipment
     item = from_char.equipment.get_item('worndesc', keyword)
     if item:
-        look_in_container(form_char, item)
+        look_in_container(from_char, item)
         return
     # look in something in room
     item = from_char.room.container.get_item('roomdesc', keyword)

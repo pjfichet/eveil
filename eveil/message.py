@@ -23,8 +23,8 @@ def info(player, text):
     "Game information sent to a player."
     player.client.send("<p class='info'>{}</p>".format(text))
 
-def fmt(player, title, text):
-    player.client.send("<p><b>{}</b>. — {}</p>".format(title, text))
+def fmt(character, title, text):
+    character.player.client.send("<p><b>{}</b>. — {}</p>".format(title, text))
 
 def _has_name(name, text):
     "Check if a player is inserting his character name in his pose."
