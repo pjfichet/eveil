@@ -16,7 +16,7 @@
 import re
 from .message import pose, expose, info
 from .look import look, look_in_inventory, look_in_equipment
-from .tool import tool
+from .tool import tool, retool
 from .manipulation import get_item, put_item, wear_item, rem_item
 
 # Player states defining commands availability
@@ -260,6 +260,10 @@ class Parser():
     @Cmd(Scope.CHARGEN, "item", "", ".*\s*$")
     def _tool(self, player, arg):
         tool(player.character, arg[0])
+
+    @Cmd(Scope.CHARGEN, "éditer", "mot_clé", "(.+)\s*$")
+    def _retool(self, player, arg):
+        retool(player.character, arg[1])
 
     ### Admin commands ###
 

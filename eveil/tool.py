@@ -96,7 +96,7 @@ def get_item(character):
     if not character.data["tooling"]:
         info(character.player, "Aucun objet n'est en cours de fabrication.")
         return None
-    item = character.inventory.get_item(character.data["tooling"])
+    item = character.inventory.item_by_uid(character.data["tooling"])
     if not item:
         info(character.player, "Aucun objet trouvé.")
         return None
@@ -104,6 +104,11 @@ def get_item(character):
 
 def tool_create(character, name):
     """Creates an item."""
+    if character.data["tooling"]:
+        item = get_item(character)
+        info(character.player, "{} est déjà en train de fabriquer {}."
+             .format(character.data["name"], item.data["shortdesc"]))
+        return
     uid = character.game.db.uid()
     item = Item(character.game, uid)
     item.template(name)
@@ -113,6 +118,21 @@ def tool_create(character, name):
     info(character.player, "{} a fabriqué {}."
          .format(character.data["name"], item.data["shortdesc"]))
 
+def retool(character, keyword):
+    """Retool an item."""
+    if character.data["tooling"]:
+        item = get_item(character)
+        info(character.player, "{} est déjà en train de fabriquer {}."
+             .format(character.data["name"], item.data["shortdesc"]))
+        return
+    item = character.inventory.get_item('shortdesc', keyword)
+    if item:
+        character.data["tooling"] = item.uid
+        info(character.player, "{} modifie {}."
+             .format(character.data["name"], item.data["shortdesc"]))
+    else:
+        info(character.player, "Aucun objet ne correspond au mot clé {}."
+             .format(keyword))
 
 def tool_describe(character, key, description):
     """Describe the item."""
