@@ -209,3 +209,15 @@ def get_item_from_container(character, container, item_kw):
         info(character.player,
              "{} transporte trop de choses pour pouvoir prendre {}."
              .format(character.data['name'], item.data['shortdesc']))
+
+def destroy_item(character, keyword):
+    item = character.inventory.get_item('shortdesc', keyword)
+    if item:
+        item.destroy()
+        character.inventory.rem_item(item)
+        info(character.player,
+             "{} détruit {}."
+             .format(character.data['name'], item.data['shortdesc']))
+    else:
+        info("{} ne transporte aucun objet correspondant au mot clé {}."
+             .format(character.data['name'], keyword))

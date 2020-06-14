@@ -135,6 +135,11 @@ class Item():
             }
             self.game.db.put('item', self.uid, self.data)
 
+    def destroy(self):
+        self.game.db.rem('container', self.data['container_id'])
+        self.container = None
+        self.game.db.rem('item', self.uid)
+
     def template(self, name):
         """Creates a new item using list_items."""
         if name not in ITEMS:
