@@ -91,13 +91,12 @@ def wornlist(character, top=False):
         if key > visible:
             visible = key
         if key in layers:
-            layers[key] = layers[key] + ", " + item.data['worndesc']
+            layers[key] = layers[key] + " " + item.data['worndesc']
         else:
             layers[key] = item.data['worndesc']
     if top:
-        return layers[visible].capitalize() + '.'
-    garment = '. '.join([layers[key].capitalize() for key in layers])
-    garment += '.'
+        return layers[visible]
+    garment = ' '.join([layers[key] for key in layers])
     return garment
 
 

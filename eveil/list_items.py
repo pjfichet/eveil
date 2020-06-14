@@ -21,10 +21,10 @@ for players to do it carefully.
 ITEMS = {
 
 "sous-vêtement": {
-    "shortdesc": "un sous-vêtement quelconque",
+    "shortdesc": "un sous-vêtement",
     "longdesc" : "Ce sous-vêtement est parfaitement quelconque.",
-    "roomdesc" : "un sous-vêtement quelconque est ici",
-    "worndesc" : "un sous-vêtement quelconque couvre sa peau",
+    "roomdesc" : "Un sous-vêtement est ici.",
+    "worndesc" : "Un sous-vêtement couvre sa peau.",
     "wornplace" : 1,    # hold=0, underwear=1, outerwear=2, cloak=3
     "gender" : 1,       # neutre=0 masculin=1, féminin=2
     "number" : 0,       # singulier=0, pluriel=1
@@ -40,8 +40,8 @@ ITEMS = {
 "vêtement": {
     "shortdesc": "un vêtement quelconque",
     "longdesc" : "Ce vêtement est parfaitement quelconque.",
-    "roomdesc" : "un vêtement quelconque est ici",
-    "worndesc" : "/il est habillé d'un vêtement quelconque",
+    "roomdesc" : "Un vêtement est ici.",
+    "worndesc" : "Un vêtement est sur ses épaules.",
     "wornplace" : 2,    # hold=0, underwear=1, outerwear=2, cloak=3
     "gender" : 1,       # neutre=0 masculin=1, féminin=2
     "number" : 0,       # singulier=0, pluriel=1
@@ -55,10 +55,10 @@ ITEMS = {
 },
 
 "manteau": {
-    "shortdesc": "un manteau quelconque",
+    "shortdesc": "un manteau",
     "longdesc" : "Ce manteau est parfaitement quelconque.",
-    "roomdesc" : "un manteau quelconque est ici",
-    "worndesc" : "un manteau quelconque lui couvre les épaules",
+    "roomdesc" : "Un manteau est ici.",
+    "worndesc" : "Un manteau lui couvre les épaules.",
     "wornplace" : 3,    # hold=0, underwear=1, outerwear=2, cloak=3
     "gender" : 1,       # neutre=0 masculin=1, féminin=2
     "number" : 0,       # singulier=0, pluriel=1
@@ -72,18 +72,18 @@ ITEMS = {
 },
 
 "sac": {
-    "shortdesc": "un sac quelconque",
+    "shortdesc": "un sac",
     "longdesc" : "Ce sac est parfaitement quelconque.",
-    "roomdesc" : "un sac quelconque est ici",
-    "worndesc" : "/il porte un sac quelconque",
+    "roomdesc" : "Un sac est ici.",
+    "worndesc" : "Un sac est sur ses épaules.",
     "wornplace" : 2,        # hold=0, underwear=1, outerwear=2, cloak=3.
     "gender" : 1,           # neutre=0 masculin=1, féminin=2.
     "number" : 0,           # singulier=0, pluriel=1.
-    "volume" : 40,          # When folded, in dm3. Minimum is 1.
+    "volume" : 1,          # When folded, in dm3. Minimum is 1.
     "value" : 10,           # default to 10.
     "quality" : 0,          # rough=0, normal=1, fine=2.
     "weight" : 250,         # in gram.
-    "inner_volume" : 100,   # container volume - 0 if not a container.
+    "inner_volume" : 10,   # container volume - 0 if not a container.
     "container_id" : None,
     "position_id" : None,
 },

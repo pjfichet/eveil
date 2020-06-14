@@ -120,9 +120,16 @@ def tool_describe(character, key, description):
     item = get_item(character)
     if not item:
         return
+    # Fix punctuation.
+    if key == 'shortdesc':
+        description = re.sub('(.|!|?)?$', '', description).lower()
+    else:
+        if description[-1] != '.':
+            description += '.'
+        description = description.capitalize()
     item.data[COMMANDS[key]] = description
     item.put()
-    info(character.player, "item {}: {}.".format(key, description))
+    info(character.player, "item {}: {}".format(key, description))
 
 def tool_gender(character, gender):
     """Set the gender of the item."""
