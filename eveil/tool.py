@@ -38,12 +38,17 @@ def tool(character, command):
     and pick the correct one."""
     # first, we sanitize spaces
     command = re.sub(r"\s+", " ", command)
-    character.game.log("tool {}".format(command))
+    #character.game.log("tool {}".format(command))
     # we match for commands
     # fabriquer (un|une) (sous-vêtement|vêtement|manteau...)
-    match = re.match(r"(un |une )*({})\s*$".format(ITEMS_LIST), command)
+    match = re.match(r"nouveau ({})\s*$".format(ITEMS_LIST), command)
     if match:
         tool_create(character, match.group(2))
+        return
+
+    match = re.match(r"modifie (\w+)\s*$", command)
+    if match:
+        tool_retool(character, match.group(1))
         return
 
     match = re.match(r"({}) (.*)\s*$".format(COMMANDS_LIST), command)
@@ -61,17 +66,25 @@ def tool(character, command):
         tool_number(character, match.group(1))
         return
 
-    match = re.match(r"finaliser\s*$", command)
+    match = re.match(r"nouveau (\w+)\s*$", command)
+    if match:
+        tool_create(character, match.group(1))
+        return
+
+    match = re.match(r"finalise\s*$", command)
     if match:
         tool_finalise(character)
         return
 
     info(character.player, """<b>Usage:</b><br/>
-         item (un|une) [{}]<br/>
-         item [{}] <i>description</i><br/>
+         item nouveau [{}]<br/>
+         item apparence <i>courte description</i><br/>
+         item description <i>Longue description.</i><br/>
+         item porté <i>Description lorsque porté.</i><br/>
+         item posé <i>Description lorsque posé.</i><br/>
          item genre <i>[masculin|féminin]</i><br/>
          item nombre <i>[singulier|pluriel]</i><br/>
-         item finaliser"""
+         item finalise"""
          .format(ITEMS_LIST, COMMANDS_LIST))
 
 def get_item(character):
@@ -100,7 +113,7 @@ def tool_create(character, name):
     character.data["tooling"] = item.uid
     pose(character, "/Il fabrique {}.".format(item.data["shortdesc"]))
 
-def retool(character, keyword):
+def tool_retool(character, keyword):
     """Retool an item."""
     if character.data["tooling"]:
         item = get_item(character)
