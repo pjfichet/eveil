@@ -16,8 +16,8 @@
 import re
 from .message import pose, expose, info
 from .look import look, look_in_inventory, look_in_equipment
-from .tool import tool, retool
-from .manipulation import get_item, put_item, wear_item, rem_item
+from .tool import tool
+from .manipulation import get_item, put_item, wear_item, rem_item, destroy_item
 
 # Player states defining commands availability
 class State():
@@ -214,14 +214,17 @@ class Parser():
     def _put_item(self, player, arg):
         put_item(player.character, arg[1])
 
-    @Cmd(Scope.CHARACTER, "porter", "mot_clé", "(\w+)\s*$")
+    @Cmd(Scope.CHARACTER, "mettre", "mot_clé", "(\w+)\s*$")
     def _wear_item(self, player, arg):
         wear_item(player.character, arg[1])
 
     @Cmd(Scope.CHARACTER, "enlever", "mot_clé", "(\w+)\s*$")
     def _remove_item(self, player, arg):
         rem_item(player.character, arg[1])
-        
+
+    @Cmd(Scope.CHARACTER, "détruire", "mot_clé", "(\w+)\s*$")
+    def _destroy_item(self, player, arg):
+        destroy_item(player.character, arg[1])
 
     @Cmd(Scope.CHARACTER, "connaissances", "", "^$")
     def _list_remember(self, player, arg):
@@ -260,10 +263,6 @@ class Parser():
     @Cmd(Scope.CHARGEN, "item", "", ".*\s*$")
     def _tool(self, player, arg):
         tool(player.character, arg[0])
-
-    @Cmd(Scope.CHARGEN, "éditer", "mot_clé", "(.+)\s*$")
-    def _retool(self, player, arg):
-        retool(player.character, arg[1])
 
     ### Admin commands ###
 
