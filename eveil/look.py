@@ -18,55 +18,25 @@ Functions for the command look.
 """
 
 import re
-from .message import info, expose_format
+from .message import info, fmt
 
 def look(from_char, command):
     """Command look. We check various matches and pick the correct
     one."""
     # first, we sanitize spaces
     command = re.sub(r"\s+", " ", command).lower()
-    # regarder émilie:
-    match = re.match(r"(\w+)\s*$", command)
-    if match:
-        look_at(from_char, match.group(1))
-        return
     # regarder l'objet:
-    match = re.match(r"(le |la |les |l')(\w+)\s*$", command)
+    match = re.match(r"(le |la |les |l')?(\w+)\s*$", command)
     if match:
         look_at(from_char, match.group(2))
         return
-    # regarder dans boite:
-    match = re.match(r"(dans|sur) (\w+)\s*$", command)
-    if match:
-        look_in(from_char, match.group(2))
-        return
     # regarder dans la boite:
-    match = re.match(r"(dans|sur) (le |la |les |l')(\w+)\s*$", command)
+    match = re.match(r"(dans|sur) (le |la |les |l')?(\w+)\s*$", command)
     if match:
         look_in(from_char, match.group(3))
         return
-    # regarder objet boite:
-    match = re.match(r"(\w+)\s(\w+)\s*$", command)
-    if match:
-        look_at_in(from_char, match.group(2), match.group(1))
-        return
-    # regarder objet dans boite | regarder objet de|du|sur personnage:
-    match = re.match(r"(\w+)\s(dans |de |du |sur |d')(\w+)\s*$", command)
-    if match:
-        look_at_in(from_char, match.group(3), match.group(1))
-        return
-    # regarder l'objet dans boite | regarder l'objet de personnage
-    match = re.match(r"(le |la |les |l')(\w+)\s(dans |de |du |sur |d')(\w+)\s*$", command)
-    if match:
-        look_at_in(from_char, match.group(4), match.group(2))
-        return
-    # regarder objet dans la boite | regarder objet de|sur le personnage:
-    match = re.match(r"(\w+)\s(dans|de|sur)\s(le |la |les |l')(\w+)\s*$", command)
-    if match:
-        look_at_in(from_char, match.group(4), match.group(1))
-        return
-    # regarder l'objet dans la boite | regarder l'objet de|sur le personnage:
-    match = re.match(r"(le |la |les |l')(\w+)\s(dans|de|sur)\s(le |la |les |l')(\w+)\s*$", command)
+    # regarder l'objet dans la boite
+    match = re.match(r"(le |la |les |l')?(\w+)\s(dans|de|sur)\s(le |la |les |l')?(\w+)\s*$", command)
     if match:
         look_at_in(from_char, match.group(5), match.group(2))
         return
@@ -76,7 +46,9 @@ def look(from_char, command):
         <code>regarder [le|la|les|l'] <i>mot_clé</i> [dans|de|sur|d']
         [le|la|les|l'] <i>mot_clé</i></code>""")
 
-
+def look_fmt(character, shortdesc, longdesc):
+    character.player.client.send("<p><b>{} regarde {}</b>. — {}</p>"
+        .format(character.data["name"], shortdesc, longdesc))
 
 def look_at(from_char, keyword):
     """Regarder émilie"""
@@ -132,20 +104,28 @@ def wornlist(character, top=False):
 def look_in_equipment(from_char, to_char):
     """ Look in equipment, only show visible items."""
     layers = wornlist(from_char)
-    from_char.player.client.send("<p>{}</p>".format(layers))
+    fmt(from_char.player,
+        "{} regarde son équipement".format(from_char.data['name']),
+        layers)
 
 def look_at_character(from_char, to_char):
     """Look at a character."""
     visible = wornlist(from_char, top=True) 
-    from_char.player.client.send(
-        "<p>{}</p><p>{}</p>"
-        .format(to_char.data['longdesc'], visible))
+    if from_char == to_char:
+        title = "{} se regarde".format(from_char.data['name'])
+    else:
+        title =  "{} regarde {}".format(
+                    from_char.data['name'],
+                    from_char.remember.get_remember(to_char))
+    content = "{}</p><p>{}".format(to_char.data['longdesc'], visible)
+    fmt(from_char.player, title, content)
 
 def look_at_item(from_char, item):
     """Look at an item."""
-    from_char.player.client.send(
-        "<p>{}</p>"
-        .format(item.data['longdesc']))
+    title = "{} regarde {}".format(
+                from_char.data['name'],
+                item.data['shortdesc'])
+    fmt(from_char.player, title, item.data['longdesc'])
 
 def look_in(from_char, keyword):
     """Regarder dans le coffre"""
@@ -153,7 +133,13 @@ def look_in(from_char, keyword):
     for character in from_char.room.characters:
         if keyword in from_char.remember.get_remember(character).lower():
             visible = wornlist(character, top=True) 
-            from_char.player.client.send("<p>{}</p>".format(visible))
+            if from_char == character:
+                title = "{} regarde son équipement".format(from_char.data['name'])
+            else:
+                title = "{} regarde l'équipement de {}".format(
+                            from_char.data['name'],
+                            from_char.remember.get_remember(character))
+            fmt(from_char, title, visible)
             return
     # look in something in inventory
     item = from_char.inventory.get_item('shortdesc', keyword)
@@ -183,9 +169,9 @@ def look_in_container(from_char, item):
         info(from_char.player, "{} est vide.".format(
              item.data["shortdesc"].capitalize() ))
         return
-    from_char.player.client.send(
-        "<p>{}.</p>"
-        .format(item.container.list_items('shortdesc')))
+    title = "{} regarde dans {}".format(from_char.data['name'],
+                item.data['shortdesc'])
+    fmt(from_char, title, item.container.list_items('shortdesc'))
 
 def look_in_inventory(from_char, to_char):
     """ look in inventory."""
@@ -194,7 +180,8 @@ def look_in_inventory(from_char, to_char):
              to_char.data["name"]))
         return
     items = to_char.inventory.list_items('shortdesc')
-    from_char.player.client.send("<p>{}</p>".format(items))
+    title = "{} regarde son inventaire".format(from_char.data['name'])
+    fmt(from_char, title, items)
 
 def look_at_in(from_char, key_container, key_item):
     """look at something in container. Here, we search for the correct

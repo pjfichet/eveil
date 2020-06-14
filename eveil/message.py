@@ -23,6 +23,9 @@ def info(player, text):
     "Game information sent to a player."
     player.client.send("<p class='info'>{}</p>".format(text))
 
+def fmt(player, title, text):
+    player.client.send("<p><b>{}</b>. — {}</p>".format(title, text))
+
 def _has_name(name, text):
     "Check if a player is inserting his character name in his pose."
     name = '/' + name.lower()
@@ -43,7 +46,7 @@ def pose(from_char, text):
         text = text[:-1]
     for to_char in from_char.room.characters:
         newtext = expose_format(from_char, to_char, text)
-        to_char.player.client.send("<p>{}.</p>".format(newtext))
+        to_char.player.client.send("<p><b>{}</b>.</p>".format(newtext))
     from_char.data['pose'] = text
 
 def expose(from_char, text):
