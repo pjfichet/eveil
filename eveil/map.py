@@ -230,7 +230,7 @@ class Room():
 
     def rp(self):
         """ Update the RP status of the room."""
-        self.next_rp = datetime.now + room.RPDELTA
+        self.next_rp = datetime.now + Room.RPDELTA
 
     def has_rp(self, now):
         """ Check if the room is RP active."""
