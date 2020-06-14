@@ -38,6 +38,10 @@ class Container():
             }
             self.game.db.put('container', self.uid, self.data)
 
+    def set_volume(self, volume):
+        self.data['max_volume'] = volume
+        self.game.db.put('container', self.uid, self.data)
+
     def add_item(self, item):
         """Puts an item in the container."""
         new_volume = self.data['used_volume'] + item.data['volume']
@@ -59,16 +63,26 @@ class Container():
         self.game.db.put('container', self.uid, self.data)
         return True
 
-    def get_item(self, uid):
+    def item_by_uid(self, uid):
         """Finds and returns an item by its uid."""
         for item in self.items:
             if item.uid == uid:
                 return item
         return None
 
-    def set_volume(self, volume):
-        self.data['max_volume'] = volume
-        self.game.db.put('container', self.uid, self.data)
+    def get_item(self, key, keyword):
+        """Finds and returns an item by a keyword."""
+        for item in self.items:
+            if keyword in item.data[key].lower():
+                return item
+        return None
+
+    def list_items(self, key):
+        items = ''
+        items = ", ".join([item.data[key] for item in self.items])
+        if items != '':
+            items += '.'
+        return items.capitalize()
 
 
 class Item():

@@ -18,7 +18,7 @@ Functions for the command look.
 """
 
 import re
-from .message import info
+from .message import info, expose_format
 
 def look(from_char, command):
     """Command look. We check various matches and pick the correct
@@ -80,55 +80,66 @@ def look(from_char, command):
 
 def look_at(from_char, keyword):
     """Regarder émilie"""
+    # look at character
     for character in from_char.room.characters:
         if keyword in from_char.remember.get_remember(character).lower():
             look_at_character(from_char, character)
             return
-    for item in from_char.inventory.items:
-        if keyword in item.data['shortdesc'].lower():
-            look_at_item(from_char, item)
-            return
-    for item in from_char.equipment.items:
-        if keyword in item.data['worndesc'].lower():
-            look_at_item(from_char, item)
-            return
-    for item in from_char.room.container.items:
-        if keyword in item.data['roomdesc'].lower():
-            look_at_item(from_char, item)
-            return
-    info(
-        from_char.player,
-        "Aucun personnage ni objet ne correspond au mot clé « {} »."
-        .format(keyword))
+    # look at item in inventory
+    item = from_char.inventory.get_item('shortdesc', keyword)
+    if item:
+        look_at_item(from_char, item)
+        return
+    # look at item in equipment
+    item = from_char.equipment.get_item('worndesc', keyword)
+    if item:
+        look_at_item(from_char, item)
+        return
+    # look at item in room
+    item = from_char.room.container.get_item('roomdesc', keyword)
+    if item:
+        look_at_item(from_char, item)
+        return
+    # nothing found
+    info(from_char.player,
+         "Aucun personnage ni objet ne correspond au mot clé « {} »."
+         .format(keyword))
 
-def wornlist(character):
+def wornlist(character, top=False):
     if not character.equipment.items:
         if character.data['gender'] > 1:
             return "Elle est toute nue."
         else:
             return "Il est tout nu."
-    wearlist = {}
+    layers = {}
     visible = 0
     for item in character.equipment.items:
         # sort items by wornplace
         key = item.data['wornplace']
         if key > visible:
             visible = key
-        if key in wearlist:
-            wearlist[key] = wearlist[key] + ", " + item.data['worndesc']
+        if key in layers:
+            layers[key] = layers[key] + ", " + item.data['worndesc']
         else:
-            wearlist[key] = item.data['worndesc']
-    # we only returns the highest wornplace, since it covers
-    # the other ones.
-    return wearlist[visible]
+            layers[key] = item.data['worndesc']
+    if top:
+        return layers[visible].capitalize() + '.'
+    garment = '. '.join([layers[key].capitalize() for key in layers])
+    garment += '.'
+    return garment
+
+
+def look_in_equipment(from_char, to_char):
+    """ Look in equipment, only show visible items."""
+    layers = wornlist(from_char)
+    from_char.player.client.send("<p>{}</p>".format(layers))
 
 def look_at_character(from_char, to_char):
     """Look at a character."""
-    items = wornlist(from_char) 
+    visible = wornlist(from_char, top=True) 
     from_char.player.client.send(
         "<p>{}</p><p>{}</p>"
-        .format(to_char.data['longdesc'], items.capitalize()))
-
+        .format(to_char.data['longdesc'], visible))
 
 def look_at_item(from_char, item):
     """Look at an item."""
@@ -138,87 +149,102 @@ def look_at_item(from_char, item):
 
 def look_in(from_char, keyword):
     """Regarder dans le coffre"""
-    for item in from_char.room.container.items:
-        if keyword in item.data['roomdesc'].lower():
-            if item.container:
-                look_in_container(from_char, item)
-                return
-            info(from_char.player, "{} ne peut pas regarder dans {}."
-                .format(from_char.data["name"], item.data['shortdesc']))
+    # look in character = look at his equipment
     for character in from_char.room.characters:
         if keyword in from_char.remember.get_remember(character).lower():
-            look_in_equipment(from_char, character)
+            visible = wornlist(character, top=True) 
+            from_char.player.client.send("<p>{}</p>".format(visible))
             return
+    # look in something in inventory
+    item = from_char.inventory.get_item('shortdesc', keyword)
+    if item:
+        look_in_container(from_char, item)
+        return
+    # look in something in equipment
+    item = from_char.equipment.get_item('worndesc', keyword)
+    if item:
+        look_in_container(form_char, item)
+        return
+    # look in something in room
+    item = from_char.room.container.get_item('roomdesc', keyword)
+    if item:
+        look_in_container(from_char, item)
+        return
     info(from_char.player, "Aucun objet ne correspond au mot clé « {} »."
         .format(keyword))
 
 def look_in_container(from_char, item):
     """Look in a container."""
+    if not item.container:
+        info(from_char.player, "{} ne peut pas regarder dans {}."
+             .format(from_char.data["name"], item.data['shortdesc']))
+        return
     if not item.container.items:
         info(from_char.player, "{} est vide.".format(
-            item.data["shortdesc"].capitalize() ))
+             item.data["shortdesc"].capitalize() ))
         return
-    list_items = ", ".join(
-        obj.data["shortdesc"]
-        for obj in item.container.items)
-    from_char.player.client.send("<p>{}.</p>"
-        .format(list_items.capitalize()))
-
-def look_in_equipment(from_char, to_char):
-    if not to_char.equipment.items:
-        info(from_char.player, "{} ne porte rien.".format(
-            to_char.data["name"]))
-        return
-    list_items = ", ".join(item.data["worndesc"]
-        for item in to_char.equipment.items)
     from_char.player.client.send(
-        "<p>{}.</p>".format(list_items.capitalize()))
+        "<p>{}.</p>"
+        .format(item.container.list_items('shortdesc')))
 
 def look_in_inventory(from_char, to_char):
+    """ look in inventory."""
     if not to_char.inventory.items:
         info(from_char.player, "{} ne transporte rien.".format(
              to_char.data["name"]))
         return
-    list_items = ", ".join(item.data["shortdesc"]
-        for item in to_char.inventory.items)
-    from_char.player.client.send(
-        "<p>{}.</p>".format(list_items.capitalize()))
+    items = to_char.inventory.list_items('shortdesc')
+    from_char.player.client.send("<p>{}</p>".format(items))
 
 def look_at_in(from_char, key_container, key_item):
-    "regarder la veste d'émilie."
+    """look at something in container. Here, we search for the correct
+    container key"""
+    # look at something on character
     for character in from_char.room.characters:
         if key_container in from_char.remember.get_remember(character).lower():
             look_at_in_equipment(from_char, character, key_item)
             return
-    for item in from_char.room.container.items:
-        if key_container in item.data['shortdesc'].lower():
-            if item.container:
-                look_at_in_container(from_char, item, key_item)
-                return
-            info(from_char.player, "{} ne peut pas regarder dans {}."
-                .format(from_char.data["name"], item.data['shortdesc']))
+    # look at something in inventory
+    item = from_char.inventory.get_item('shortdesc', key_container)
+    if item:
+        look_at_in_container(from_char, item, key_item)
+        return
+    # look at something in equipment
+    item = from_char.equipment.get_item('shortdesc', key_container)
+    if item:
+        look_at_in_container(from_char, item, key_item)
+        return
+    # look at something in room
+    item = from_char.room.container.get_item('roomdesc', key_container)
+    if item :
+        look_at_in_container(from_char, item, key_item)
+        return
+    # nothing found
     info(from_char.player,
         "Aucun personnage ni objet ne correspond au mot clé « {} »."
         .format(key_container))
 
 def look_at_in_equipment(from_char, to_char, keyword):
-    "regarder la veste d'émilie"
-    for item in to_char.equipment.items:
-        if keyword in item.data['worndesc'].lower():
-            look_at_item(from_char, item)
-            return
-    info(from_char.player,
-        "{} ne porte aucun objet correspondant au mot clé « {} »."
-        .format(from_char.remember.get_remember(to_char), keyword))
+    "look at something in equipment"
+    item = to_char.equipment.get_item('worndesc', keyword)
+    if item:
+        look_at_item(from_char, item)
+    else:
+        info(from_char.player,
+            "{} ne porte aucun objet correspondant au mot clé « {} »."
+            .format(from_char.remember.get_remember(to_char), keyword))
 
 def look_at_in_container(from_char, item, keyword):
-    "regarder dans le coffre"
+    """look at something in container. Here, we have found the
+    container, we search for an object in it"""
     if not item.container:
+        info(from_char.player, "{} ne peut pas regarder dans {}."
+             .format(from_char.data["name"], item.data['shortdesc']))
         return
-    for obj in item.container.items:
-        if keyword in obj.data["shortdesc"].lower():
-            look_at_item(from_char, obj)
-            return
-    info(from_char.player,
-        "{} ne contient aucun object correspondant au mot clé « {} »."
-        .format(item.data["shortdesc"], keyword))
+    obj = item.container.get_item('shortdesc', keyword)
+    if obj:
+        look_at_item(from_char, obj)
+    else: 
+        info(from_char.player,
+            "{} ne contient aucun object correspondant au mot clé « {} »."
+            .format(item.data["shortdesc"], keyword))
