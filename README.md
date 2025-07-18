@@ -1,3 +1,8 @@
+# Information
+
+This repository has been archived as I stopped working on this.
+
+
 # Eveil: a roleplaying mud using websocket
 
 ## Description
